@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CANDIDAT
+  ENTREPRISE
+  ADMIN
+}
+
+enum StatutOffre {
+  EN_ATTENTE
+  OUVERTE
+  FERMEE
+}
+
+enum StatutCandidature {
+  EN_ATTENTE
+  VUE
+  ENTRETIEN
+  ACCEPTE
+  REFUSE
+}
+
+model Utilisateur {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String
+  role       Role
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  candidat   Candidat?
+  entreprise Entreprise?
+  notifications Notification[]
+
+  @@map("utilisateurs")
+}
+
+model Candidat {
+  id             Int       @id @default(autoincrement())
+  utilisateurId  Int       @unique
+  prenom         String
+  nom            String
+  telephone      String?
+  localisation   String?
+  titre          String?
+  bio            String?
+  cvUrl          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  utilisateur    Utilisateur    @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  candidatures   Candidature[]
+  competences    CompetenceCandidat[]
+
+  @@map("candidats")
+}
+
+model Entreprise {
+  id             Int       @id @default(autoincrement())
+  utilisateurId  Int       @unique
+  nom            String
+  description    String?
+  secteur        String?
+  siteWeb        String?
+  logoUrl        String?
+  localisation   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  offres         Offre[]
+
+  @@map("entreprises")
+}
+
+model Competence {
+  id   Int    @id @default(autoincrement())
+  nom  String @unique
+
+  offres     CompetenceOffre[]
+  candidats  CompetenceCandidat[]
+
+  @@map("competences")
+}
+
+model CompetenceOffre {
+  offre        Offre      @relation(fields: [offreId], references: [id], onDelete: Cascade)
+  offreId      Int
+  competence   Competence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+  competenceId Int
+
+  @@id([offreId, competenceId])
+  @@map("competence_offres")
+}
+
+model CompetenceCandidat {
+  candidat     Candidat   @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+  candidatId   Int
+  competence   Competence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+  competenceId Int
+  niveau       Int        @default(50)
+
+  @@id([candidatId, competenceId])
+  @@map("competence_candidats")
+}
+
+model Offre {
+  id                 Int         @id @default(autoincrement())
+  titre              String
+  description        String
+  type_contrat       String
+  niveau_experience  String?
+  localisation       String?
+  salaire_min        Int?
+  salaire_max        Int?
+  statut             StatutOffre @default(EN_ATTENTE)
+  entrepriseId       Int
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  entreprise         Entreprise    @relation(fields: [entrepriseId], references: [id], onDelete: Cascade)
+  candidatures       Candidature[]
+  competences        CompetenceOffre[]
+
+  @@map("offres")
+}
+
+model Candidature {
+  id          Int                @id @default(autoincrement())
+  candidatId  Int
+  offreId     Int
+  statut      StatutCandidature  @default(EN_ATTENTE)
+  lettre      String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  candidat    Candidat  @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+  offre       Offre     @relation(fields: [offreId], references: [id], onDelete: Cascade)
+
+  @@unique([candidatId, offreId])
+  @@map("candidatures")
+}
+
+model Notification {
+  id             Int      @id @default(autoincrement())
+  utilisateurId  Int
+  titre          String
+  message        String
+  lu             Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}

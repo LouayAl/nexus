@@ -1,3 +1,4 @@
+// apps/frontend/src/components/jobs/JobCard.tsx
 "use client";
 
 import { useState } from "react";
@@ -80,11 +81,15 @@ export function JobCard({ offre, canApply = true }: {
           {offre.competences && offre.competences.length > 0 && (
             <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 14 }}>
               {offre.competences.slice(0, 5).map((c) => (
-                <span key={c.id} style={{
-                  background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
-                  color: theme.textSub, fontSize: 11, padding: "2px 8px", borderRadius: 6,
+                <span key={c.competence.id} style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                  color: theme.textSub,
+                  fontSize: 11,
+                  padding: "2px 8px",
+                  borderRadius: 6,
                 }}>
-                  {c.nom}
+                  {c.competence.nom}
                 </span>
               ))}
             </div>

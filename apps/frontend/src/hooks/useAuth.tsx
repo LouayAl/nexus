@@ -1,3 +1,4 @@
+// apps/frontend/src/hooks/useAuth.tsx
 "use client";
 
 import {
@@ -5,7 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { authApi, setToken, removeToken, type User } from "@/lib/api";
+import { authApi, setToken, removeToken, type User, type RegisterPayload } from "@/lib/api";
 
 interface AuthState {
   user:    User | null;
@@ -13,7 +14,8 @@ interface AuthState {
 }
 
 interface AuthContextType extends AuthState {
-  login:  (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, redirectTo?: string) => Promise<void>;
+  register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
 }
 
@@ -29,14 +31,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .catch(()        => setState({ user: null, loading: false }));
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
+  // In useAuth.tsx — update login to accept a redirect destination
+  const login = useCallback(async (email: string, password: string, redirectTo?: string) => {
     const { data } = await authApi.login(email, password);
     setToken(data.access_token);
     setState({ user: data.user, loading: false });
-    const dest =
+    const dest = redirectTo ?? (
       data.user.role === "ADMIN"      ? "/admin"             :
       data.user.role === "ENTREPRISE" ? "/company/dashboard" :
-      "/discover";
+      "/discover"
+    );
+    router.push(dest);
+  }, [router]);
+
+  const register = useCallback(async (payload: RegisterPayload) => {
+    const { data } = await authApi.register(payload);
+    setToken(data.access_token);
+    setState({ user: data.user, loading: false });
+    const dest =
+      data.user.role === "ENTREPRISE" ? "/company/dashboard" : "/discover";
     router.push(dest);
   }, [router]);
 
@@ -47,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>
+    <AuthContext.Provider value={{ ...state, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

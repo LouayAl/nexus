@@ -1,3 +1,4 @@
+/* apps/frontend/src/app/globals.css */
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
@@ -126,10 +127,17 @@ body {
 .carousel-track {
   display: flex;
   width: max-content;
-  animation: slideRight 32s linear infinite;
+  animation: carousel-scroll 40s linear infinite;
+  will-change: transform;
 }
+
 .carousel-track:hover {
   animation-play-state: paused;
+}
+
+@keyframes carousel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-33.333%); }
 }
 
 /* ── No grid bg ── */

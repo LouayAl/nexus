@@ -1,3 +1,4 @@
+// apps/frontend/src/hooks/useNotificationSocket.ts
 "use client";
 
 import { useEffect, useRef } from "react";
