@@ -55,9 +55,12 @@ model Candidat {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
-  utilisateur    Utilisateur    @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  utilisateur    Utilisateur         @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
   candidatures   Candidature[]
   competences    CompetenceCandidat[]
+  experiences    Experience[]
+  formations     Formation[]
+  langues        Langue[]
 
   @@map("candidats")
 }
@@ -159,4 +162,45 @@ model Notification {
   utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
 
   @@map("notifications")
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  candidatId  Int
+  poste       String
+  entreprise  String
+  dateDebut   String
+  dateFin     String?
+  actuel      Boolean  @default(false)
+  description String?
+  createdAt   DateTime @default(now())
+
+  candidat    Candidat @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+
+  @@map("experiences")
+}
+
+model Formation {
+  id         Int      @id @default(autoincrement())
+  candidatId Int
+  diplome    String
+  ecole      String
+  annee      String
+  createdAt  DateTime @default(now())
+
+  candidat   Candidat @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+
+  @@map("formations")
+}
+
+model Langue {
+  id         Int      @id @default(autoincrement())
+  candidatId Int
+  nom        String
+  niveau     String   // Débutant / Intermédiaire / Avancé / Natif
+  createdAt  DateTime @default(now())
+
+  candidat   Candidat @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+
+  @@map("langues")
 }

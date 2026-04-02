@@ -55,28 +55,58 @@ export const offresApi = {
 
 // ── CANDIDATURES ──────────────────────────────────────────────────────────────
 export const candidaturesApi = {
-  apply:        (offreId: number, lettre?: string)   =>
+  apply:           (offreId: number, lettre?: string) =>
     api.post<Candidature>("/candidatures", { offreId, lettre }),
-  getMy:        ()                                   => api.get<Candidature[]>("/candidatures/mes-candidatures"),
-  getByOffre:   (offreId: number)                    => api.get<Candidature[]>(`/candidatures/offre/${offreId}`),
-  getByEntreprise: ()                                => api.get<Candidature[]>("/candidatures/entreprise"),
-  updateStatut: (id: number, statut: string)         =>
+  getMy:           () => api.get<Candidature[]>("/candidatures/mes-candidatures"),
+  getByOffre:      (offreId: number) => api.get<Candidature[]>(`/candidatures/offre/${offreId}`),
+  getByEntreprise: () => api.get<Candidature[]>("/candidatures/entreprise"),
+  updateStatut:    (id: number, statut: string) =>
     api.patch<Candidature>(`/candidatures/${id}/statut`, { statut }),
-  withdraw:     (id: number)                         => api.delete(`/candidatures/${id}`),
+  withdraw:        (id: number) => api.delete(`/candidatures/${id}`),
 };
 
 // ── CANDIDATS ─────────────────────────────────────────────────────────────────
 export const candidatsApi = {
   getProfile:    () => api.get<CandidatProfile>("/candidats/profile"),
-  updateProfile: (data: Partial<CandidatProfile>) =>
+  updateProfile: (data: Partial<CandidatProfileUpdate>) =>
     api.patch<CandidatProfile>("/candidats/profile", data),
+
+  // Skills — dedicated endpoint
+  addSkill: (data: { nom: string; niveau: number }) =>
+    api.post("/candidats/competences", data),
+  deleteSkill: (competenceId: number) =>
+    api.delete(`/candidats/competences/${competenceId}`),
+
+  // CV
+  uploadCv: (file: File) => {
+    const form = new FormData();
+    form.append("cv", file);
+    return api.post<{ cvUrl: string }>("/candidats/cv", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+
+  // Experiences
+  addExperience:    (data: ExperienceDto)              => api.post<Experience>("/candidats/experiences", data),
+  updateExperience: (id: number, data: Partial<ExperienceDto>) => api.patch<Experience>(`/candidats/experiences/${id}`, data),
+  deleteExperience: (id: number)                       => api.delete(`/candidats/experiences/${id}`),
+
+  // Formations
+  addFormation:    (data: FormationDto)                => api.post<Formation>("/candidats/formations", data),
+  updateFormation: (id: number, data: Partial<FormationDto>) => api.patch<Formation>(`/candidats/formations/${id}`, data),
+  deleteFormation: (id: number)                        => api.delete(`/candidats/formations/${id}`),
+
+  // Langues
+  addLangue:    (data: LangueDto)                      => api.post<Langue>("/candidats/langues", data),
+  updateLangue: (id: number, data: Partial<LangueDto>) => api.patch<Langue>(`/candidats/langues/${id}`, data),
+  deleteLangue: (id: number)                           => api.delete(`/candidats/langues/${id}`),
 };
 
 // ── ENTREPRISES ───────────────────────────────────────────────────────────────
 export const entreprisesApi = {
-  getAll:        ()                                  => api.get<EntreprisePublic[]>("/entreprises"),
-  getProfile:    ()                                  => api.get<EntrepriseProfile>("/entreprises/profile"),
-  updateProfile: (data: Partial<EntrepriseProfile>)  =>
+  getAll:        () => api.get<EntreprisePublic[]>("/entreprises"),
+  getProfile:    () => api.get<EntrepriseProfile>("/entreprises/profile"),
+  updateProfile: (data: Partial<EntrepriseProfile>) =>
     api.patch<EntrepriseProfile>("/entreprises/profile", data),
 };
 
@@ -103,8 +133,8 @@ export interface User {
 }
 
 export interface UserFull extends User {
-  createdAt:  string;
-  candidat?:  CandidatProfile;
+  createdAt:   string;
+  candidat?:   CandidatProfile;
   entreprise?: EntrepriseProfile;
 }
 
@@ -117,7 +147,82 @@ export interface RegisterPayload {
   nomEntreprise?: string;
 }
 
-// Matches backend response shape exactly
+export interface Experience {
+  id:          number;
+  candidatId:  number;
+  poste:       string;
+  entreprise:  string;
+  dateDebut:   string;
+  dateFin?:    string;
+  actuel:      boolean;
+  description?: string;
+  createdAt:   string;
+}
+
+export interface Formation {
+  id:         number;
+  candidatId: number;
+  diplome:    string;
+  ecole:      string;
+  annee:      string;
+  createdAt:  string;
+}
+
+export interface Langue {
+  id:         number;
+  candidatId: number;
+  nom:        string;
+  niveau:     string;
+  createdAt:  string;
+}
+
+export interface ExperienceDto {
+  poste:        string;
+  entreprise:   string;
+  dateDebut:    string;
+  dateFin?:     string;
+  actuel?:      boolean;
+  description?: string;
+}
+
+export interface FormationDto {
+  diplome: string;
+  ecole:   string;
+  annee:   string;
+}
+
+export interface LangueDto {
+  nom:    string;
+  niveau: string;
+}
+
+export interface CandidatProfile {
+  id:            number;
+  utilisateurId: number;
+  prenom:        string;
+  nom:           string;
+  telephone?:    string;
+  titre?:        string;
+  bio?:          string;
+  localisation?: string;
+  cvUrl?:        string;
+  competences?:  { competenceId: number; niveau: number; competence: { id: number; nom: string } }[];
+  experiences?:  Experience[];
+  formations?:   Formation[];
+  langues?:      Langue[];
+  utilisateur?:  { email: string; createdAt: string };
+}
+
+export interface CandidatProfileUpdate {
+  prenom?:        string;
+  nom?:           string;
+  telephone?:     string;
+  titre?:         string;
+  bio?:           string;
+  localisation?:  string;
+  competences?:   { nom: string; niveau: number }[];
+}
+
 export interface Offre {
   id:                number;
   titre:             string;
@@ -143,12 +248,12 @@ export interface OffrePaginee {
 }
 
 export interface OffresParams {
-  page?:               number;
-  limit?:              number;
-  keyword?:            string;
-  localisation?:       string;
-  type_contrat?:       string;
-  niveau_experience?:  string;
+  page?:              number;
+  limit?:             number;
+  keyword?:           string;
+  localisation?:      string;
+  type_contrat?:      string;
+  niveau_experience?: string;
 }
 
 export interface CreateOffreDto {
@@ -173,37 +278,24 @@ export interface Candidature {
   candidat?:  CandidatProfile;
 }
 
-export interface CandidatProfile {
-  id:           number;
-  utilisateurId:number;
-  prenom:       string;
-  nom:          string;
-  telephone?:   string;
-  titre?:       string;
-  bio?:         string;
-  localisation?: string;
-  cvUrl?:       string;
-  competences?: { competenceId: number; niveau: number; competence: { id: number; nom: string } }[];
-}
-
 export interface EntrepriseProfile {
-  id:           number;
-  utilisateurId:number;
-  nom:          string;
-  description?: string;
-  secteur?:     string;
-  siteWeb?:     string;
+  id:            number;
+  utilisateurId: number;
+  nom:           string;
+  description?:  string;
+  secteur?:      string;
+  siteWeb?:      string;
   localisation?: string;
-  logoUrl?:     string;
+  logoUrl?:      string;
 }
 
 export interface EntreprisePublic {
-  id:           number;
-  nom:          string;
-  secteur?:     string;
+  id:            number;
+  nom:           string;
+  secteur?:      string;
   localisation?: string;
-  logoUrl?:     string;
-  _count:       { offres: number };
+  logoUrl?:      string;
+  _count:        { offres: number };
 }
 
 export interface Notification {

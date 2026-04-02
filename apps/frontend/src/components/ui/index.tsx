@@ -1,3 +1,4 @@
+// apps/frontend/src/components/ui/index.tsx
 "use client";
 
 import { type ReactNode, type ButtonHTMLAttributes } from "react";
@@ -148,3 +149,5 @@ export function Input({ label, icon: Icon, className, style, ...props }:
     </div>
   );
 }
+export { Textarea } from "./Textarea";
+export { Select } from "./Select";
