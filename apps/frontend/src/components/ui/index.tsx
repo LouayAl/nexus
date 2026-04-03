@@ -79,7 +79,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-[8px] font-semibold font-outfit transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center gap-2 rounded-lg font-semibold font-outfit transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
         sizeClass, className
       )}
       style={{ fontFamily: "'Outfit', sans-serif", ...styles }}
@@ -101,7 +101,7 @@ export function StatCard({ label, value, icon: Icon, color, trend }: {
   trend?: string;
 }) {
   return (
-    <Card className="flex-1 min-w-[140px]" style={{ padding: "20px 22px" }}>
+    <Card className="flex-1 min-w-35" style={{ padding: "20px 22px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
         <div>
           <div style={{ color: theme.textSub, fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>
@@ -141,7 +141,7 @@ export function Input({ label, icon: Icon, className, style, ...props }:
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 14px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
         {Icon && <Icon size={15} color={theme.textSub} />}
         <input
-          className={cn("bg-transparent border-none outline-none flex-1 py-[11px] text-[13px]", className)}
+          className={cn("bg-transparent border-none outline-none flex-1 py-2.75 text-[13px]", className)}
           style={{ color: theme.text, fontFamily: "'Outfit', sans-serif", ...style }}
           {...props}
         />
