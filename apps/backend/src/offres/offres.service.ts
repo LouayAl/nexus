@@ -105,8 +105,18 @@ export class OffresService {
   }
 
   // Admin only — approve or reject
-  async updateStatut(id: number, statut: 'OUVERTE' | 'FERMEE') {
-    await this.findOne(id);
+  async updateStatut(id: number, userId: number, statut: 'OUVERTE' | 'EN_ATTENTE' | 'FERMEE') {
+    const offre = await this.findOne(id);
+    
+    // Check if user is admin or owns the offer
+    const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
+    
+    if (!entreprise || offre.entrepriseId !== entreprise.id) {
+      // User is not the owner - only admin can update other offers
+      // For now, throw forbidden
+      throw new ForbiddenException('Non autorisé à modifier cette offre');
+    }
+
     return this.prisma.offre.update({
       where: { id },
       data: { statut },

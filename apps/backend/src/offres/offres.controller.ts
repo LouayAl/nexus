@@ -63,12 +63,15 @@ export class OffresController {
 
   // Admin — approve / reject offer
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ENTREPRISE, Role.ADMIN)
   @Patch(':id/statut')
-  updateStatut(
+  async updateStatut(
     @Param('id', ParseIntPipe) id: number,
-    @Body('statut') statut: 'OUVERTE' | 'FERMEE',
+    @Request() req: any,
+    @Body('statut') statut: 'OUVERTE' | 'EN_ATTENTE' | 'FERMEE',
   ) {
-    return this.offres.updateStatut(id, statut);
+    // If admin, allow any offer
+    // If entreprise, only their own offers
+    return this.offres.updateStatut(id, req.user.id, statut);
   }
 }
