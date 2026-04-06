@@ -111,10 +111,30 @@ export const entreprisesApi = {
 };
 
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
+export interface AdminCreateOffreDto extends CreateOffreDto {
+  entrepriseId: number;
+}
+
+export interface EntrepriseAdmin {
+  id:            number;
+  utilisateurId: number;
+  nom:           string;
+  secteur?:      string;
+  localisation?: string;
+  logoUrl?:      string;
+  description?:  string;
+  siteWeb?:      string;
+  utilisateur:   { email: string; createdAt: string };
+  offres:        { id: number; titre: string; statut: string; _count: { candidatures: number } }[];
+  _count:        { offres: number };
+}
+
 export const adminApi = {
-  getPending:   ()           => api.get<Offre[]>("/offres?statut=EN_ATTENTE"),
-  approveOffre: (id: number) => api.patch(`/offres/${id}/statut`, { statut: "OUVERTE" }),
-  rejectOffre:  (id: number) => api.patch(`/offres/${id}/statut`, { statut: "FERMEE" }),
+  getPending:          ()                          => api.get<Offre[]>("/offres/admin/pending"),
+  approveOffre:        (id: number)                => api.patch(`/offres/${id}/statut`, { statut: "OUVERTE" }),
+  rejectOffre:         (id: number)                => api.patch(`/offres/${id}/statut`, { statut: "FERMEE" }),
+  createForEntreprise: (data: AdminCreateOffreDto) => api.post<Offre>("/offres/admin/create", data),
+  getAllEntreprises:   ()                          => api.get<EntrepriseAdmin[]>("/entreprises/admin/all"),
 };
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────────────────────

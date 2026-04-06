@@ -106,10 +106,10 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
         </Field>
 
         <div style={{ display: "flex", gap: 12 }}>
-          <Field label="Salaire min (€/an)" half>
+          <Field label="Salaire min ( MAD/an)" half>
             <input type="number" style={inputStyle} value={form.salaire_min ?? ""} onChange={(e) => setForm((f: FormData) => ({ ...f, salaire_min: e.target.value ? +e.target.value : undefined }))} placeholder="45000" />
           </Field>
-          <Field label="Salaire max (€/an)" half>
+          <Field label="Salaire max ( MAD/an)" half>
             <input type="number" style={inputStyle} value={form.salaire_max ?? ""} onChange={(e) => setForm((f: FormData) => ({ ...f, salaire_max: e.target.value ? +e.target.value : undefined }))} placeholder="65000" />
           </Field>
         </div>
@@ -133,7 +133,7 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
           <div style={{ background: "rgba(26,158,111,0.06)", border: "1px solid rgba(26,158,111,0.15)", borderRadius: 12, padding: "12px 16px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
             <CheckCircle size={15} color="#1A9E6F" />
             <span style={{ fontSize: 13, color: "#1A9E6F", fontWeight: 600 }}>
-              Rémunération : {Math.round(form.salaire_min / 1000)}K – {Math.round(form.salaire_max / 1000)}K € / an
+              Rémunération : {Math.round(form.salaire_min / 1000)}K – {Math.round(form.salaire_max / 1000)}K  MAD / an
             </span>
           </div>
         )}

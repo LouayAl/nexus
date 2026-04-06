@@ -39,4 +39,17 @@ export class EntreprisesService {
       },
     });
   }
+
+  async getAllForAdmin() {
+    return this.prisma.entreprise.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        utilisateur: { select: { email: true, createdAt: true } },
+        offres: {
+          select: { id: true, titre: true, statut: true, _count: { select: { candidatures: true } } },
+        },
+        _count: { select: { offres: true } },
+      },
+    });
+  }
 }

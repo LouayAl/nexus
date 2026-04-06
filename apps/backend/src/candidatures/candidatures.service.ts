@@ -87,30 +87,55 @@ export class CandidaturesService {
     });
   }
 
-  // Entreprise — update application status
+  // Entreprise / Admin — update application status
   async updateStatut(id: number, userId: number, dto: UpdateCandidatureDto) {
     const candidature = await this.prisma.candidature.findUnique({
-      where:   { id },
+      where: { id },
       include: { offre: { include: { entreprise: true } } },
     });
-    if (!candidature) throw new NotFoundException('Candidature introuvable');
 
-    const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
+    if (!candidature) {
+      throw new NotFoundException('Candidature introuvable');
+    }
+
+    // get user
+    const user = await this.prisma.utilisateur.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Utilisateur introuvable');
+    }
+
+    // ✅ ADMIN can update any candidature
+    if (user.role === 'ADMIN') {
+      return this.prisma.candidature.update({
+        where: { id },
+        data: { statut: dto.statut },
+        include: this.includeFields(),
+      });
+    }
+
+    // ✅ ENTREPRISE can update only their offers
+    const entreprise = await this.prisma.entreprise.findUnique({
+      where: { utilisateurId: userId },
+    });
+
     if (!entreprise || candidature.offre.entrepriseId !== entreprise.id) {
       throw new ForbiddenException('Non autorisé');
     }
 
     const updated = await this.prisma.candidature.update({
       where: { id },
-      data:  { statut: dto.statut },
+      data: { statut: dto.statut },
       include: this.includeFields(),
     });
 
-    // Create notification for candidat
+    // notify candidat (not entreprise)
     await this.prisma.notification.create({
       data: {
         utilisateurId: candidature.offre.entreprise.utilisateurId,
-        titre:   `Statut mis à jour`,
+        titre: `Statut mis à jour`,
         message: `Votre candidature pour "${candidature.offre.titre}" est maintenant : ${dto.statut}`,
       },
     });

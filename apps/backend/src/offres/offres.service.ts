@@ -105,15 +105,37 @@ export class OffresService {
   }
 
   // Admin only — approve or reject
-  async updateStatut(id: number, userId: number, statut: 'OUVERTE' | 'EN_ATTENTE' | 'FERMEE') {
+  async updateStatut(
+    id: number,
+    userId: number,
+    statut: 'OUVERTE' | 'EN_ATTENTE' | 'FERMEE',
+  ) {
     const offre = await this.findOne(id);
-    
-    // Check if user is admin or owns the offer
-    const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
-    
+
+    // get user
+    const user = await this.prisma.utilisateur.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Utilisateur introuvable');
+    }
+
+    // ✅ ADMIN can update any offer
+    if (user.role === 'ADMIN') {
+      return this.prisma.offre.update({
+        where: { id },
+        data: { statut },
+        include: this.includeFields(),
+      });
+    }
+
+    // ✅ ENTREPRISE only its own offers
+    const entreprise = await this.prisma.entreprise.findUnique({
+      where: { utilisateurId: userId },
+    });
+
     if (!entreprise || offre.entrepriseId !== entreprise.id) {
-      // User is not the owner - only admin can update other offers
-      // For now, throw forbidden
       throw new ForbiddenException('Non autorisé à modifier cette offre');
     }
 
@@ -155,5 +177,30 @@ export class OffresService {
       competences: { include: { competence: true } },
       _count:      { select: { candidatures: true } },
     };
+  }
+
+  async getAllPending() {
+    return this.prisma.offre.findMany({
+      where:   { statut: 'EN_ATTENTE' },
+      orderBy: { createdAt: 'desc' },
+      include: this.includeFields(),
+    });
+  }
+
+  async createForEntreprise(data: any) {
+    const { entrepriseId, competences, ...rest } = data;
+    return this.prisma.offre.create({
+      data: {
+        ...rest,
+        statut: 'EN_ATTENTE',
+        entrepriseId,
+        ...(competences?.length && {
+          competences: {
+            create: await this.resolveCompetences(competences),
+          },
+        }),
+      },
+      include: this.includeFields(),
+    });
   }
 }

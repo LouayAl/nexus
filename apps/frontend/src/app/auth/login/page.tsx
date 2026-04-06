@@ -194,7 +194,7 @@ function LoginForm() {
             <span style={{ fontSize:11, fontWeight:700, color:"#EE813D", letterSpacing:"0.06em", textTransform:"uppercase" }}>Bienvenue</span>
           </div>
           <h2 className="font-display" style={{ fontSize:28, fontWeight:900, color:"#0D2137", letterSpacing:"-0.02em", marginBottom:6, lineHeight:1.2 }}>
-            Bon retour 👋
+            Bienvenue
           </h2>
           <p style={{ fontSize:14, color:"#5A7A96", lineHeight:1.6 }}>
             Accédez à votre espace Nexus.

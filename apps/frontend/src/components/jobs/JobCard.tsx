@@ -30,7 +30,7 @@ export function JobCard({ offre, canApply = true }: {
     (CONTRACT_COLORS[offre.type_contrat] ?? "neutral") as "success" | "warning" | "secondary" | "primary" | "neutral";
   const salaire =
     offre.salaire_min && offre.salaire_max
-      ? `${offre.salaire_min / 1000}K–${offre.salaire_max / 1000}K €/an`
+      ? `${offre.salaire_min / 1000}K–${offre.salaire_max / 1000}K  MAD/an`
       : null;
 
   return (

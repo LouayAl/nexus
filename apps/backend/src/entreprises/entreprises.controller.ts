@@ -27,4 +27,12 @@ export class EntreprisesController {
   updateProfile(@Request() req: any, @Body() body: any) {
     return this.entreprises.updateProfile(req.user.id, body);
   }
+
+  // Admin — get all entreprises with full details
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/all')
+  getAllForAdmin() {
+    return this.entreprises.getAllForAdmin();
+  }
 }

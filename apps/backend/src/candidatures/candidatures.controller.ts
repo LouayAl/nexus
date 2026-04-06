@@ -55,7 +55,7 @@ export class CandidaturesController {
   }
 
   // Entreprise — update status
-  @Roles(Role.ENTREPRISE)
+  @Roles(Role.ENTREPRISE, Role.ADMIN)
   @UseGuards(RolesGuard)
   @Patch(':id/statut')
   updateStatut(

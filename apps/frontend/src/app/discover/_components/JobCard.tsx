@@ -34,7 +34,7 @@ export function JobCard({ offre, featured = false, onApply }: {
 
   const contract = CONTRACT_STYLES[offre.type_contrat] ?? { bg:"rgba(16,64,107,0.08)", color:"#10406B" };
   const salary   = offre.salaire_min && offre.salaire_max
-    ? `${Math.round(offre.salaire_min/1000)}K – ${Math.round(offre.salaire_max/1000)}K €`
+    ? `${Math.round(offre.salaire_min/1000)}K – ${Math.round(offre.salaire_max/1000)}K  MAD`
     : null;
   const skills = offre.competences?.map(c => c.competence) ?? [];
 

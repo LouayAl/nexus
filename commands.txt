@@ -1,0 +1,2 @@
+to dump database:
+docker exec -t nexus_postgres pg_dumpall -c -U nexus > full_backup.sql

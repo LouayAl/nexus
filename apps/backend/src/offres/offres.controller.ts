@@ -35,7 +35,7 @@ export class OffresController {
 
   // Entreprise — update own offer
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ENTREPRISE)
+  @Roles(Role.ENTREPRISE, Role.ADMIN)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -74,4 +74,23 @@ export class OffresController {
     // If entreprise, only their own offers
     return this.offres.updateStatut(id, req.user.id, statut);
   }
+
+  // Admin — get ALL pending offers with entreprise info
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/pending')
+  getAllPending() {
+    return this.offres.getAllPending();
+  }
+
+  // Admin — create offer for a specific entreprise
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post('admin/create')
+  createForEntreprise(
+    @Body() body: { entrepriseId: number } & CreateOffreDto,
+  ) {
+    return this.offres.createForEntreprise(body);
+  }
+
 }
