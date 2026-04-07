@@ -1,2 +1,6 @@
+Backend: NestJS with Prisma + PostgreSQL, JWT auth, roles (CANDIDAT, ENTREPRISE, ADMIN), Google/LinkedIn OAuth
+Frontend: Next.js (App Router), with pages for discover, profile, company dashboard, applications, admin, auth
+Schema: Well-structured with Users, Candidats, Entreprises, Offres, Candidatures, Competences, Experiences, Formations, Langues, Notifications
+
 to dump database:
 docker exec -t nexus_postgres pg_dumpall -c -U nexus > full_backup.sql

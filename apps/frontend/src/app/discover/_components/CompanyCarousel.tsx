@@ -42,19 +42,7 @@ export function CompanyCarousel({ entreprises }: { entreprises: EntreprisePublic
         </div>
       </div>
 
-      <div style={{ textAlign:"center", marginTop:48, padding:"0 64px" }}>
-        <p style={{ color:"#5A7A96", fontSize:15, marginBottom:20 }}>
-          Vous êtes une entreprise ? Publiez vos offres et trouvez les meilleurs talents.
-        </p>
-        <div style={{ display:"flex", gap:12, justifyContent:"center" }}>
-          <button style={{ padding:"13px 28px", borderRadius:99, background:"linear-gradient(135deg, #EE813D, #d4691f)", border:"none", color:"white", fontSize:14, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", boxShadow:"0 4px 20px rgba(238,129,61,0.35)", display:"flex", alignItems:"center", gap:8 }}>
-            <Zap size={15}/> Publier une offre
-          </button>
-          <button style={{ padding:"13px 28px", borderRadius:99, background:"white", border:"1px solid rgba(16,64,107,0.15)", color:"#10406B", fontSize:14, fontWeight:600, cursor:"pointer", fontFamily:"'DM Sans',sans-serif", boxShadow:"0 2px 8px rgba(16,64,107,0.06)" }}>
-            En savoir plus
-          </button>
-        </div>
-      </div>
+
     </section>
   );
 }

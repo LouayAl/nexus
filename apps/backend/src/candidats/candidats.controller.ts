@@ -1,18 +1,19 @@
 // src/candidats/candidats.controller.ts
 import {
-  Controller, Get, Post, Patch, Delete, Put,
+  Controller, Get, Post, Patch, Delete,
   Body, Param, UseGuards, Request, ParseIntPipe,
   UploadedFile, UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { extname } from 'path';
 import { CandidatsService } from './candidats.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '@prisma/client';
 
+// ── Candidat routes (role: CANDIDAT) ─────────────────────────────────────────
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.CANDIDAT)
 @Controller('candidats')
@@ -35,7 +36,10 @@ export class CandidatsController {
   }
 
   @Delete('competences/:competenceId')
-  deleteCompetence(@Request() req: any, @Param('competenceId', ParseIntPipe) competenceId: number) {
+  deleteCompetence(
+    @Request() req: any,
+    @Param('competenceId', ParseIntPipe) competenceId: number,
+  ) {
     return this.candidats.deleteCompetence(req.user.id, competenceId);
   }
 
@@ -53,7 +57,7 @@ export class CandidatsController {
       const allowed = ['.pdf', '.doc', '.docx'];
       cb(null, allowed.includes(extname(file.originalname).toLowerCase()));
     },
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    limits: { fileSize: 5 * 1024 * 1024 },
   }))
   async uploadCv(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
     const cvUrl = `/uploads/cv/${file.filename}`;
@@ -106,5 +110,25 @@ export class CandidatsController {
   @Delete('langues/:id')
   deleteLangue(@Request() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.candidats.deleteLangue(req.user.id, id);
+  }
+}
+
+// ── Admin routes (role: ADMIN) ────────────────────────────────────────────────
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
+@Controller('candidats/admin')
+export class CandidatsAdminController {
+  constructor(private candidats: CandidatsService) {}
+
+  /** GET /candidats/admin/all — list every candidat with counts */
+  @Get('all')
+  getAllCandidats() {
+    return this.candidats.getAllCandidats();
+  }
+
+  /** GET /candidats/admin/:id — full profile + candidatures */
+  @Get(':id')
+  getCandidatById(@Param('id', ParseIntPipe) id: number) {
+    return this.candidats.getCandidatByIdForAdmin(id);
   }
 }

@@ -67,7 +67,7 @@ export default function CompanyDashboardPage() {
     <AppShell pageTitle="Dashboard Recruteur">
       {modal.type === "create" && <OfferFormModal onClose={handleModalClose} />}
       {modal.type === "edit" && <OfferFormModal offre={modal.offre} onClose={handleModalClose} />}
-      {modal.type === "detail" && <OfferDetailModal offre={modal.offre} onClose={closeModal} onStatusChange={() => loadOffers()} onEdit={() => setModal({ type: "edit", offre: modal.offre })} onViewCandidats={() => setModal({ type: "candidats", offre: modal.offre })} />}
+      {modal.type === "detail" && <OfferDetailModal offre={modal.offre} onClose={closeModal} onStatusChange={() => loadOffers()} onEdit={() => setModal({ type: "edit", offre: modal.offre })} onViewCandidats={() => setModal({ type: "candidats", offre: modal.offre })} onDelete={() => loadOffers()} />}
       {modal.type === "candidats" && <CandidatsModal offre={modal.offre} onClose={closeModal} />}
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 32 }}>

@@ -3,7 +3,7 @@ import { StatutCandidature } from '@prisma/client';
 
 export class CreateCandidatureDto {
   @IsInt()
-  offreId: number;
+  offreId!: number;
 
   @IsString()
   @IsOptional()
@@ -12,5 +12,5 @@ export class CreateCandidatureDto {
 
 export class UpdateCandidatureDto {
   @IsEnum(StatutCandidature)
-  statut: StatutCandidature;
+  statut!: StatutCandidature;
 }

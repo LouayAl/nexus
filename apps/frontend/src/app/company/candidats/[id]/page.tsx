@@ -315,7 +315,10 @@ function CandidatDetailContent() {
                 <div key={competence.id?? `skill-${i}`} style={{ marginBottom:16 }}>
                   <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
                     <span style={{ fontSize:13, fontWeight:600, color:"#0D2137" }}>{competence.nom}</span>
-                    <span style={{ fontSize:12, fontWeight:700, color:SKILL_COLORS[i%SKILL_COLORS.length] }}>{niveau}%</span>
+                    <span style={{ fontSize:12, fontWeight:700, color:SKILL_COLORS[i%SKILL_COLORS.length] }}>
+                      {niveau}% ({skillLevelLabel(niveau)})
+
+                    </span>
                   </div>
                   <div style={{ height:7, background:"#F0F4F8", borderRadius:4, overflow:"hidden" }}>
                     <div style={{ height:"100%", width:`${niveau}%`, borderRadius:4, background:`linear-gradient(90deg, ${SKILL_COLORS[i%SKILL_COLORS.length]}80, ${SKILL_COLORS[i%SKILL_COLORS.length]})`, transition:"width 0.6s" }}/>
@@ -402,6 +405,12 @@ function CandidatDetailContent() {
       </div>
     </AppShell>
   );
+}
+
+function skillLevelLabel(niveau: number) {
+  if (niveau <= 40) return "Débutant";
+  if (niveau <= 70) return "Intermédiaire";
+  return "Expert";
 }
 
 // ── Page export ────────────────────────────────────────────────────────────────

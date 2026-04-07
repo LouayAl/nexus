@@ -3,7 +3,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, Sparkles, User, UserCircle  } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import toast from "react-hot-toast";
@@ -188,10 +188,50 @@ function LoginForm() {
       }}>
 
         {/* Header */}
-        <div style={{ marginBottom:32 }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"rgba(238,129,61,0.08)", borderRadius:99, padding:"4px 12px", marginBottom:16, border:"1px solid rgba(238,129,61,0.15)" }}>
+        <div style={{ marginBottom:32, textAlign: "center" }}>
+
+          {/* Avatar */}
+          <div
+            style={{
+              width: 90,
+              height: 90,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #F4F6F9, #E9EEF5)",
+              border: "1px solid rgba(16,64,107,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 18px auto",
+              boxShadow: "0 6px 18px rgba(16,64,107,0.08)"
+            }}
+          >
+            <UserCircle size={80} color="#B0C4D4" />
+          </div>
+
+          <div
+            style={{
+              display:"inline-flex",
+              alignItems:"center",
+              gap:6,
+              background:"rgba(238,129,61,0.08)",
+              borderRadius:99,
+              padding:"4px 12px",
+              marginBottom:16,
+              border:"1px solid rgba(238,129,61,0.15)"
+            }}
+          >
             <Sparkles size={12} color="#EE813D"/>
-            <span style={{ fontSize:11, fontWeight:700, color:"#EE813D", letterSpacing:"0.06em", textTransform:"uppercase" }}>Bienvenue</span>
+            <span
+              style={{
+                fontSize:11,
+                fontWeight:700,
+                color:"#EE813D",
+                letterSpacing:"0.06em",
+                textTransform:"uppercase"
+              }}
+            >
+              Bienvenue
+            </span>
           </div>
           <h2 className="font-display" style={{ fontSize:28, fontWeight:900, color:"#0D2137", letterSpacing:"-0.02em", marginBottom:6, lineHeight:1.2 }}>
             Bienvenue
@@ -214,21 +254,64 @@ function LoginForm() {
         {/* Form */}
         <form onSubmit={handleSubmit} style={{ display:"flex", flexDirection:"column", gap:16 }}>
           <div>
-            <label style={{ display:"block", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.07em", color:"#5A7A96", marginBottom:8 }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: 11,
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.07em",
+                color: "#5A7A96",
+                marginBottom: 8,
+              }}
+            >
               Adresse email
             </label>
-            <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="vous@exemple.com" required
-              style={{
-                width:"100%", padding:"12px 16px", borderRadius:12,
-                border:"1.5px solid rgba(16,64,107,0.12)", outline:"none",
-                fontSize:14, color:"#0D2137", fontFamily:"'DM Sans',sans-serif",
-                background:"#FAFAF8", transition:"all 0.18s", boxSizing:"border-box",
-              }}
-              onFocus={e => { e.target.style.borderColor="#2284C0"; e.target.style.background="white"; e.target.style.boxShadow="0 0 0 3px rgba(34,132,192,0.08)"; }}
-              onBlur={e  => { e.target.style.borderColor="rgba(16,64,107,0.12)"; e.target.style.background="#FAFAF8"; e.target.style.boxShadow="none"; }}
-            />
+
+            <div style={{ position: "relative" }}>
+              <User
+                size={15}
+                style={{
+                  position: "absolute",
+                  left: 14,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "#B0C4D4",
+                  pointerEvents: "none",
+                }}
+              />
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="vous@exemple.com"
+                required
+                style={{
+                  width: "100%",
+                  padding: "12px 16px 12px 40px", // space for icon
+                  borderRadius: 12,
+                  border: "1.5px solid rgba(16,64,107,0.12)",
+                  outline: "none",
+                  fontSize: 14,
+                  color: "#0D2137",
+                  fontFamily: "'DM Sans',sans-serif",
+                  background: "#FAFAF8",
+                  transition: "all 0.18s",
+                  boxSizing: "border-box",
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#2284C0";
+                  e.target.style.background = "white";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(34,132,192,0.08)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "rgba(16,64,107,0.12)";
+                  e.target.style.background = "#FAFAF8";
+                  e.target.style.boxShadow = "none";
+                }}
+              />
+            </div>
           </div>
 
           <div>

@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OFFER CARD
 // ═══════════════════════════════════════════════════════════════════════════════
-
+// frontend/src/app/company/dashboard/OfferCard.tsx
 import { useState } from "react";
 import { MapPin, Users, ChevronRight } from "lucide-react";
 import { CONTRACT_COLORS, OFFRE_STATUT_CONFIG, getEmoji, type Offre } from "./constants";

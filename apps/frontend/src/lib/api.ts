@@ -1,3 +1,4 @@
+// frontend/src/lib/api.ts
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -135,7 +136,42 @@ export const adminApi = {
   rejectOffre:         (id: number)                => api.patch(`/offres/${id}/statut`, { statut: "FERMEE" }),
   createForEntreprise: (data: AdminCreateOffreDto) => api.post<Offre>("/offres/admin/create", data),
   getAllEntreprises:   ()                          => api.get<EntrepriseAdmin[]>("/entreprises/admin/all"),
+  /** GET /candidats/admin/all */
+  getAllCandidats: () =>
+    api.get<CandidatAdmin[]>("/candidats/admin/all"),
+ 
+  /** GET /candidats/admin/:id  (full profile + candidatures) */
+  getCandidatById: (id: number) =>
+    api.get<CandidatAdmin>(`/candidats/admin/${id}`),
+
 };
+
+export interface CandidatAdmin {
+  id:            number;
+  utilisateurId: number;
+  prenom:        string;
+  nom:           string;
+  titre?:        string;
+  bio?:          string;
+  telephone?:    string;
+  localisation?: string;
+  cvUrl?:        string;
+  createdAt:     string;
+  updatedAt:     string;
+  utilisateur?:  { email: string; createdAt: string };
+  competences?:  { competenceId: number; niveau: number; competence: { id: number; nom: string } }[];
+  experiences?:  Experience[];
+  formations?:   Formation[];
+  langues?:      Langue[];
+  candidatures?: Candidature[];   // populated only in the detail call
+  _count?: {
+    candidatures: number;
+    competences:  number;
+    experiences?: number;
+    formations?:  number;
+  };
+}
+
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
 export const notificationsApi = {

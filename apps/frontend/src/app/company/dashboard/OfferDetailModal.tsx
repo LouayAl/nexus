@@ -1,9 +1,9 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // OFFER DETAIL MODAL
 // ═══════════════════════════════════════════════════════════════════════════════
-
+// frontend/src/app/company/dashboard/OfferDetailModal.tsx
 import { useState } from "react";
-import { MapPin, Briefcase, Clock, Users, Target, CheckCircle, Edit2, ChevronDown, Loader2 } from "lucide-react";
+import { MapPin, Briefcase, Clock, Users, Target, CheckCircle, Edit2, ChevronDown, Loader2, Trash2, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 import { Modal } from "./Modal";
 import { CONTRACT_COLORS, OFFRE_STATUT_CONFIG, getEmoji, type Offre } from "./constants";
@@ -11,21 +11,23 @@ import { offresApi } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 
-
 interface OfferDetailModalProps {
   offre: Offre;
   onClose: () => void;
   onEdit: () => void;
   onViewCandidats: () => void;
-  onStatusChange?: () => void; // Add this prop
+  onStatusChange?: () => void;
+  onDelete?: () => void;
 }
 
 const STATUS_ORDER = ["EN_ATTENTE", "OUVERTE", "FERMEE"];
 
-export function OfferDetailModal({ offre, onClose, onEdit, onViewCandidats, onStatusChange }: OfferDetailModalProps) {
+export function OfferDetailModal({ offre, onClose, onEdit, onViewCandidats, onStatusChange, onDelete }: OfferDetailModalProps) {
   const [showStatusMenu, setShowStatusMenu] = useState(false);
   const router = useRouter();
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const contract = CONTRACT_COLORS[offre.type_contrat] ?? { bg: "rgba(16,64,107,0.08)", color: "#10406B" };
   const salary = offre.salaire_min && offre.salaire_max ? `${Math.round(offre.salaire_min / 1000)}K – ${Math.round(offre.salaire_max / 1000)}K  MAD / an` : null;
@@ -44,6 +46,20 @@ export function OfferDetailModal({ offre, onClose, onEdit, onViewCandidats, onSt
       toast.error("Erreur lors de la mise à jour du statut");
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+  
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await offresApi.delete(offre.id);
+      toast.success("Offre supprimée");
+      onDelete?.();
+      onClose();
+    } catch {
+      toast.error("Erreur lors de la suppression");
+      setIsDeleting(false);
+      setConfirmDelete(false);
     }
   };
 
@@ -115,26 +131,49 @@ export function OfferDetailModal({ offre, onClose, onEdit, onViewCandidats, onSt
               {STATUS_ORDER.map((status) => {
                 const config = OFFRE_STATUT_CONFIG[status];
                 const isCurrentStatus = status === offre.statut;
+                const pendingCount = offre._count?.candidatures ?? 0;
+                const isFermeeWithCandidates =
+                  status === 'FERMEE' && offre.statut === 'OUVERTE' && pendingCount > 0;
+
                 return (
-                  <button
-                    key={status}
-                    onClick={() => handleStatusChange(status)}
-                    disabled={isCurrentStatus}
-                    style={{
-                      display: "block",
-                      width: "100%",
-                      padding: "10px 14px",
-                      textAlign: "left",
-                      background: isCurrentStatus ? config.bg : "transparent",
-                      border: "none",
-                      color: isCurrentStatus ? config.color : "#0D2137",
-                      fontSize: 12,
-                      fontWeight: isCurrentStatus ? 700 : 500,
-                      cursor: isCurrentStatus ? "default" : "pointer",
-                    }}
-                  >
-                    {config.label}
-                  </button>
+                  <div key={status}>
+                    <button
+                      onClick={() => handleStatusChange(status)}
+                      disabled={isCurrentStatus}
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        padding: "10px 14px",
+                        textAlign: "left",
+                        background: isCurrentStatus ? config.bg : "transparent",
+                        border: "none",
+                        color: isCurrentStatus ? config.color : "#0D2137",
+                        fontSize: 12,
+                        fontWeight: isCurrentStatus ? 700 : 500,
+                        cursor: isCurrentStatus ? "default" : "pointer",
+                      }}
+                    >
+                      {config.label}
+                    </button>
+
+                    {isFermeeWithCandidates && (
+                      <div style={{
+                        margin: "0 8px 6px",
+                        padding: "7px 10px",
+                        borderRadius: 7,
+                        background: "rgba(214,64,69,0.06)",
+                        border: "1px solid rgba(214,64,69,0.18)",
+                        display: "flex",
+                        gap: 7,
+                        alignItems: "flex-start",
+                      }}>
+                        <AlertTriangle size={11} color="#D64045" style={{ flexShrink: 0, marginTop: 1 }} />
+                        <span style={{ fontSize: 11, color: "#D64045", lineHeight: 1.5 }}>
+                          {pendingCount} candidature{pendingCount > 1 ? "s" : ""} en cours seront automatiquement refusées.
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -157,13 +196,32 @@ export function OfferDetailModal({ offre, onClose, onEdit, onViewCandidats, onSt
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: "flex", gap: 10 }}>
-        <button onClick={() => router.push(`/company/candidats?offreId=${offre.id}`)} style={{ flex: 1, padding: "12px", background: "linear-gradient(135deg, #EE813D, #d4691f)", border: "none", borderRadius: 11, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 4px 16px rgba(238,129,61,0.3)" }}>
-          <Users size={14} /> Voir les candidats ({offre._count?.candidatures ?? 0})
-        </button>
-        <button onClick={onEdit} style={{ padding: "12px 20px", borderRadius: 11, background: "rgba(34,132,192,0.08)", border: "1px solid rgba(34,132,192,0.2)", color: "#2284C0", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", gap: 7 }}>
-          <Edit2 size={13} /> Modifier
-        </button>
+      <div style={{ display: "flex", gap: 10, flexDirection: "column" }}>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={() => router.push(`/company/candidats?offreId=${offre.id}`)} style={{ flex: 1, padding: "12px", background: "linear-gradient(135deg, #EE813D, #d4691f)", border: "none", borderRadius: 11, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, boxShadow: "0 4px 16px rgba(238,129,61,0.3)" }}>
+            <Users size={14} /> Voir les candidats ({offre._count?.candidatures ?? 0})
+          </button>
+          <button onClick={onEdit} style={{ padding: "12px 20px", borderRadius: 11, background: "rgba(34,132,192,0.08)", border: "1px solid rgba(34,132,192,0.2)", color: "#2284C0", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", gap: 7 }}>
+            <Edit2 size={13} /> Modifier
+          </button>
+        </div>
+
+        {/* Delete — two-step confirmation */}
+        {!confirmDelete ? (
+          <button onClick={() => setConfirmDelete(true)} style={{ padding: "10px", borderRadius: 11, background: "transparent", border: "1px solid rgba(214,64,69,0.25)", color: "#D64045", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+            <Trash2 size={13} /> Supprimer l'offre
+          </button>
+        ) : (
+          <div style={{ display: "flex", gap: 8, alignItems: "center", padding: "10px 14px", borderRadius: 11, background: "rgba(214,64,69,0.06)", border: "1px solid rgba(214,64,69,0.2)" }}>
+            <AlertTriangle size={14} color="#D64045" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 12, color: "#D64045", flex: 1, fontWeight: 500 }}>Confirmer la suppression ? Cette action est irréversible.</span>
+            <button onClick={() => setConfirmDelete(false)} style={{ padding: "6px 12px", borderRadius: 8, background: "transparent", border: "1px solid rgba(16,64,107,0.15)", color: "#5A7A96", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif" }}>Annuler</button>
+            <button onClick={handleDelete} disabled={isDeleting} style={{ padding: "6px 14px", borderRadius: 8, background: "#D64045", border: "none", color: "white", fontSize: 12, fontWeight: 700, cursor: isDeleting ? "not-allowed" : "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", gap: 5, opacity: isDeleting ? 0.7 : 1 }}>
+              {isDeleting ? <Loader2 size={11} style={{ animation: "spin 0.8s linear infinite" }} /> : null}
+              Supprimer
+            </button>
+          </div>
+        )}
       </div>
     </Modal>
   );

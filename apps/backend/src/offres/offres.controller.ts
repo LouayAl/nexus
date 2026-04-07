@@ -1,3 +1,4 @@
+// src/offres/offres.controller.ts
 import {
   Controller, Get, Post, Patch, Delete,
   Body, Param, Query, UseGuards, Request, ParseIntPipe,

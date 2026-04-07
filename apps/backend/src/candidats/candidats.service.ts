@@ -1,4 +1,4 @@
-// src/candidats/candidats.service.ts 
+// src/candidats/candidats.service.ts
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -30,7 +30,7 @@ export class CandidatsService {
     }
     return this.prisma.candidat.update({
       where: { utilisateurId: userId },
-      data:  {
+      data: {
         ...rest,
         ...(competences && {
           competences: {
@@ -84,7 +84,7 @@ export class CandidatsService {
     return { message: 'Supprimé' };
   }
 
-  // ── Experiences ──────────────────────────────────────────────────────────
+  // ── Experiences ────────────────────────────────────────────────────────────
   async addExperience(userId: number, data: any) {
     const candidat = await this.getCandidatOrFail(userId);
     return this.prisma.experience.create({ data: { ...data, candidatId: candidat.id } });
@@ -101,7 +101,7 @@ export class CandidatsService {
     return { message: 'Supprimé' };
   }
 
-  // ── Formations ───────────────────────────────────────────────────────────
+  // ── Formations ─────────────────────────────────────────────────────────────
   async addFormation(userId: number, data: any) {
     const candidat = await this.getCandidatOrFail(userId);
     return this.prisma.formation.create({ data: { ...data, candidatId: candidat.id } });
@@ -118,7 +118,7 @@ export class CandidatsService {
     return { message: 'Supprimé' };
   }
 
-  // ── Langues ──────────────────────────────────────────────────────────────
+  // ── Langues ────────────────────────────────────────────────────────────────
   async addLangue(userId: number, data: any) {
     const candidat = await this.getCandidatOrFail(userId);
     return this.prisma.langue.create({ data: { ...data, candidatId: candidat.id } });
@@ -135,7 +135,7 @@ export class CandidatsService {
     return { message: 'Supprimé' };
   }
 
-  // ── CV Upload ─────────────────────────────────────────────────────────────
+  // ── CV Upload ──────────────────────────────────────────────────────────────
   async updateCvUrl(userId: number, cvUrl: string) {
     return this.prisma.candidat.update({
       where: { utilisateurId: userId },
@@ -143,7 +143,63 @@ export class CandidatsService {
     });
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ── ADMIN ──────────────────────────────────────────────────────────────────
+
+  /** List all candidats with lightweight counts for the admin grid */
+  async getAllCandidats() {
+    return this.prisma.candidat.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        utilisateur: { select: { email: true, createdAt: true } },
+        competences: { include: { competence: true } },
+        _count: {
+          select: {
+            candidatures: true,
+            competences:  true,
+          },
+        },
+      },
+    });
+  }
+
+  /** Full candidat profile including all candidatures + offer details */
+  async getCandidatByIdForAdmin(candidatId: number) {
+    const candidat = await this.prisma.candidat.findUnique({
+      where: { id: candidatId },
+      include: {
+        utilisateur: { select: { email: true, createdAt: true } },
+        competences: { include: { competence: true } },
+        experiences: { orderBy: { dateDebut: 'desc' } },
+        formations:  { orderBy: { annee: 'desc' } },
+        langues:     true,
+        candidatures: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            offre: {
+              include: {
+                entreprise: {
+                  select: { id: true, nom: true, logoUrl: true, localisation: true },
+                },
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            candidatures: true,
+            competences:  true,
+            experiences:  true,
+            formations:   true,
+          },
+        },
+      },
+    });
+
+    if (!candidat) throw new NotFoundException('Candidat introuvable');
+    return candidat;
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
   private async getCandidatOrFail(userId: number) {
     const candidat = await this.prisma.candidat.findUnique({ where: { utilisateurId: userId } });
     if (!candidat) throw new ForbiddenException('Profil introuvable');

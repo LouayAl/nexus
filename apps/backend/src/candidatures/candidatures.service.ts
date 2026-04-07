@@ -1,3 +1,4 @@
+// src/candidatures/candidatures.service.ts
 import {
   Injectable, NotFoundException, ForbiddenException, ConflictException,
 } from '@nestjs/common';
@@ -58,6 +59,9 @@ export class CandidaturesService {
           include: {
             utilisateur:  { select: { email: true } },
             competences:  { include: { competence: true } },
+            experiences: true,
+            formations: true,
+            langues: true,
           },
         },
       },
@@ -80,6 +84,9 @@ export class CandidaturesService {
           include: {
             utilisateur: { select: { email: true } },
             competences: { include: { competence: true } },
+            experiences: true,
+            formations: true,
+            langues: true,
           },
         },
         offre: { select: { id: true, titre: true } },

@@ -1,16 +1,17 @@
+// src/offres/dto/offre.dto.ts
 import { IsString, IsOptional, IsInt, IsEnum, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { StatutOffre } from '@prisma/client';
 
 export class CreateOffreDto {
   @IsString()
-  titre: string;
+  titre!: string;
 
   @IsString()
-  description: string;
+  description!: string;
 
   @IsString()
-  type_contrat: string;
+  type_contrat!: string;
 
   @IsString()
   @IsOptional()
@@ -88,6 +89,10 @@ export class FilterOffreDto {
   @IsOptional()
   type_contrat?: string;
 
+  @IsEnum(StatutOffre)
+  @IsOptional()
+  statut?: StatutOffre;
+
   @IsString()
   @IsOptional()
   niveau_experience?: string;
@@ -101,4 +106,6 @@ export class FilterOffreDto {
   @IsOptional()
   @Type(() => Number)
   limit?: number;
+
+
 }

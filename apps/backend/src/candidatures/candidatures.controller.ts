@@ -1,3 +1,4 @@
+// src/candidatures/candidatures.controller.ts
 import {
   Controller, Get, Post, Patch, Delete,
   Body, Param, UseGuards, Request, ParseIntPipe,
