@@ -19,10 +19,14 @@ export function AppShell({ children, pageTitle, fullWidth = false }: {
         notifOpen={notifOpen}
         onNotifClick={() => setNotifOpen(o => !o)}
       />
-      <div style={{ display:"flex", flex:1 }}>
-        <main className="animate-fade-up" style={{ flex:1, overflowX:"hidden" }}>
+      <div style={{ display:"flex", flex:1, position:"relative" }}>
+        <main className="animate-fade-up" style={{ flex:1, overflowX:"hidden", minWidth:0 }}>
           {fullWidth ? children : (
-            <div style={{ maxWidth:1200, margin:"0 auto", padding:"40px 48px" }}>
+            <div style={{
+              maxWidth:1200,
+              margin:"0 auto",
+              padding:"var(--page-py) var(--page-px)",
+            }}>
               {children}
             </div>
           )}
