@@ -66,4 +66,12 @@ export class CandidaturesController {
   ) {
     return this.candidatures.updateStatut(id, req.user.id, dto);
   }
+
+  // Entreprise / Admin — get one candidature
+  @Roles(Role.ENTREPRISE, Role.ADMIN)
+  @UseGuards(RolesGuard)
+  @Get(':id')
+  getOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.candidatures.getOneById(id, req.user.id);
+  }
 }

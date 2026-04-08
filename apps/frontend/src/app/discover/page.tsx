@@ -10,11 +10,11 @@ import { StatsBar }        from "./_components/StatsBar";
 import { FeaturedSlider }  from "./_components/FeaturedSlider";
 import { FiltersSection }  from "./_components/FiltersSection";
 import { CompanyCarousel } from "./_components/CompanyCarousel";
-import { JobDrawer } from "./_components/JobDrawer";
+import { JobDrawer }       from "./_components/JobDrawer";
 
 function Footer() {
   return (
-    <footer style={{ background:"#10406B", padding:"40px 64px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
+    <footer style={{ background:"#10406B", padding:"40px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         <div style={{ width:32, height:32, borderRadius:8, background:"linear-gradient(135deg, #EE813D, #2284C0)", display:"flex", alignItems:"center", justifyContent:"center" }}>
           <span className="font-display" style={{ color:"white", fontSize:16, fontWeight:900 }}>N</span>
@@ -24,7 +24,7 @@ function Footer() {
       <div style={{ fontSize:13, color:"rgba(255,255,255,0.4)", textAlign:"center" }}>
         © 2026 Nexus · La plateforme de recrutement de demain
       </div>
-      <div style={{ display:"flex", gap:20 }}>
+      <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"center" }}>
         {["Confidentialité","CGU","Contact"].map(link => (
           <span key={link} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", cursor:"pointer", fontWeight:500 }}>{link}</span>
         ))}
@@ -39,16 +39,15 @@ export default function DiscoverPage() {
   const [activeKw,     setActiveKw]     = useState<string | null>(null);
   const [contractType, setContractType] = useState<string | null>(null);
   const [search,       setSearch]       = useState({ keyword:"", location:"" });
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const [selectedOffre, setSelectedOffre] = useState<Offre | null>(null);
 
+  const resultsRef = useRef<HTMLDivElement>(null);
   const hasFilters = !!(search.keyword || search.location || activeKw || contractType);
 
   const scrollToResults = useCallback(() =>
     setTimeout(() => resultsRef.current?.scrollIntoView({ behavior:"smooth", block:"start" }), 100), []);
 
-  const [selectedOffre, setSelectedOffre] = useState<Offre | null>(null);
-
-  // ── Queries ────────────────────────────────────────────────────────────────
+  // ── Queries ──────────────────────────────────────────────────────────────
   const { data: offresData, isLoading: loadingOffres } = useQuery({
     queryKey: ["offres", search.keyword, search.location, activeKw, contractType],
     queryFn:  () => offresApi.getAll({
@@ -70,7 +69,7 @@ export default function DiscoverPage() {
   const featured    = offres.slice(0, 5);
   const entreprises = entreprisesData   ?? [];
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
+  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleSearch = () => {
     setActiveKw(null);
     setSearch({ keyword, location });
@@ -86,7 +85,6 @@ export default function DiscoverPage() {
 
   const handleApply = (offre: Offre) => setSelectedOffre(offre);
 
-
   const clearFilters = () => {
     setKeyword(""); setLocation(""); setActiveKw(null); setContractType(null);
     setSearch({ keyword:"", location:"" });
@@ -99,22 +97,31 @@ export default function DiscoverPage() {
         onKeyword={setKeyword} onLocation={setLocation}
         onSearch={handleSearch} onTag={handleTag}
       />
-      <StatsBar/>
-      <FeaturedSlider offres={featured} loading={loadingOffres} onApply={handleApply} selectedId={selectedOffre?.id}/>
+      <StatsBar />
+      <FeaturedSlider
+        offres={featured}
+        loading={loadingOffres}
+        onApply={handleApply}
+        selectedId={selectedOffre?.id}
+      />
       <FiltersSection
         resultsRef={resultsRef}
-        offres={offres} total={total} loading={loadingOffres}
-        activeKw={activeKw} contractType={contractType}
-        hasFilters={hasFilters} search={search}
+        offres={offres}
+        total={total}
+        loading={loadingOffres}
+        activeKw={activeKw}
+        contractType={contractType}
+        hasFilters={hasFilters}
+        search={search}
         onCategory={kw => { setActiveKw(kw); setSearch({ keyword:"", location:search.location }); }}
         onContract={setContractType}
         onClear={clearFilters}
         onApply={handleApply}
         selectedId={selectedOffre?.id}
       />
-      <CompanyCarousel entreprises={entreprises}/>
-      <Footer/>
-      <JobDrawer offre={selectedOffre} onClose={() => setSelectedOffre(null)}/>
+      <CompanyCarousel entreprises={entreprises} />
+      <Footer />
+      <JobDrawer offre={selectedOffre} onClose={() => setSelectedOffre(null)} />
     </AppShell>
   );
 }

@@ -177,4 +177,42 @@ export class CandidaturesService {
       },
     };
   }
+
+  async getOneById(id: number, userId: number) {
+    const candidature = await this.prisma.candidature.findUnique({
+      where: { id },
+      include: {
+        candidat: {
+          include: {
+            utilisateur: { select: { email: true } },
+            competences: { include: { competence: true } },
+            experiences: true,
+            formations: true,
+            langues: true,
+          },
+        },
+        offre: {
+          include: {
+            entreprise: { select: { id: true, nom: true, logoUrl: true } },
+            competences: { include: { competence: true } },
+          },
+        },
+      },
+    });
+
+    if (!candidature) throw new NotFoundException('Candidature introuvable');
+
+    // Security: check if user is allowed
+    const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
+    if (!user) throw new ForbiddenException('Utilisateur introuvable');
+
+    if (user.role === 'ENTREPRISE') {
+      const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
+      if (!entreprise || candidature.offre.entrepriseId !== entreprise.id) {
+        throw new ForbiddenException('Non autorisé');
+      }
+    }
+
+    return candidature;
+  }
 }

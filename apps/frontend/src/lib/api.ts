@@ -58,12 +58,24 @@ export const offresApi = {
 export const candidaturesApi = {
   apply:           (offreId: number, lettre?: string) =>
     api.post<Candidature>("/candidatures", { offreId, lettre }),
+
   getMy:           () => api.get<Candidature[]>("/candidatures/mes-candidatures"),
-  getByOffre:      (offreId: number) => api.get<Candidature[]>(`/candidatures/offre/${offreId}`),
-  getByEntreprise: () => api.get<Candidature[]>("/candidatures/entreprise"),
-  updateStatut:    (id: number, statut: string) =>
+
+  getByOffre:      (offreId: number) =>
+    api.get<Candidature[]>(`/candidatures/offre/${offreId}`),
+
+  getByEntreprise: () =>
+    api.get<Candidature[]>("/candidatures/entreprise"),
+
+  // ✅ ADD THIS
+  getOne: (id: number) =>
+    api.get<Candidature>(`/candidatures/${id}`),
+
+  updateStatut: (id: number, statut: string) =>
     api.patch<Candidature>(`/candidatures/${id}/statut`, { statut }),
-  withdraw:        (id: number) => api.delete(`/candidatures/${id}`),
+
+  withdraw: (id: number) =>
+    api.delete(`/candidatures/${id}`),
 };
 
 // ── CANDIDATS ─────────────────────────────────────────────────────────────────

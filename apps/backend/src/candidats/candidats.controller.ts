@@ -131,4 +131,6 @@ export class CandidatsAdminController {
   getCandidatById(@Param('id', ParseIntPipe) id: number) {
     return this.candidats.getCandidatByIdForAdmin(id);
   }
+
+  
 }
