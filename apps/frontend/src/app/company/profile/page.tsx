@@ -14,6 +14,8 @@ import toast from "react-hot-toast";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 
+import { ChangePasswordModal } from "@/components/auth/ChangePasswordModal";
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const SECTEURS = [
   "Tech & Logiciel","Data & IA","Cloud & DevOps","Cybersécurité",
@@ -163,6 +165,7 @@ function EditProfileModal({ profile, onClose }: { profile: EntrepriseProfile; on
 export default function CompanyProfilePage() {
   const { user }       = useAuth();
   const [showEdit, setShowEdit] = useState(false);
+  const [showChangePw, setShowChangePw] = useState(false);
   const width    = useWindowWidth();
   const isMobile = width < 768;
 
@@ -383,27 +386,45 @@ export default function CompanyProfilePage() {
     </div>
   );
 
-  const AccountCard = (
-    <div style={{ background:"#F7F8FA", border:"1px solid rgba(16,64,107,0.08)", borderRadius:16, padding:20 }}>
-      <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.07em", color:"#5A7A96", marginBottom:14 }}>Compte</div>
-      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-        {[
-          { label:"Email",     value: user?.email ?? "—" },
-          { label:"Rôle",      value: "Recruteur"         },
-          { label:"ID compte", value: `#${profile.utilisateurId}` },
-        ].map(({ label, value }) => (
-          <div key={label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0", borderBottom:"1px solid rgba(16,64,107,0.05)" }}>
-            <span style={{ fontSize:12, color:"#5A7A96", fontWeight:500 }}>{label}</span>
-            <span style={{ fontSize:12, color:"#0D2137", fontWeight:600 }}>{value}</span>
-          </div>
-        ))}
-      </div>
+const AccountCard = (
+  <div style={{ background:"#F7F8FA", border:"1px solid rgba(16,64,107,0.08)", borderRadius:16, padding:20 }}>
+    <div style={{ fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.07em", color:"#5A7A96", marginBottom:14 }}>Compte</div>
+    <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+      {[
+        { label:"Email",     value: user?.email ?? "—" },
+        { label:"Rôle",      value: "Recruteur"         },
+        { label:"ID compte", value: `#${profile.utilisateurId}` },
+      ].map(({ label, value }) => (
+        <div key={label} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"8px 0", borderBottom:"1px solid rgba(16,64,107,0.05)" }}>
+          <span style={{ fontSize:12, color:"#5A7A96", fontWeight:500 }}>{label}</span>
+          <span style={{ fontSize:12, color:"#0D2137", fontWeight:600 }}>{value}</span>
+        </div>
+      ))}
     </div>
-  );
+
+    {/* Change password button */}
+    <button
+      onClick={() => setShowChangePw(true)}
+      style={{
+        marginTop:14, width:"100%", padding:"10px",
+        borderRadius:10, border:"1px solid rgba(16,64,107,0.12)",
+        background:"white", color:"#5A7A96", fontSize:13, fontWeight:600,
+        cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
+        display:"flex", alignItems:"center", justifyContent:"center", gap:8,
+        transition:"all 0.18s",
+      }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor="#2284C0"; (e.currentTarget as HTMLElement).style.color="#2284C0"; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor="rgba(16,64,107,0.12)"; (e.currentTarget as HTMLElement).style.color="#5A7A96"; }}
+    >
+      🔒 Changer le mot de passe
+    </button>
+  </div>
+);
 
   return (
     <AppShell pageTitle="Mon Profil Entreprise">
       {showEdit && <EditProfileModal profile={profile} onClose={() => setShowEdit(false)}/>}
+      {showChangePw && <ChangePasswordModal onClose={() => setShowChangePw(false)}/>}
 
       {/* Page header */}
       <div style={{ marginBottom:28 }}>

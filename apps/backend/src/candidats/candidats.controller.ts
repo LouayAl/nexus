@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { CandidatsService } from './candidats.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -47,7 +47,7 @@ export class CandidatsController {
   @Post('cv')
   @UseInterceptors(FileInterceptor('cv', {
     storage: diskStorage({
-      destination: './uploads/cv',
+      destination: join(__dirname, '..', '..', '..', 'uploads', 'cv'),
       filename: (req, file, cb) => {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, `cv-${unique}${extname(file.originalname)}`);
@@ -63,6 +63,35 @@ export class CandidatsController {
     const cvUrl = `/uploads/cv/${file.filename}`;
     return this.candidats.updateCvUrl(req.user.id, cvUrl);
   }
+
+  @Post('avatar')
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: (req, file, cb) => {
+        const dir = join(__dirname, '..', '..', '..', 'uploads', 'avatars');
+        require('fs').mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+      },
+      filename: (req, file, cb) => {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `avatar-${unique}${extname(file.originalname)}`);
+      },
+    }),
+    fileFilter: (req, file, cb) => {
+      if (!file.mimetype.startsWith('image/')) {
+        return cb(new Error(`Invalid file type: ${file.mimetype}`), false);
+      }
+      cb(null, true);
+    },
+    limits: { fileSize: 5 * 1024 * 1024 },
+  }))
+  async uploadAvatar(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
+    console.log('file received:', file);
+    if (!file) throw new Error('No file received — multer rejected it');
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    return this.candidats.updateAvatarUrl(req.user.id, avatarUrl);
+  }
+
 
   // ── Experiences ────────────────────────────────────────────────────────────
   @Post('experiences')

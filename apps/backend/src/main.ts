@@ -1,3 +1,4 @@
+// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -16,8 +17,10 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  // Serve uploads from the project root, not dist
-  app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
+  // __dirname = dist/src at runtime → go up twice to reach apps/backend/
+  const uploadsPath = join(__dirname, '..', '..', 'uploads');
+  console.log('uploads path:', uploadsPath);
+  app.useStaticAssets(uploadsPath, { prefix: '/uploads' });
 
   await app.listen(process.env.PORT || 3001);
   console.log(`🚀 Nexus API running on http://localhost:3001`);

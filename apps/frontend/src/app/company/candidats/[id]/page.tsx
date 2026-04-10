@@ -12,7 +12,9 @@ import {
 import { AppShell } from "@/components/layout/AppShell";
 import { candidaturesApi, type Candidature } from "@/lib/api";
 import toast from "react-hot-toast";
-import { useState, useEffect as useEff } from "react";
+import { useState} from "react";
+import { AvatarUpload } from "@/components/AvatarUpload";
+import { useIsMobile } from "@/hooks/useBreakpoint";
 
 const STATUT_CONFIG: Record<string, { label: string; bg: string; color: string; icon: any }> = {
   EN_ATTENTE: { label: "En attente", bg: "rgba(176,196,212,0.15)", color: "#5A7A96",  icon: Clock       },
@@ -37,25 +39,12 @@ function skillLevelLabel(niveau: number) {
   return "Expert";
 }
 
-function useWindowWidth() {
-  const [width, setWidth] = useState(
-    typeof window !== "undefined" ? window.innerWidth : 1200
-  );
-  useEff(() => {
-    const handler = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
-  }, []);
-  return width;
-}
-
 function CandidatDetailContent() {
   const router       = useRouter();
   const params       = useParams();
   const searchParams = useSearchParams();
   const qc           = useQueryClient();
-  const width        = useWindowWidth();
-  const isMobile     = width < 768;
+  const isMobile = useIsMobile();
 
   const candidatureId = Number(params.id);
   const backUrl       = searchParams.get("back") ?? "/company/candidats";
@@ -152,9 +141,12 @@ function CandidatDetailContent() {
   const IdentityCard = (
     <div style={{ background: "white", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 20, padding: 24, boxShadow: "0 2px 12px rgba(16,64,107,0.06)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-        <div style={{ width: isMobile ? 60 : 80, height: isMobile ? 60 : 80, borderRadius: "50%", flexShrink: 0, background: "linear-gradient(135deg, #EE813D, #2284C0)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: isMobile ? 22 : 28, fontWeight: 900, color: "white", fontFamily: "'Fraunces',serif" }}>
-          {initials}
-        </div>
+        <AvatarUpload
+          initials={initials}
+          avatarUrl={profile.avatarUrl}
+          size={isMobile ? 60 : 80}
+          readOnly
+        />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="font-display" style={{ fontSize: isMobile ? 18 : 22, fontWeight: 800, color: "#0D2137", marginBottom: 2 }}>{profile.prenom} {profile.nom}</div>
           {profile.titre && <div style={{ color: "#5A7A96", fontSize: 13, marginBottom: 4 }}>{profile.titre}</div>}

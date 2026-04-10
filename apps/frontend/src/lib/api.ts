@@ -7,7 +7,6 @@ const TOKEN_KEY = "nexus_token";
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api",
   timeout: 10_000,
-  headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use((config) => {
@@ -41,6 +40,10 @@ export const authApi = {
   register: (data: RegisterPayload) =>
     api.post<{ access_token: string; user: User }>("/auth/register", data),
   me: () => api.get<UserFull>("/auth/me"),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.patch("/auth/change-password", data),
+  sendCredentials: (data: { email: string; password: string; nom: string; role: string }) =>
+    api.post("/auth/admin/send-credentials", data),
 };
 
 // ── OFFRES ────────────────────────────────────────────────────────────────────
@@ -97,6 +100,12 @@ export const candidatsApi = {
     return api.post<{ cvUrl: string }>("/candidats/cv", form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+  },
+
+  uploadAvatar: (file: File) => {
+    const form = new FormData();
+    form.append("avatar", file);
+    return api.post("/candidats/avatar", form); // no headers override
   },
 
   // Experiences
@@ -156,6 +165,11 @@ export const adminApi = {
   getCandidatById: (id: number) =>
     api.get<CandidatAdmin>(`/candidats/admin/${id}`),
 
+  createCandidat:   (data: { email: string; password: string; prenom: string; nom: string }) =>
+    api.post("/auth/admin/create-candidat", { ...data, role: "CANDIDAT" }),
+  createEntreprise: (data: { email: string; password: string; nomEntreprise: string }) =>
+    api.post("/auth/admin/create-entreprise", { ...data, role: "ENTREPRISE" }),
+
 };
 
 export interface CandidatAdmin {
@@ -168,6 +182,7 @@ export interface CandidatAdmin {
   telephone?:    string;
   localisation?: string;
   cvUrl?:        string;
+  avatarUrl?:    string | null;
   createdAt:     string;
   updatedAt:     string;
   utilisateur?:  { email: string; createdAt: string };
@@ -279,6 +294,7 @@ export interface CandidatProfile {
   formations?:   Formation[];
   langues?:      Langue[];
   utilisateur?:  { email: string; createdAt: string };
+  avatarUrl?: string | null;
 }
 
 export interface CandidatProfileUpdate {

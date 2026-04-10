@@ -52,6 +52,7 @@ model Candidat {
   titre          String?
   bio            String?
   cvUrl          String?
+  avatarUrl      String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 

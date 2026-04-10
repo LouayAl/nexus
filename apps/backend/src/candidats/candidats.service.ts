@@ -143,6 +143,13 @@ export class CandidatsService {
     });
   }
 
+  async updateAvatarUrl(userId: number, avatarUrl: string) {
+    return this.prisma.candidat.update({
+      where: { utilisateurId: userId },
+      data:  { avatarUrl },
+    });
+  }
+
   // ── ADMIN ──────────────────────────────────────────────────────────────────
 
   /** List all candidats with lightweight counts for the admin grid */

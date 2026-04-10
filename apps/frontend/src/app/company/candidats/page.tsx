@@ -273,7 +273,7 @@ function CandidatsContent() {
                   onClick={resetFilters}
                   style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", borderRadius: 10, background: "rgba(214,64,69,0.06)", border: "1px solid rgba(214,64,69,0.15)", color: "#D64045", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'DM Sans',sans-serif" }}
                 >
-                  <X size={12} /> Reset
+                  <X size={12} /> Réinitialiser
                 </button>
               )}
             </div>

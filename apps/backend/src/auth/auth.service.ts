@@ -1,14 +1,16 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import * as bcrypt from 'bcrypt';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
+    private mailService: MailService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -104,7 +106,26 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.role);
   }
 
+  async sendCredentials(data: { email: string; password: string; nom: string; role: 'CANDIDAT' | 'ENTREPRISE' }) {
+    const loginUrl = `${process.env.FRONTEND_URL}/auth/login`;
+    await this.mailService.sendCredentials(data.email, { ...data, loginUrl });
+    return { message: 'Email envoyé' };
+  }
 
+  async changePassword(userId: number, currentPassword: string, newPassword: string) {
+    const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('Utilisateur introuvable');
+
+    // OAuth users (empty password) can set a new password directly
+    if (user.password) {
+      const valid = await bcrypt.compare(currentPassword, user.password);
+      if (!valid) throw new UnauthorizedException('Mot de passe actuel incorrect');
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await this.prisma.utilisateur.update({ where: { id: userId }, data: { password: hash } });
+    return { message: 'Mot de passe mis à jour' };
+  }
 
 }
 
