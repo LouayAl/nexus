@@ -1,3 +1,4 @@
+// frontend/src/app/company/dashboard/OfferFormModal.tsx
 // OfferFormModal.tsx - Fixed version
 "use client";
 

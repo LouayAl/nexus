@@ -112,8 +112,10 @@ function CandidatsContent() {
   const statsData = [
     { label: "Total",      value: filtered.length,                                      color: "#2284C0" },
     { label: "En attente", value: filtered.filter(c => c.statut === "EN_ATTENTE").length, color: "#5A7A96" },
+    { label: "Vues",       value: filtered.filter(c => c.statut === "VUE").length,        color: "#2284C0" },
     { label: "Entretiens", value: filtered.filter(c => c.statut === "ENTRETIEN").length,  color: "#7C3AED" },
     { label: "Acceptés",   value: filtered.filter(c => c.statut === "ACCEPTE").length,    color: "#1A9E6F" },
+    { label: "Refusés",   value: filtered.filter(c => c.statut === "REFUSE").length,    color: "#DC2626" },
   ];
 
   const navigateToCandidat = (c: Candidature) => {
