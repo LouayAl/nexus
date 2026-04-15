@@ -1,24 +1,40 @@
-import { Controller, Post, Get, Body, UseGuards, Request, Res, Patch } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Patch, Post, Query, Request, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
+import { Role } from '@prisma/client';
+import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from './roles.guard';
 import { Roles } from './roles.decorator';
-import { Role } from '@prisma/client';
+import { LinkedInStrategy } from './strategies/linkedin.strategy';
+import { clearAuthCookie, setAuthCookie } from './auth-cookie.util';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private linkedinStrategy: LinkedInStrategy,
+  ) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.auth.register(dto);
+  async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
+    const session = await this.auth.register({ ...dto, role: Role.CANDIDAT });
+    setAuthCookie(res, session.access_token);
+    return { user: session.user };
   }
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.auth.login(dto);
+  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+    const session = await this.auth.login(dto);
+    setAuthCookie(res, session.access_token);
+    return { user: session.user };
+  }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    clearAuthCookie(res);
+    return { message: 'Deconnexion reussie' };
   }
 
   @UseGuards(JwtAuthGuard)
@@ -27,58 +43,50 @@ export class AuthController {
     return this.auth.me(req.user.id);
   }
 
-// Add these 4 routes to the existing AuthController:
-
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleAuth() {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  googleCallback(@Request() req: any, @Res() res: any) {
-    const { access_token, user } = req.user;
-    const dest =
-      user.role === 'ADMIN'      ? 'admin'             :
-      user.role === 'ENTREPRISE' ? 'company/dashboard' :
-      'discover';
-    res.redirect(
-      `${process.env.FRONTEND_URL}/auth/oauth-callback?token=${access_token}&role=${user.role}&dest=${dest}`
-    );
+  async googleCallback(@Request() req: any, @Res({ passthrough: true }) res: Response) {
+    setAuthCookie(res, req.user.access_token);
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/oauth-callback`);
   }
 
   @Get('linkedin')
-  @UseGuards(AuthGuard('linkedin'))
-  linkedinAuth() {}
+  async linkedinLogin(@Res() res: Response) {
+    const url = await this.linkedinStrategy.getAuthUrl();
+    return res.redirect(url);
+  }
 
   @Get('linkedin/callback')
-  @UseGuards(AuthGuard('linkedin'))
-  linkedinCallback(@Request() req: any, @Res() res: any) {
-    const { access_token, user } = req.user;
-    const dest =
-      user.role === 'ADMIN'      ? 'admin'             :
-      user.role === 'ENTREPRISE' ? 'company/dashboard' :
-      'discover';
-    res.redirect(
-      `${process.env.FRONTEND_URL}/auth/oauth-callback?token=${access_token}&role=${user.role}&dest=${dest}`
-    );
+  async linkedinCallback(@Query('code') code: string | undefined, @Res({ passthrough: true }) res: Response) {
+    if (!code) {
+      throw new BadRequestException('Missing LinkedIn authorization code');
+    }
+
+    const session = await this.linkedinStrategy.handleCallback(code);
+    setAuthCookie(res, session.access_token);
+    return res.redirect(`${process.env.FRONTEND_URL}/auth/oauth-callback`);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post('admin/create-candidat')
-  createCandidat(@Body() dto: RegisterDto) {
-    return this.auth.register({ ...dto, role: 'CANDIDAT' });
+  async createCandidat(@Body() dto: RegisterDto) {
+    const session = await this.auth.register({ ...dto, role: 'CANDIDAT' });
+    return { user: session.user };
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post('admin/create-entreprise')
-  createEntreprise(@Body() dto: RegisterDto) {
-    return this.auth.register({ ...dto, role: 'ENTREPRISE' });
+  async createEntreprise(@Body() dto: RegisterDto) {
+    const session = await this.auth.register({ ...dto, role: 'ENTREPRISE' });
+    return { user: session.user };
   }
 
-
-  // Admin — send credentials email
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post('admin/send-credentials')
@@ -86,7 +94,6 @@ export class AuthController {
     return this.auth.sendCredentials(body);
   }
 
-  // Any logged-in user — change own password
   @UseGuards(JwtAuthGuard)
   @Patch('change-password')
   changePassword(@Request() req: any, @Body() body: { currentPassword: string; newPassword: string }) {

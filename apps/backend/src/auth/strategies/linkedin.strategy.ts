@@ -1,31 +1,66 @@
 import { Injectable } from '@nestjs/common';
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-linkedin-oauth2';
 import { AuthService } from '../auth.service';
+import * as openid from 'openid-client';
 
 @Injectable()
-export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
-  constructor(private auth: AuthService) {
-    super({
-      clientID:     process.env.LINKEDIN_CLIENT_ID!,
-      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
-      callbackURL:  process.env.LINKEDIN_CALLBACK_URL!,
-      scope: ['openid', 'profile', 'email'],
+export class LinkedInStrategy {
+  private client!: openid.Client;
+
+  constructor(private auth: AuthService) {}
+
+  private getClient() {
+    if (this.client) {
+      return this.client;
+    }
+
+    const issuer = new openid.Issuer({
+      issuer: 'https://www.linkedin.com/oauth',
+      authorization_endpoint: 'https://www.linkedin.com/oauth/v2/authorization',
+      token_endpoint: 'https://www.linkedin.com/oauth/v2/accessToken',
+      userinfo_endpoint: 'https://api.linkedin.com/v2/userinfo',
+      jwks_uri: 'https://www.linkedin.com/oauth/openid/jwks',
+    });
+
+    this.client = new issuer.Client({
+      client_id: process.env.LINKEDIN_CLIENT_ID!,
+      client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
+      redirect_uris: [process.env.LINKEDIN_CALLBACK_URL!],
+      response_types: ['code'],
+      token_endpoint_auth_method: 'client_secret_post',
+    });
+
+    return this.client;
+  }
+
+  async getAuthUrl() {
+    const client = this.getClient();
+
+    return client.authorizationUrl({
+      scope: 'openid profile email',
     });
   }
 
-  async validate(
-    accessToken: string,
-    refreshToken: string,
-    profile: any,
-    done: Function,
-  ) {
-    const user = await this.auth.findOrCreateOAuthUser({
-      email:    profile.emails[0].value,
-      prenom:   profile.name.givenName  ?? profile.displayName?.split(' ')[0] ?? '',
-      nom:      profile.name.familyName ?? profile.displayName?.split(' ')[1] ?? '',
+  async handleCallback(code: string) {
+    const client = this.getClient();
+
+    const tokenSet = await client.callback(
+      process.env.LINKEDIN_CALLBACK_URL!,
+      { code },
+    );
+
+    const userinfo = await client.userinfo(tokenSet.access_token!);
+    const email = userinfo.email;
+
+    if (typeof email !== 'string' || !email) {
+      throw new Error('LinkedIn did not return a valid email');
+    }
+
+    return this.auth.findOrCreateOAuthUser({
+      email,
+      prenom: userinfo.given_name ?? '',
+      nom: userinfo.family_name ?? '',
       provider: 'linkedin',
+      avatarUrl: typeof userinfo.picture === 'string' ? userinfo.picture : undefined,
     });
-    done(null, user);
   }
 }

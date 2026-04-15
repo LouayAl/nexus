@@ -1,3 +1,4 @@
+// backend/src/auth/strategies/google.strategy.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
@@ -25,6 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       prenom:   profile.name.givenName,
       nom:      profile.name.familyName,
       provider: 'google',
+      avatarUrl: profile.photos?.[0]?.value,
     });
     done(null, user);
   }

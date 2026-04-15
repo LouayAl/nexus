@@ -1,10 +1,8 @@
-// apps/frontend/src/hooks/useNotificationSocket.ts
 "use client";
 
 import { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 import toast from "react-hot-toast";
-import { getToken } from "@/lib/api";
 
 export function useNotificationSocket(userId: number | null) {
   const socketRef = useRef<Socket | null>(null);
@@ -15,8 +13,8 @@ export function useNotificationSocket(userId: number | null) {
     const socket = io(
       process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001",
       {
-        auth:         { token: getToken() },
-        transports:   ["websocket"],
+        withCredentials: true,
+        transports: ["websocket"],
         reconnection: true,
       }
     );
@@ -30,7 +28,7 @@ export function useNotificationSocket(userId: number | null) {
       type?: "success" | "info" | "warning";
     }) => {
       if (payload.type === "success") toast.success(payload.message, { duration: 5000 });
-      else                            toast(payload.message,         { duration: 5000 });
+      else toast(payload.message, { duration: 5000 });
     });
 
     socketRef.current = socket;

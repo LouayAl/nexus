@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2, MapPin, Search, Briefcase, Star, FileText, ChevronRight, Filter } from "lucide-react";
 import { adminApi, type CandidatAdmin } from "@/lib/api";
 import { CandidatDetailModal } from "./CandidatDetailModal";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 export function CandidatsTab() {
   const [search,   setSearch]   = useState("");
@@ -79,6 +80,7 @@ function CandidatCard({ candidat: c, onClick }: { candidat: CandidatAdmin; onCli
     "linear-gradient(135deg,#D64045,#a82030)",
   ];
   const gradient = gradients[c.prenom.charCodeAt(0) % gradients.length];
+  const avatarSrc = resolveAvatarUrl(c.avatarUrl);
 
   return (
     <div onClick={onClick}
@@ -88,8 +90,8 @@ function CandidatCard({ candidat: c, onClick }: { candidat: CandidatAdmin; onCli
     >
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:12 }}>
         <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-          {c.avatarUrl ? (
-            <img src={`${process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3001"}${c.avatarUrl}`}
+          {avatarSrc ? (
+            <img src={avatarSrc}
               alt="avatar" style={{ width:44, height:44, borderRadius:12, objectFit:"cover", flexShrink:0 }}
               onError={e => { (e.target as HTMLImageElement).style.display="none"; }}
             />

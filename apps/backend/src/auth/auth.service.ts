@@ -1,8 +1,8 @@
 import { Injectable, ConflictException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
-import * as bcrypt from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
@@ -15,20 +15,20 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const exists = await this.prisma.utilisateur.findUnique({ where: { email: dto.email } });
-    if (exists) throw new ConflictException('Email déjà utilisé');
+    if (exists) throw new ConflictException('Email deja utilise');
 
     const hash = await bcrypt.hash(dto.password, 10);
 
     const user = await this.prisma.utilisateur.create({
       data: {
-        email:    dto.email,
+        email: dto.email,
         password: hash,
-        role:     dto.role,
+        role: dto.role,
         ...(dto.role === 'CANDIDAT' && {
           candidat: {
             create: {
               prenom: dto.prenom || '',
-              nom:    dto.nom    || '',
+              nom: dto.nom || '',
             },
           },
         }),
@@ -42,6 +42,7 @@ export class AuthService {
       },
     });
 
+    await this.sendWelcomeEmail(user.email, dto.prenom || dto.nom || 'candidat');
     return this.signToken(user.id, user.email, user.role);
   }
 
@@ -59,14 +60,81 @@ export class AuthService {
     return this.prisma.utilisateur.findUnique({
       where: { id: userId },
       select: {
-        id:        true,
-        email:     true,
-        role:      true,
+        id: true,
+        email: true,
+        role: true,
         createdAt: true,
-        candidat:  true,
-        entreprise:true,
+        candidat: true,
+        entreprise: true,
       },
     });
+  }
+
+  async findOrCreateOAuthUser(data: {
+    email: string;
+    prenom: string;
+    nom: string;
+    provider: string;
+    avatarUrl?: string;
+  }) {
+    let user = await this.prisma.utilisateur.findUnique({
+      where: { email: data.email },
+      include: { candidat: true },
+    });
+
+    if (!user) {
+      user = await this.prisma.utilisateur.create({
+        data: {
+          email: data.email,
+          password: '',
+          role: 'CANDIDAT',
+          candidat: {
+            create: {
+              prenom: data.prenom,
+              nom: data.nom,
+              avatarUrl: data.avatarUrl,
+            },
+          },
+        },
+        include: { candidat: true },
+      });
+
+      await this.sendWelcomeEmail(data.email, `${data.prenom} ${data.nom}`.trim() || 'candidat');
+    } else if (user.candidat && data.avatarUrl && !user.candidat.avatarUrl) {
+      user = await this.prisma.utilisateur.update({
+        where: { id: user.id },
+        data: {
+          candidat: {
+            update: {
+              avatarUrl: data.avatarUrl,
+            },
+          },
+        },
+        include: { candidat: true },
+      });
+    }
+
+    return this.signToken(user.id, user.email, user.role);
+  }
+
+  async sendCredentials(data: { email: string; password: string; nom: string; role: 'CANDIDAT' | 'ENTREPRISE' }) {
+    const loginUrl = `${process.env.FRONTEND_URL}/auth/login`;
+    await this.mailService.sendCredentials(data.email, { ...data, loginUrl });
+    return { message: 'Email envoye' };
+  }
+
+  async changePassword(userId: number, currentPassword: string, newPassword: string) {
+    const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
+    if (!user) throw new NotFoundException('Utilisateur introuvable');
+
+    if (user.password) {
+      const valid = await bcrypt.compare(currentPassword, user.password);
+      if (!valid) throw new UnauthorizedException('Mot de passe actuel incorrect');
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await this.prisma.utilisateur.update({ where: { id: userId }, data: { password: hash } });
+    return { message: 'Mot de passe mis a jour' };
   }
 
   private signToken(userId: number, email: string, role: string) {
@@ -77,55 +145,13 @@ export class AuthService {
     };
   }
 
-  async findOrCreateOAuthUser(data: {
-    email:    string;
-    prenom:   string;
-    nom:      string;
-    provider: string;
-  }) {
-    let user = await this.prisma.utilisateur.findUnique({
-      where: { email: data.email },
-    });
+  private async sendWelcomeEmail(email: string, nom: string) {
+    const profileUrl = `${process.env.FRONTEND_URL}/profile`;
 
-    if (!user) {
-      user = await this.prisma.utilisateur.create({
-        data: {
-          email:    data.email,
-          password: '',           // no password for OAuth users
-          role:     'CANDIDAT',   // default role, can be changed later
-          candidat: {
-            create: {
-              prenom: data.prenom,
-              nom:    data.nom,
-            },
-          },
-        },
-      });
+    try {
+      await this.mailService.sendCandidateWelcome(email, nom, profileUrl);
+    } catch (error) {
+      console.error('Failed to send welcome email:', error);
     }
-
-    return this.signToken(user.id, user.email, user.role);
   }
-
-  async sendCredentials(data: { email: string; password: string; nom: string; role: 'CANDIDAT' | 'ENTREPRISE' }) {
-    const loginUrl = `${process.env.FRONTEND_URL}/auth/login`;
-    await this.mailService.sendCredentials(data.email, { ...data, loginUrl });
-    return { message: 'Email envoyé' };
-  }
-
-  async changePassword(userId: number, currentPassword: string, newPassword: string) {
-    const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
-    if (!user) throw new NotFoundException('Utilisateur introuvable');
-
-    // OAuth users (empty password) can set a new password directly
-    if (user.password) {
-      const valid = await bcrypt.compare(currentPassword, user.password);
-      if (!valid) throw new UnauthorizedException('Mot de passe actuel incorrect');
-    }
-
-    const hash = await bcrypt.hash(newPassword, 10);
-    await this.prisma.utilisateur.update({ where: { id: userId }, data: { password: hash } });
-    return { message: 'Mot de passe mis à jour' };
-  }
-
 }
-

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 const STATUT: Record<string, { color: string; bg: string; label: string }> = {
   EN_ATTENTE: { color:"#EE813D", bg:"rgba(238,129,61,0.1)",  label:"En attente" },
@@ -37,6 +38,7 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
     queryFn:  () => adminApi.getCandidatById(candidatId).then(r => r.data),
     staleTime: 5 * 60_000,
   });
+  const avatarSrc = resolveAvatarUrl(candidat?.avatarUrl);
 
   return (
     <Modal title="Profil candidat" onClose={onClose} wide>
@@ -74,8 +76,8 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
 
               {/* Avatar or photo */}
               <div style={{ flexShrink:0 }}>
-                {candidat.avatarUrl ? (
-                  <img src={`${API}${candidat.avatarUrl}`} alt="avatar"
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt="avatar"
                     style={{ width:60, height:60, borderRadius:14, objectFit:"cover", border:"2px solid rgba(255,255,255,0.3)" }}
                     onError={e => { (e.target as HTMLImageElement).style.display="none"; }}
                   />

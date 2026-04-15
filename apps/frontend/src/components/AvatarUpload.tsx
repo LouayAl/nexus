@@ -6,8 +6,7 @@ import { Camera, Loader2 } from "lucide-react";
 import { candidatsApi } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ?? "http://localhost:3001";
+import { resolveAvatarUrl } from "@/lib/avatar";
 
 // ── Client-side image compression ────────────────────────────────────────────
 async function compressImage(file: File, maxSizePx = 400, quality = 0.82): Promise<File> {
@@ -57,7 +56,7 @@ export function AvatarUpload({ initials, avatarUrl, size = 80, readOnly }: Props
   const [imgError,  setImgError]  = useState(false);
 
   // Reset error when avatarUrl changes (new upload from server)
-  const remoteSrc = avatarUrl ? `${API_BASE}${avatarUrl}` : null;
+  const remoteSrc = resolveAvatarUrl(avatarUrl);
   const src = localSrc ?? (imgError ? null : remoteSrc);
 
   const handleFile = useCallback(async (file: File) => {

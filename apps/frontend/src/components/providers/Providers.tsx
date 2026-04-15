@@ -1,3 +1,4 @@
+// frontend/src/components/providers/Providers.tsx
 "use client";
 
 import { AuthProvider } from "@/hooks/useAuth";

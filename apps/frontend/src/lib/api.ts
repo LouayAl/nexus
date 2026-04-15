@@ -1,44 +1,35 @@
 // frontend/src/lib/api.ts
 import axios from "axios";
-import Cookies from "js-cookie";
-
-const TOKEN_KEY = "nexus_token";
 
 export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api",
   timeout: 10_000,
-});
-
-api.interceptors.request.use((config) => {
-  const token = Cookies.get(TOKEN_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     const url = err.config?.url ?? "";
-    const isAuthRoute = url.includes("/auth/me") || url.includes("/auth/login") || url.includes("/auth/register");
+    const isAuthRoute =
+      url.includes("/auth/me") ||
+      url.includes("/auth/login") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/logout");
     if (err.response?.status === 401 && !isAuthRoute) {
-      Cookies.remove(TOKEN_KEY);
       if (typeof window !== "undefined") window.location.href = "/auth/login";
     }
     return Promise.reject(err);
   }
 );
 
-export const setToken    = (token: string) =>
-  Cookies.set(TOKEN_KEY, token, { expires: 7, sameSite: "strict" });
-export const removeToken = () => Cookies.remove(TOKEN_KEY);
-export const getToken    = () => Cookies.get(TOKEN_KEY);
-
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 export const authApi = {
   login:    (email: string, password: string) =>
-    api.post<{ access_token: string; user: User }>("/auth/login", { email, password }),
+    api.post<{ user: User }>("/auth/login", { email, password }),
   register: (data: RegisterPayload) =>
-    api.post<{ access_token: string; user: User }>("/auth/register", data),
+    api.post<{ user: User }>("/auth/register", data),
+  logout: () => api.post<{ message: string }>("/auth/logout"),
   me: () => api.get<UserFull>("/auth/me"),
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.patch("/auth/change-password", data),
