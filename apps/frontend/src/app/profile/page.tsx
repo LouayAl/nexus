@@ -1,3 +1,4 @@
+// frontend/src/app/profile/page.tsx last version that i need to fix
 "use client";
 
 import { useRef, useState } from "react";

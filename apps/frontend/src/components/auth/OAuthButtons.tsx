@@ -1,11 +1,15 @@
+// frontend/src/components/auth/OAuthButtons.tsx
 "use client";
 
 interface Props {
   mode: "login" | "register";
 }
 
-const GOOGLE_URL   = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL   ?? "http://localhost:3001/api/auth/google";
-const LINKEDIN_URL = process.env.NEXT_PUBLIC_LINKEDIN_AUTH_URL ?? "http://localhost:3001/api/auth/linkedin";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
+
+const GOOGLE_URL = `${API_BASE}/api/auth/google`;
+const LINKEDIN_URL = `${API_BASE}/api/auth/linkedin`;
 
 export function OAuthButtons({ mode }: Props) {
   const label = mode === "login" ? "Continuer" : "S'inscrire";

@@ -1,8 +1,14 @@
 // frontend/src/lib/api.ts
 import axios from "axios";
 
+const isProd = process.env.NODE_ENV === "production";
+
+const baseURL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (isProd ? "https://recrutement.ifmia.ma/api" : "http://localhost:3001/api");
+
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api",
+  baseURL,
   timeout: 10_000,
   withCredentials: true,
 });

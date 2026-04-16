@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/CandidatDetailModal.tsx
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import {
 import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
 import { resolveAvatarUrl } from "@/lib/avatar";
+import { SERVER_URL } from "@/lib/serverUrl";
 
 const STATUT: Record<string, { color: string; bg: string; label: string }> = {
   EN_ATTENTE: { color:"#EE813D", bg:"rgba(238,129,61,0.1)",  label:"En attente" },
@@ -21,7 +23,7 @@ const LANG_LEVEL: Record<string, string> = {
   Débutant:"A1-A2", Intermédiaire:"B1-B2", Avancé:"C1", Natif:"Natif",
 };
 
-const API = process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3001";
+// const API = process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3001";
 
 function SectionTitle({ icon, children }: { icon?: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -117,7 +119,7 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
 
               {/* CV button */}
               {candidat.cvUrl && (
-                <a href={`${API}${candidat.cvUrl}`} target="_blank" rel="noreferrer" style={{ flexShrink:0, display:"flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:9, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"white", fontSize:11, fontWeight:600, textDecoration:"none" }}>
+                <a href={`${SERVER_URL}${candidat.cvUrl}`} target="_blank" rel="noreferrer" style={{ flexShrink:0, display:"flex", alignItems:"center", gap:5, padding:"7px 12px", borderRadius:9, background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.25)", color:"white", fontSize:11, fontWeight:600, textDecoration:"none" }}>
                   <Download size={12}/> CV
                 </a>
               )}

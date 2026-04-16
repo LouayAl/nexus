@@ -1,3 +1,4 @@
+// frontend/src/app/company/dashboard/CandidatsModal.tsx
 // ═══════════════════════════════════════════════════════════════════════════════
 // CANDIDATS MODAL
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -21,7 +22,7 @@ export function CandidatsModal({ offre, onClose }: CandidatsModalProps) {
     queryKey: ["candidatures-offre", offre.id], 
     queryFn: () => candidaturesApi.getByOffre(offre.id).then(r => r.data) 
   });
-
+ 
   const updateStatut = useMutation({
     mutationFn: ({ id, statut }: { id: number; statut: string }) => 
       candidaturesApi.updateStatut(id, statut), 
@@ -86,7 +87,12 @@ export function CandidatsModal({ offre, onClose }: CandidatsModalProps) {
                 const statusConfig = STATUT_CONFIG[c.statut] ?? STATUT_CONFIG.EN_ATTENTE;
                 const initials = c.candidat ? `${c.candidat.prenom?.[0] ?? ""}${c.candidat.nom?.[0] ?? ""}`.toUpperCase() : "??";
                 const name = c.candidat ? `${c.candidat.prenom} ${c.candidat.nom}` : "Candidat";
-                const cvUrl = c.candidat?.cvUrl ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ?? "http://localhost:3001"}${c.candidat.cvUrl}` : null;
+                const API_BASE =
+                  process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
+
+                const cvUrl = c.candidat?.cvUrl
+                  ? `${API_BASE}${c.candidat.cvUrl}`
+                  : null;
                 const isAlreadyAccepted = c.statut === "ACCEPTE";
 
                 return (

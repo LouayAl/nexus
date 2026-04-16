@@ -1,3 +1,4 @@
+// frontend/src/app/auth/register/page.tsx last version that i need to fix
 "use client";
 
 import { useState, type FormEvent } from "react";

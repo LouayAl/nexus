@@ -3,15 +3,17 @@
 
 import { Mail, Phone, MapPin } from "lucide-react";
 import type { CandidatProfile } from "@/lib/api";
+import type { AppLanguage } from "@/hooks/useAppLanguage";
 
 interface Props {
   profile:        CandidatProfile;
   email:          string;
   onEdit:         () => void;
   onChangePw:     () => void;
+  language: AppLanguage;
 }
 
-export function ContactCard({ profile, email, onEdit, onChangePw }: Props) {
+export function ContactCard({ profile, email, onEdit, onChangePw, language }: Props) {
   return (
     <div style={{ background:"#F7F8FA", border:"1px solid rgba(16,64,107,0.08)", borderRadius:16, padding:20 }}>
 

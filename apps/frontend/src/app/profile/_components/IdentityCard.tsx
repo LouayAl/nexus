@@ -1,3 +1,4 @@
+// frontend/src/app/profile/_components/IdentityCard.tsx 
 "use client";
 
 import { Download, Edit2, Loader2, MapPin, Upload } from "lucide-react";
@@ -46,8 +47,11 @@ export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploa
   const exps = profile.experiences ?? [];
   const skills = profile.competences ?? [];
   const langs = profile.langues ?? [];
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
+
   const cvUrl = profile.cvUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ?? "http://localhost:3001"}${profile.cvUrl}`
+    ? `${API_BASE}${profile.cvUrl}`
     : null;
 
   return (

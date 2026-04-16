@@ -128,8 +128,10 @@ function CandidatDetailContent() {
 
   const sc          = STATUT_CONFIG[candidature.statut] ?? STATUT_CONFIG.EN_ATTENTE;
   const initials    = `${profile.prenom?.[0] ?? ""}${profile.nom?.[0] ?? ""}`.toUpperCase();
-  const cvUrl       = profile.cvUrl
-    ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") ?? "http://localhost:3001"}${profile.cvUrl}`
+  const API_BASE =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
+  const cvUrl = profile.cvUrl
+    ? `${API_BASE}${profile.cvUrl}`
     : null;
   const skills      = profile.competences ?? [];
   const experiences = profile.experiences ?? [];

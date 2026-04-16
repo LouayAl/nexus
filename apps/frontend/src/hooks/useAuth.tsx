@@ -1,3 +1,4 @@
+// frontend/src/hooks/useAuth.tsx last version that i need to fix
 "use client";
 
 import {
@@ -31,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const assertCandidate = useCallback(async (user: User) => {
-    if (user.role === "CANDIDAT") return user;
+    if (user.role === "CANDIDAT" || user.role === "ADMIN") return user;
 
     await authApi.logout().catch(() => undefined);
     throw new Error("candidate_only");
@@ -41,6 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await authApi.login(email, password);
     const user = await assertCandidate(data.user);
     setState({ user, loading: false });
+
+    if (user.role === "ADMIN") {
+      router.push("/admin");
+      return;
+    }
+
     const dest = redirectTo && redirectTo.startsWith("/profile") ? redirectTo : "/profile";
     router.push(dest);
   }, [assertCandidate, router]);
