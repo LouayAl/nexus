@@ -27,8 +27,9 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
 
-  // Static uploads (profile pictures, CVs, etc.)
-  const uploadsPath = join(__dirname, '..', '..', 'uploads');
+  // ✅ FIXED uploads path
+  const uploadsPath = join(process.cwd(), 'uploads');
+
   console.log('📁 uploads path:', uploadsPath);
 
   app.useStaticAssets(uploadsPath, {
