@@ -162,7 +162,7 @@ function LoginForm() {
               <span style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.85)", letterSpacing: "0.04em" }}>{copy.heroEyebrow}</span>
             </div>
 
-            <h1 className="font-display" style={{ fontSize: "clamp(36px,4vw,58px)", fontWeight: 900, color: "white", lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: 24 }}>
+            <h1 className="font-display" style={{ fontSize: "clamp(36px,4vw,58px)", fontWeight: 900, color: "white", lineHeight: 1.1, marginBottom: 24 }}>
               {copy.heroTitleA}<br />
               <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text", fontStyle: "italic" }}>{copy.heroTitleB}</span><br />
               {copy.heroTitleC}
@@ -226,10 +226,7 @@ function LoginForm() {
             </div>
 
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
-                <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96" }}>{copy.password}</label>
-                <span style={{ fontSize: 12, color: "#2284C0", cursor: "pointer", fontWeight: 600 }}>{copy.forgot}</span>
-              </div>
+              
               <div style={{ position: "relative" }}>
                 <Lock size={14} color="#B0C4D4" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
                 <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required style={{ ...iSx, paddingRight: 44 }} onFocus={onF} onBlur={onB} />
