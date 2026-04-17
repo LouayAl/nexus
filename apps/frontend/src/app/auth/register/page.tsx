@@ -174,7 +174,7 @@ export default function RegisterPage() {
 
             <h1 className="font-display" style={{ fontSize: "clamp(36px,4vw,56px)", fontWeight: 900, color: "white", lineHeight: 1.1, letterSpacing: "-0.03em", marginBottom: 20 }}>
               {copy.heroTitleA}<br />
-              <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text", fontStyle: "italic" }}>{copy.heroTitleB}</span><br />
+              <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text" }}>{copy.heroTitleB}</span><br />
               {copy.heroTitleC}
             </h1>
             <p style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 400, marginBottom: 48 }}>
@@ -233,14 +233,14 @@ export default function RegisterPage() {
                 <label style={{ display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 6 }}>{copy.firstName}</label>
                 <div style={{ position: "relative" }}>
                   <User size={13} color="#B0C4D4" style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-                  <input style={iSx} value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Jean" required onFocus={onF} onBlur={onB} />
+                  <input style={iSx} value={prenom} onChange={(e) => setPrenom(e.target.value)} placeholder="Prénom" required onFocus={onF} onBlur={onB} />
                 </div>
               </div>
               <div>
-                <label style={{ display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 6 }}>{copy.lastName}</label>
+                <label style={{ display: "block", fontSize: 11, fontWeight: 700, textTransform: "uppercase",  color: "#5A7A96", marginBottom: 6 }}>{copy.lastName}</label>
                 <div style={{ position: "relative" }}>
                   <User size={13} color="#B0C4D4" style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
-                  <input style={iSx} value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Dupont" required onFocus={onF} onBlur={onB} />
+                  <input style={iSx} value={nom} onChange={(e) => setNom(e.target.value)} placeholder="Nom de famille" required onFocus={onF} onBlur={onB} />
                 </div>
               </div>
             </div>

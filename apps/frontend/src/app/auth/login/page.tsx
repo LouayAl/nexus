@@ -164,7 +164,7 @@ function LoginForm() {
 
             <h1 className="font-display" style={{ fontSize: "clamp(36px,4vw,58px)", fontWeight: 900, color: "white", lineHeight: 1.1, marginBottom: 24 }}>
               {copy.heroTitleA}<br />
-              <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text", fontStyle: "italic" }}>{copy.heroTitleB}</span><br />
+              <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text" }}>{copy.heroTitleB}</span><br />
               {copy.heroTitleC}
             </h1>
             <p style={{ fontSize: 17, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 420, marginBottom: 48 }}>
@@ -204,7 +204,7 @@ function LoginForm() {
               <Sparkles size={12} color="#EE813D" />
               <span style={{ fontSize: 11, fontWeight: 700, color: "#EE813D", letterSpacing: "0.06em", textTransform: "uppercase" }}>{copy.badge}</span>
             </div>
-            <h2 className="font-display" style={{ fontSize: "clamp(22px,4vw,28px)", fontWeight: 900, color: "#0D2137", letterSpacing: "-0.02em", marginBottom: 4 }}>{copy.title}</h2>
+            <h2 className="font-display" style={{ fontSize: "clamp(22px,4vw,28px)", fontWeight: 900, color: "#0D2137", marginBottom: 4 }}>{copy.title}</h2>
             <p style={{ fontSize: 14, color: "#5A7A96" }}>{copy.subtitle}</p>
           </div>
 
@@ -226,7 +226,10 @@ function LoginForm() {
             </div>
 
             <div>
-              
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
+                <label style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96" }}>{copy.password}</label>
+                
+              </div>
               <div style={{ position: "relative" }}>
                 <Lock size={14} color="#B0C4D4" style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
                 <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required style={{ ...iSx, paddingRight: 44 }} onFocus={onF} onBlur={onB} />
