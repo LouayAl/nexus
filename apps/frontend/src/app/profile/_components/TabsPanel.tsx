@@ -34,9 +34,9 @@ export function TabsPanel({
   const langs  = profile.langues     ?? [];
 
   const tabs = [
-    { key:"skills" as Tab,     label:"Compétences", icon:Star,     count:skills.length },
-    { key:"experience" as Tab, label:"Expérience",  icon:Briefcase,count:exps.length   },
     { key:"formation" as Tab,  label:"Formation",   icon:Award,    count:forms.length  },
+    { key:"experience" as Tab, label:"Expérience",  icon:Briefcase,count:exps.length   },
+    { key:"skills" as Tab,     label:"Compétences", icon:Star,     count:skills.length },
     { key:"langues" as Tab,    label:"Langues",     icon:Globe2,   count:langs.length  },
   ];
 

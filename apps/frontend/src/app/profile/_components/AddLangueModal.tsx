@@ -38,7 +38,7 @@ export function AddLangueModal({
         </Field>
         <Field label="Niveau">
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {NIVEAU_OPTIONS.map(n => (
+            {NIVEAU_OPTIONS.slice(0, -1).map(n => (
               <button key={n} type="button" onClick={() => setNiveau(n)} style={{
                 padding:"9px 12px", borderRadius:10,
                 border:`2px solid ${niveau === n ? LANGUE_NIVEAU_COLORS[n] : "rgba(16,64,107,0.1)"}`,
@@ -47,6 +47,19 @@ export function AddLangueModal({
                 fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
               }}>{n}</button>
             ))}
+          </div>
+
+          {/* Last item centered */}
+          <div style={{ display:"flex", justifyContent:"center", marginTop:8 }}>
+            {(() => { const n = NIVEAU_OPTIONS[NIVEAU_OPTIONS.length - 1]; return (
+              <button type="button" onClick={() => setNiveau(n)} style={{
+                padding:"9px 12px", borderRadius:10, width:"100%",
+                border:`2px solid ${niveau === n ? LANGUE_NIVEAU_COLORS[n] : "rgba(16,64,107,0.1)"}`,
+                background: niveau === n ? `${LANGUE_NIVEAU_COLORS[n]}12` : "#FAFAF8",
+                color: niveau === n ? LANGUE_NIVEAU_COLORS[n] : "#5A7A96",
+                fontSize:12, fontWeight:700, cursor:"pointer", fontFamily:"'DM Sans',sans-serif",
+              }}>{n}</button>
+            );})()}
           </div>
         </Field>
         <SubmitBtn loading={mut.isPending} label={isEdit ? "Modifier" : "Ajouter"}/>

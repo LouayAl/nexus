@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/CreateCandidatModal.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,6 +7,7 @@ import { Loader2, UserPlus } from "lucide-react";
 import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
 import toast from "react-hot-toast";
+import { LocationInput } from "@/components/ui/LocationInput";
 
 export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
@@ -76,7 +78,12 @@ export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
           </div>
           <div>
             <label style={labelStyle}>Localisation</label>
-            <input style={inputStyle} value={form.localisation} onChange={set("localisation")} placeholder="Casablanca"/>
+            <LocationInput
+              style={inputStyle}
+              value={form.localisation}
+              onChange={v => setForm(f => ({ ...f, localisation: v }))}
+              placeholder="Tanger, Maroc"
+            />
           </div>
         </div>
 

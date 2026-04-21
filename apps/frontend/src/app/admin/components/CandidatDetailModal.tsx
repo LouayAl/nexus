@@ -20,7 +20,7 @@ const STATUT: Record<string, { color: string; bg: string; label: string }> = {
 };
 
 const LANG_LEVEL: Record<string, string> = {
-  Débutant:"A1-A2", Intermédiaire:"B1-B2", Avancé:"C1", Natif:"Natif",
+  Débutant:"A1-A2", Intermédiaire:"B1-B2", Avancé:"C1", Bilingue:"C1-C2", Natif:"Natif",
 };
 
 // const API = process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3001";

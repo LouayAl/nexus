@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/CreateEntrepriseModal.tsx
 "use client";
 
 import { useState } from "react";
@@ -7,11 +8,65 @@ import { adminApi, authApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import { Modal } from "./Modal";
 import { Field, inputStyle } from "./Field";
+import { LocationInput } from "@/components/ui/LocationInput";
+import { ColoredSelect } from "./ColoredSelect";
 
 const SECTEURS = [
-  "Tech & Logiciel","Data & IA","Cloud & DevOps","Cybersécurité",
-  "Design & Produit","Marketing & Growth","Finance & Fintech",
-  "MedTech & Santé","GreenTech","E-commerce","Conseil","Autre",
+  // Tech
+  "Tech & Logiciel",
+  "Data & Intelligence Artificielle",
+  "Cloud & DevOps",
+  "Cybersécurité",
+  "Télécommunications",
+
+  // Business & Finance
+  "Finance & Banque",
+  "Fintech & Paiement",
+  "Comptabilité & Audit",
+  "Assurance",
+  "Conseil & Management",
+
+  // Marketing & Commerce
+  "Marketing & Communication",
+  "Publicité & Médias",
+  "E-commerce & Retail",
+  "Ventes & Business Development",
+
+  // Industrie & Ingénierie
+  "Industrie & Manufacturing",
+  "Automobile & Mobilité",
+  "Aéronautique & Défense",
+  "Énergie & Utilities",
+  "BTP & Immobilier",
+  "Chimie & Matériaux",
+
+  // Santé & Sciences
+  "Santé & Médical",
+  "Pharmacie & Biotechnologie",
+  "Recherche & Sciences",
+
+  // RH & Services
+  "Ressources Humaines",
+  "Formation & Éducation",
+  "Juridique & Conformité",
+  "Logistique & Supply Chain",
+  "Transport & Livraison",
+  "Tourisme & Hôtellerie",
+  "Restauration & Alimentation",
+
+  // Créatif & Design
+  "Design & UX/UI",
+  "Architecture & Urbanisme",
+  "Médias & Divertissement",
+  "Mode & Luxe",
+
+  // Impact & Public
+  "GreenTech & Environnement",
+  "Agriculture & Agritech",
+  "Administration Publique",
+  "ONG & Associations",
+
+  "Autre",
 ];
 
 interface Props { onClose: () => void; }
@@ -95,21 +150,22 @@ export function CreateEntrepriseModal({ onClose }: Props) {
           </div>
 
           <Field label="Secteur d'activité">
-            <div style={{ position:"relative" }}>
-              <Tag size={13} color="#B0C4D4" style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none", zIndex:1 }}/>
-              <select style={{ ...inputStyle, paddingLeft:34, cursor:"pointer" }} value={form.secteur} onChange={set("secteur")}>
-                <option value="">— Sélectionner —</option>
-                {SECTEURS.map(s => <option key={s}>{s}</option>)}
-              </select>
-            </div>
+            <ColoredSelect
+              value={form.secteur}
+              onChange={v => setForm(f => ({ ...f, secteur: v }))}
+              searchable
+              options={SECTEURS.map(s => ({ value: s, label: s }))}
+            />
           </Field>
 
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
             <Field label="Localisation">
-              <div style={{ position:"relative" }}>
-                <MapPin size={13} color="#B0C4D4" style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }}/>
-                <input style={{ ...inputStyle, paddingLeft:34 }} value={form.localisation} onChange={set("localisation")} placeholder="Paris, France"/>
-              </div>
+              <LocationInput
+                style={inputStyle}
+                value={form.localisation}
+                onChange={v => setForm(f => ({ ...f, localisation: v }))}
+                placeholder="Tanger, Maroc"
+              />
             </Field>
             <Field label="Site web">
               <div style={{ position:"relative" }}>

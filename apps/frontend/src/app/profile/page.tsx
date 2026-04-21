@@ -21,6 +21,7 @@ import { EditProfileModal } from "./_components/EditProfileModal";
 import { IdentityCard } from "./_components/IdentityCard";
 import { TabsPanel } from "./_components/TabsPanel";
 import { type ModalType } from "./_components/types";
+import { LocationInput } from "@/components/ui/LocationInput";
 
 type Tab = "skills" | "experience" | "formation" | "langues";
 
@@ -125,6 +126,7 @@ export default function ProfilePage() {
             isMobile
             language={language}
           />
+          {bioCard}
           <ContactCard
             profile={profile}
             email={user?.email ?? "—"}
@@ -132,7 +134,6 @@ export default function ProfilePage() {
             onChangePw={() => setShowChangePw(true)}
             language={language}
           />
-          {bioCard}
           <TabsPanel
             profile={profile}
             tab={tab}
@@ -157,6 +158,7 @@ export default function ProfilePage() {
               isMobile={false}
               language={language}
             />
+            {bioCard}
             <ContactCard
               profile={profile}
               email={user?.email ?? "—"}
@@ -164,7 +166,6 @@ export default function ProfilePage() {
               onChangePw={() => setShowChangePw(true)}
               language={language}
             />
-            {bioCard}
           </div>
           <TabsPanel
             profile={profile}

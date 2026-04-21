@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { candidatsApi, type CandidatProfile } from "@/lib/api";
 import toast from "react-hot-toast";
 import { Modal, Field, inputSx, SubmitBtn } from "./Modal";
+import { LocationInput } from "@/components/ui/LocationInput";
 
 export function EditProfileModal({
   profile, onClose,
@@ -53,7 +54,11 @@ export function EditProfileModal({
           <input style={inputSx} value={form.telephone} onChange={e => setForm(f => ({ ...f, telephone:e.target.value }))} placeholder="+212 6XX XXX XXX"/>
         </Field>
         <Field label="Localisation">
-          <input style={inputSx} value={form.localisation} onChange={e => setForm(f => ({ ...f, localisation:e.target.value }))} placeholder="Casablanca, Maroc"/>
+          <LocationInput
+            style={inputSx}
+            value={form.localisation}
+            onChange={v => setForm(f => ({ ...f, localisation: v }))}
+          />
         </Field>
         <SubmitBtn loading={mut.isPending}/>
       </form>

@@ -8,13 +8,16 @@ import { Modal } from "./Modal";
 import { Field, inputStyle } from "./Field";
 import { adminApi, type AdminCreateOffreDto } from "@/lib/api";
 import toast from "react-hot-toast";
+import { LocationInput } from "@/components/ui/LocationInput";
+import { ColoredSelect } from "./ColoredSelect";
+
 
 export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
   const [selectedEntrepriseId, setSelectedEntrepriseId] = useState<number | null>(null);
   const [form, setForm] = useState({
     titre: "", description: "", type_contrat: "CDI",
-    niveau_experience: "", localisation: "",
+    niveau_experience: "Senior", localisation: "",
     salaire_min: undefined as number | undefined,
     salaire_max: undefined as number | undefined,
     competences_str: "",
@@ -53,6 +56,23 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
 
   const set = (key: string) => (e: any) => setForm((f) => ({ ...f, [key]: e.target.value }));
   const tags = form.competences_str.split(",").map((s) => s.trim()).filter(Boolean);
+
+
+  const CONTRACT_COLORS: Record<string, string> = {
+    "CDI":        "#1A9E6F",
+    "CDD":        "#2284C0",
+    "Intérim":    "#EE813D",
+    "Freelance":  "#7C3AED",
+    "Stage":      "#D64045",
+    "Alternance": "#10406B",
+  };
+
+  const EXPERIENCE_COLORS: Record<string, string> = {
+    "Junior":   "#1A9E6F",
+    "Confirmé": "#2284C0",
+    "Senior":   "#EE813D",
+    "Expert":   "#7C3AED",
+  };
 
   return (
     <Modal title="Créer une offre (Admin)" onClose={onClose} wide>
@@ -115,22 +135,44 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
           <input style={inputStyle} value={form.titre} onChange={set("titre")} placeholder="Ex: Senior React Developer" required />
         </Field>
 
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <Field label="Type de contrat">
-            <select style={inputStyle} value={form.type_contrat} onChange={set("type_contrat")}>
-              {["CDI", "CDD", "Freelance", "Stage", "Alternance"].map((t) => <option key={t}>{t}</option>)}
-            </select>
+            <ColoredSelect
+              value={form.type_contrat}
+              onChange={v => setForm(f => ({ ...f, type_contrat: v }))}
+              options={[
+                { value: "CDI",        label: "CDI",        color: "#1A9E6F" },
+                { value: "CDD",        label: "CDD",        color: "#2284C0" },
+                { value: "Intérim",    label: "Intérim",    color: "#EE813D" },
+                { value: "Freelance",  label: "Freelance",  color: "#7C3AED" },
+                { value: "Stage",      label: "Stage",      color: "#D64045" },
+                { value: "Alternance", label: "Alternance", color: "#10406B" },
+              ]}
+            />
           </Field>
+
           <Field label="Niveau d'expérience">
-            <select style={inputStyle} value={form.niveau_experience} onChange={set("niveau_experience")}>
-              <option value="">— Sélectionner —</option>
-              {["Junior", "Confirmé", "Senior", "Expert"].map((n) => <option key={n}>{n}</option>)}
-            </select>
+            <ColoredSelect
+              value={form.niveau_experience}
+              onChange={v => setForm(f => ({ ...f, niveau_experience: v }))}
+              placeholder=""
+              options={[
+                { value: "Junior",   label: "Junior",   color: "#1A9E6F" },
+                { value: "Confirmé", label: "Confirmé", color: "#2284C0" },
+                { value: "Senior",   label: "Senior",   color: "#EE813D" },
+                { value: "Expert",   label: "Expert",   color: "#7C3AED" },
+              ]}
+            />
           </Field>
         </div>
 
         <Field label="Localisation">
-          <input style={inputStyle} value={form.localisation} onChange={set("localisation")} placeholder="Casablanca · Remote" />
+          <LocationInput
+            style={inputStyle}
+            value={form.localisation}
+            onChange={v => setForm(f => ({ ...f, localisation: v }))}
+            placeholder="Tanger, Maroc"
+          />
         </Field>
 
         <div style={{ display: "flex", gap: 12 }}>
