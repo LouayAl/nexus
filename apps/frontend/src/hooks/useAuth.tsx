@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query"; 
 import { authApi, type RegisterPayload, type User } from "@/lib/api";
 
 interface AuthState {
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
@@ -65,10 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch {
       // Keep the UI signed out even if the cookie is already gone.
     }
-
+    queryClient.clear();
     setState({ user: null, loading: false });
     router.push("/auth/login");
-  }, [router]);
+  }, [router, queryClient]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, register, logout }}>
