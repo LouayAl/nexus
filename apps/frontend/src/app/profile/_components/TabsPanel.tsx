@@ -394,7 +394,17 @@ export function TabsPanel({
                 {exps.length === 0
                   ? empty(<Briefcase size={32}/>, copy.emptyExp)
                   : [...exps]
-                      .sort((a, b) => new Date((b.dateFin || b.dateDebut) + "-01").getTime() - new Date((a.dateFin || a.dateDebut) + "-01").getTime())
+                      .sort((a, b) => {
+                        // 1. Current jobs always first
+                        if (a.actuel && !b.actuel) return -1;
+                        if (!a.actuel && b.actuel) return 1;
+
+                        // 2. Otherwise sort by most recent date (end date preferred, fallback start)
+                        const aDate = new Date((a.dateFin || a.dateDebut) + "-01").getTime();
+                        const bDate = new Date((b.dateFin || b.dateDebut) + "-01").getTime();
+
+                        return bDate - aDate;
+                      })
                       .map((exp, i, arr) => {
                         const color = SKILL_COLORS[i % SKILL_COLORS.length];
                         const fmt = (v?: string) => v ? new Date(v + "-01").toLocaleDateString("fr-FR", { year: "numeric", month: "long" }) : "";
