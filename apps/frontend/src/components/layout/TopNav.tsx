@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { LogOut, Menu, User, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
 
@@ -75,11 +76,16 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
           boxShadow: scrolled ? "0 2px 20px rgba(16,64,107,0.07)" : "none",
         }}
       >
-        <Link href="/profile" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, #EE813D, #2284C0)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(238,129,61,0.35)" }}>
-            <span style={{ color: "white", fontSize: 16, fontWeight: 900, fontFamily: "'Fraunces', serif" }}>N</span>
-          </div>
-          <span className="font-display" style={{ fontSize: 20, fontWeight: 900, color: "#10406B", letterSpacing: "-0.02em" }}>nexus</span>
+        <Link
+          href="/profile"
+          style={{
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            flexShrink: 0,
+          }}
+        >
+          <BrandLogo height={36} />
         </Link>
 
         <div style={{ flex: 1, minWidth: 0, padding: "0 16px" }} className="hide-mobile">

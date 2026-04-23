@@ -89,6 +89,8 @@ export const candidatsApi = {
     api.post("/candidats/competences", data),
   deleteSkill: (competenceId: number) =>
     api.delete(`/candidats/competences/${competenceId}`),
+  getAllCompetences: () =>
+    api.get<{ id: number; nom: string }[]>('/candidats/competences/all'),
 
   // CV
   uploadCv: (file: File) => {
@@ -132,6 +134,22 @@ export const entreprisesApi = {
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
 export interface AdminCreateOffreDto extends CreateOffreDto {
   entrepriseId: number;
+
+  titre: string;
+  description: string;
+  type_contrat: string;
+
+  niveau_experience?: string;
+  localisation?: string;
+
+  salaire_min?: number;
+  salaire_max?: number;
+  salaire_visible?: boolean;   // <-- ADD THIS
+
+  profil_recherche?: string;   // <-- already used
+  langues?: string[];          // <-- already used
+
+  competences?: string[];
 }
 
 export interface EntrepriseAdmin {
@@ -166,7 +184,11 @@ export const adminApi = {
     api.post("/auth/admin/create-candidat", { ...data, role: "CANDIDAT" }),
   createEntreprise: (data: { email: string; password: string; nomEntreprise: string }) =>
     api.post("/auth/admin/create-entreprise", { ...data, role: "ENTREPRISE" }),
+  getAllCompetences: () =>
+    api.get<{ id: number; nom: string }[]>('/candidats/admin/competences/all'),
 
+  upsertCompetence: (nom: string) =>
+    api.post<{ id: number; nom: string }>('/candidats/admin/competences', { nom }),
 };
 
 export interface CandidatAdmin {
@@ -314,6 +336,9 @@ export interface Offre {
   localisation?:     string;
   salaire_min?:      number;
   salaire_max?:      number;
+  salaire_visible?:  boolean;
+  profil_recherche?: string;
+  langues?:          string[];
   createdAt:         string;
   entreprise:        { id: number; nom: string; logoUrl?: string; localisation?: string };
   competences?:      { competenceId: number; competence: { id: number; nom: string } }[];
@@ -346,6 +371,9 @@ export interface CreateOffreDto {
   salaire_min?:       number;
   salaire_max?:       number;
   competences?:       string[];
+  salaire_visible?:   boolean;
+  profil_recherche?:  string;
+  langues?:           string[];
 }
 
 export interface Candidature {

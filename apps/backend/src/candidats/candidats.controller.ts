@@ -42,6 +42,11 @@ export class CandidatsController {
   ) {
     return this.candidats.deleteCompetence(req.user.id, competenceId);
   }
+  
+  @Get('competences/all')
+  getAllCompetences() {
+    return this.candidats.getAllCompetences();
+  }
 
   // ── CV Upload ──────────────────────────────────────────────────────────────
   @Post('cv')
@@ -149,17 +154,27 @@ export class CandidatsController {
 export class CandidatsAdminController {
   constructor(private candidats: CandidatsService) {}
 
-  /** GET /candidats/admin/all — list every candidat with counts */
   @Get('all')
   getAllCandidats() {
     return this.candidats.getAllCandidats();
   }
 
-  /** GET /candidats/admin/:id — full profile + candidatures */
   @Get(':id')
   getCandidatById(@Param('id', ParseIntPipe) id: number) {
     return this.candidats.getCandidatByIdForAdmin(id);
   }
 
-  
+  // ── Competences ────────────────────────────────────────────────────────────
+
+  /** GET /candidats/admin/competences — full list for the picker */
+  @Get('competences/all')
+  getAllCompetences() {
+    return this.candidats.getAllCompetences();
+  }
+
+  /** POST /candidats/admin/competences — create or return existing */
+  @Post('competences')
+  upsertCompetence(@Body('nom') nom: string) {
+    return this.candidats.upsertCompetence(nom);
+  }
 }

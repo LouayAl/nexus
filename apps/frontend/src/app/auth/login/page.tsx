@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
+import { BrandLogo } from "@/components/common/BrandLogo";
 import { LanguageToggle } from "@/components/common/LanguageToggle";
 import { useAuth } from "@/hooks/useAuth";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
@@ -148,12 +149,7 @@ function LoginForm() {
           <div style={{ position: "absolute", inset: 0, opacity: 0.07, backgroundImage: "radial-gradient(ellipse at 20% 20%, #EE813D 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, #2284C0 0%, transparent 50%)" }} />
 
           <div style={{ position: "relative", zIndex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: "linear-gradient(135deg, #EE813D, #d4691f)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 20px rgba(238,129,61,0.5)" }}>
-                <span className="font-display" style={{ color: "white", fontSize: 20, fontWeight: 900 }}>N</span>
-              </div>
-              <span className="font-display" style={{ fontSize: 24, fontWeight: 900, color: "white", letterSpacing: "-0.03em" }}>nexus</span>
-            </div>
+            <BrandLogo height={42} dark />
           </div>
 
           <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 0" }}>
@@ -192,11 +188,8 @@ function LoginForm() {
             <LanguageToggle language={language} onChange={setLanguage} />
           </div>
 
-          <div className="login-mobile-logo" style={{ alignItems: "center", gap: 10, marginBottom: 28 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, #EE813D, #2284C0)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span className="font-display" style={{ color: "white", fontSize: 16, fontWeight: 900 }}>N</span>
-            </div>
-            <span className="font-display" style={{ fontSize: 20, fontWeight: 900, color: "#10406B", letterSpacing: "-0.02em" }}>nexus</span>
+          <div className="login-mobile-logo" style={{ alignItems: "center", marginBottom: 28 }}>
+            <BrandLogo height={34} />
           </div>
 
           <div style={{ marginBottom: 24 }}>

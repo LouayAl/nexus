@@ -1,4 +1,4 @@
-// frontend/src/app/profile/page.tsx last version that i need to fix
+// frontend/src/app/profile/page.tsx
 "use client";
 
 import { useRef, useState } from "react";
@@ -16,56 +16,42 @@ import { AddExperienceModal } from "./_components/AddExperienceModal";
 import { AddFormationModal } from "./_components/AddFormationModal";
 import { AddLangueModal } from "./_components/AddLangueModal";
 import { AddSkillModal } from "./_components/AddSkillModal";
+import { BioCard } from "./_components/BioCard";
 import { ContactCard } from "./_components/ContactCard";
 import { EditProfileModal } from "./_components/EditProfileModal";
 import { IdentityCard } from "./_components/IdentityCard";
 import { TabsPanel } from "./_components/TabsPanel";
 import { type ModalType } from "./_components/types";
-import { LocationInput } from "@/components/ui/LocationInput";
 
 type Tab = "skills" | "experience" | "formation" | "langues";
 
 const COPY = {
-  fr: {
-    loading: "Chargement du profil...",
-    eyebrow: "Mon espace",
-    title: "Mon Profil",
-    about: "À propos",
-  },
-  en: {
-    loading: "Loading profile...",
-    eyebrow: "My space",
-    title: "My Profile",
-    about: "About",
-  },
+  fr: { loading: "Chargement du profil...", eyebrow: "Mon espace", title: "Mon Profil" },
+  en: { loading: "Loading profile...",      eyebrow: "My space",   title: "My Profile" },
 } as const;
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user }                  = useAuth();
   const { language, setLanguage } = useAppLanguage();
-  const copy = COPY[language];
+  const copy                      = COPY[language];
+  const qc                        = useQueryClient();
+  const fileRef                   = useRef<HTMLInputElement>(null);
+  const isMobile                  = useIsMobile();
 
-  const qc = useQueryClient();
-  const fileRef = useRef<HTMLInputElement>(null);
-  const isMobile = useIsMobile();
-
-  const [tab, setTab] = useState<Tab>("skills");
-  const [modal, setModal] = useState<ModalType>(null);
-  const [editingItem, setEditingItem] = useState<any>(null);
+  const [tab,          setTab]          = useState<Tab>("skills");
+  const [modal,        setModal]        = useState<ModalType>(null);
+  const [editingItem,  setEditingItem]  = useState<any>(null);
   const [showChangePw, setShowChangePw] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
-    queryFn: () => candidatsApi.getProfile().then((r) => r.data),
+    queryFn:  () => candidatsApi.getProfile().then((r) => r.data),
   });
 
   const uploadCv = useMutation({
     mutationFn: (file: File) => candidatsApi.uploadCv(file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["profile"] });
-      toast.success(language === "fr" ? "CV importé !" : "Resume uploaded!");
-    },
-    onError: () => toast.error(language === "fr" ? "Erreur lors de l'upload" : "Upload failed"),
+    onSuccess:  () => { qc.invalidateQueries({ queryKey: ["profile"] }); toast.success(language === "fr" ? "CV importé !" : "Resume uploaded!"); },
+    onError:    () => toast.error(language === "fr" ? "Erreur lors de l'upload" : "Upload failed"),
   });
 
   if (isLoading) {
@@ -81,20 +67,48 @@ export default function ProfilePage() {
 
   if (!profile) return null;
 
-  const bioCard = profile.bio ? (
-    <div style={{ background: "white", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 16, padding: 20 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 10 }}>{copy.about}</div>
-      <p style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.7, margin: 0 }}>{profile.bio}</p>
+  const sharedIdentity = {
+    profile,
+    uploadPending: uploadCv.isPending,
+    onEdit:        () => setModal("editProfile"),
+    onUploadCv:    () => fileRef.current?.click(),
+    language,
+  };
+
+  const tabsProps = {
+    profile, tab, onTabChange: setTab, language,
+    onAddSkill:  () => setModal("addSkill"),
+    onAddExp:    () => { setEditingItem(null); setModal("addExp"); },
+    onAddForm:   () => { setEditingItem(null); setModal("addForm"); },
+    onAddLang:   () => { setEditingItem(null); setModal("addLang"); },
+    onEditExp:   (item: any) => { setEditingItem(item); setModal("addExp"); },
+    onEditForm:  (item: any) => { setEditingItem(item); setModal("addForm"); },
+    onEditLang:  (item: any) => { setEditingItem(item); setModal("addLang"); },
+  };
+
+  const contactProps = {
+    profile,
+    email:      user?.email ?? "—",
+    onEdit:     () => setModal("editProfile"),
+    onChangePw: () => setShowChangePw(true),
+    language,
+  };
+
+  const sidebar = (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <IdentityCard {...sharedIdentity} isMobile={false} />
+      {profile.bio && <BioCard bio={profile.bio} language={language} />}
+      <ContactCard {...contactProps} />
     </div>
-  ) : null;
+  );
 
   return (
     <AppShell pageTitle={copy.title}>
       {modal === "editProfile" && <EditProfileModal profile={profile} onClose={() => setModal(null)} />}
-      {modal === "addSkill" && <AddSkillModal onClose={() => setModal(null)} />}
-      {modal === "addExp" && <AddExperienceModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} />}
-      {modal === "addForm" && <AddFormationModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} />}
-      {modal === "addLang" && <AddLangueModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} />}
+      {modal === "addSkill"    && <AddSkillModal    onClose={() => setModal(null)} language={language}/>}
+      {modal === "addExp"      && <AddExperienceModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}
+      {modal === "addForm"     && <AddFormationModal  onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}
+      {modal === "addLang"     && <AddLangueModal     onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language} />}
       {showChangePw && <ChangePasswordModal onClose={() => setShowChangePw(false)} />}
 
       <input
@@ -102,10 +116,7 @@ export default function ProfilePage() {
         type="file"
         accept=".pdf,.doc,.docx"
         style={{ display: "none" }}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) uploadCv.mutate(file);
-        }}
+        onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadCv.mutate(file); }}
       />
 
       <div style={{ marginBottom: 28 }}>
@@ -118,67 +129,15 @@ export default function ProfilePage() {
 
       {isMobile ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <IdentityCard
-            profile={profile}
-            uploadPending={uploadCv.isPending}
-            onEdit={() => setModal("editProfile")}
-            onUploadCv={() => fileRef.current?.click()}
-            isMobile
-            language={language}
-          />
-          {bioCard}
-          <ContactCard
-            profile={profile}
-            email={user?.email ?? "—"}
-            onEdit={() => setModal("editProfile")}
-            onChangePw={() => setShowChangePw(true)}
-            language={language}
-          />
-          <TabsPanel
-            profile={profile}
-            tab={tab}
-            onTabChange={setTab}
-            onAddSkill={() => setModal("addSkill")}
-            onAddExp={() => { setEditingItem(null); setModal("addExp"); }}
-            onAddForm={() => { setEditingItem(null); setModal("addForm"); }}
-            onAddLang={() => { setEditingItem(null); setModal("addLang"); }}
-            onEditExp={(item) => { setEditingItem(item); setModal("addExp"); }}
-            onEditForm={(item) => { setEditingItem(item); setModal("addForm"); }}
-            onEditLang={(item) => { setEditingItem(item); setModal("addLang"); }}
-          />
+          <IdentityCard {...sharedIdentity} isMobile />
+          {profile.bio && <BioCard bio={profile.bio} language={language} />}
+          <ContactCard {...contactProps} />
+          <TabsPanel {...tabsProps} />
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 24 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <IdentityCard
-              profile={profile}
-              uploadPending={uploadCv.isPending}
-              onEdit={() => setModal("editProfile")}
-              onUploadCv={() => fileRef.current?.click()}
-              isMobile={false}
-              language={language}
-            />
-            {bioCard}
-            <ContactCard
-              profile={profile}
-              email={user?.email ?? "—"}
-              onEdit={() => setModal("editProfile")}
-              onChangePw={() => setShowChangePw(true)}
-              language={language}
-            />
-          </div>
-          <TabsPanel
-            profile={profile}
-            tab={tab}
-            onTabChange={setTab}
-            onAddSkill={() => setModal("addSkill")}
-            onAddExp={() => { setEditingItem(null); setModal("addExp"); }}
-            onAddForm={() => { setEditingItem(null); setModal("addForm"); }}
-            onAddLang={() => { setEditingItem(null); setModal("addLang"); }}
-            onEditExp={(item) => { setEditingItem(item); setModal("addExp"); }}
-            onEditForm={(item) => { setEditingItem(item); setModal("addForm"); }}
-            onEditLang={(item) => { setEditingItem(item); setModal("addLang"); }}
-          />
+          {sidebar}
+          <TabsPanel {...tabsProps} />
         </div>
       )}
     </AppShell>

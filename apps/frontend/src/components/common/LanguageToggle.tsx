@@ -1,3 +1,4 @@
+// frontend/src/components/common/LanguageToggle.tsx
 "use client";
 
 import type { AppLanguage } from "@/hooks/useAppLanguage";
@@ -17,13 +18,12 @@ export function LanguageToggle({
         gap: 4,
         padding: 4,
         borderRadius: 999,
-        background: "rgba(16,64,107,0.06)",
-        border: "1px solid rgba(16,64,107,0.08)",
+        background: "rgb(240,245,250)",
+        border: "1px solid rgb(240,245,250)",
       }}
     >
       {(["fr", "en"] as const).map((value) => {
         const active = language === value;
-
         return (
           <button
             key={value}
@@ -33,15 +33,18 @@ export function LanguageToggle({
               border: "none",
               cursor: "pointer",
               borderRadius: 999,
-              padding: "6px 10px",
+              padding: "6px 12px",
               fontSize: 11,
               fontWeight: 700,
               textTransform: "uppercase",
               letterSpacing: "0.05em",
               fontFamily: "'DM Sans', sans-serif",
-              color: active ? "#10406B" : "#5A7A96",
-              background: active ? "white" : "transparent",
-              boxShadow: active ? "0 1px 6px rgba(16,64,107,0.08)" : "none",
+              color: active ? "white" : "#B0A090",
+              background: active
+                ? "linear-gradient(135deg, #EE813D, #d4691f)"
+                : "transparent",
+              boxShadow: active ? "0 2px 8px rgba(238,129,61,0.35)" : "none",
+              transition: "all 0.18s",
             }}
           >
             {value}

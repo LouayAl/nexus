@@ -206,6 +206,23 @@ export class CandidatsService {
     return candidat;
   }
 
+  /** GET all competences for the admin picker */
+  async getAllCompetences() {
+    return this.prisma.competence.findMany({
+      orderBy: { nom: 'asc' },
+    });
+  }
+
+  /** POST — upsert a competence (returns existing if already there) */
+  async upsertCompetence(nom: string) {
+    const trimmed = nom.trim();
+    return this.prisma.competence.upsert({
+      where:  { nom: trimmed },
+      update: {},
+      create: { nom: trimmed },
+    });
+  }
+
   // ── Helpers ────────────────────────────────────────────────────────────────
   private async getCandidatOrFail(userId: number) {
     const candidat = await this.prisma.candidat.findUnique({ where: { utilisateurId: userId } });

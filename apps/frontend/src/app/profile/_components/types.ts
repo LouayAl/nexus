@@ -39,3 +39,10 @@ export type ModalType =
   | "addForm"
   | "addLang"
   | "changePw";
+
+  export function skillColor(niveau: number): string {
+  if (niveau >= 85) return "#1A9E6F"; // Expert        — green
+  if (niveau >= 65) return "#2284C0"; // Avancé        — blue
+  if (niveau >= 40) return "#EE813D"; // Intermédiaire — orange
+  return "#B0C4D4";                   // Débutant      — grey
+}

@@ -1,4 +1,4 @@
-// frontend/src/app/profile/_components/IdentityCard.tsx 
+// frontend/src/app/profile/_components/IdentityCard.tsx
 "use client";
 
 import { Download, Edit2, Loader2, MapPin, Upload } from "lucide-react";
@@ -9,133 +9,315 @@ import { completionPct, initials } from "./types";
 
 const COPY = {
   fr: {
-    edit: "Éditer",
+    edit:        "Éditer",
     editProfile: "Éditer le profil",
-    completed: "Profil complété",
+    completed:   "Profil complété",
     experiences: "Expériences",
-    skills: "Compétences",
-    languages: "Langues",
-    cv: "Mon CV",
-    upload: "Importer mon CV",
-    uploading: "Importation...",
+    skills:      "Compétences",
+    languages:   "Langues",
+    cv:          "Mon CV",
+    upload:      "Importer mon CV",
+    uploading:   "Importation...",
   },
   en: {
-    edit: "Edit",
+    edit:        "Edit",
     editProfile: "Edit profile",
-    completed: "Profile completion",
+    completed:   "Profile completion",
     experiences: "Experiences",
-    skills: "Skills",
-    languages: "Languages",
-    cv: "My resume",
-    upload: "Upload my resume",
-    uploading: "Uploading...",
+    skills:      "Skills",
+    languages:   "Languages",
+    cv:          "My resume",
+    upload:      "Upload my resume",
+    uploading:   "Uploading...",
   },
 } as const;
 
 interface Props {
-  profile: CandidatProfile;
+  profile:       CandidatProfile;
   uploadPending: boolean;
-  isMobile: boolean;
-  onEdit: () => void;
-  onUploadCv: () => void;
-  language: AppLanguage;
+  isMobile:      boolean;
+  onEdit:        () => void;
+  onUploadCv:    () => void;
+  language:      AppLanguage;
 }
 
 export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploadCv, language }: Props) {
-  const copy = COPY[language];
-  const pct = completionPct(profile);
-  const exps = profile.experiences ?? [];
+  const copy   = COPY[language];
+  const pct    = completionPct(profile);
+  const exps   = profile.experiences ?? [];
   const skills = profile.competences ?? [];
-  const langs = profile.langues ?? [];
-  const API_BASE =
-    process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
-
-  const cvUrl = profile.cvUrl
-    ? `${API_BASE}${profile.cvUrl}`
-    : null;
+  const langs  = profile.langues     ?? [];
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api$/, "") || "";
+  const cvUrl  = profile.cvUrl ? `${API_BASE}${profile.cvUrl}` : null;
 
   return (
-    <div style={{ background: "white", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 20, padding: isMobile ? 20 : 28, boxShadow: "0 2px 12px rgba(16,64,107,0.06)" }}>
-      {isMobile ? (
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-          <AvatarUpload initials={initials(profile)} avatarUrl={profile.avatarUrl} size={64} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
-              <div className="font-display" style={{ fontSize: 18, fontWeight: 800, color: "#0D2137", marginBottom: 2 }}>
+    <>
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Card ── */
+        .ic-card {
+          position: relative;
+          border-radius: 20px;
+          background: linear-gradient(175deg, #10406b 0%, #10426c 35%, #165183 68%, #216f9f 100%);
+          border: 1px solid rgba(255,255,255,0.08);
+          box-shadow:
+            0 1px 0 0 rgba(255,255,255,0.06) inset,
+            0 24px 48px -12px rgba(8,20,32,0.55),
+            0  4px 16px -4px rgba(8,20,32,0.35);
+          transition: box-shadow 0.25s ease, transform 0.25s ease;
+          overflow: hidden;
+        }
+        .ic-card:hover {
+          transform: translateY(-2px);
+          box-shadow:
+            0 1px 0 0 rgba(255,255,255,0.06) inset,
+            0 32px 56px -12px rgba(8,20,32,0.6),
+            0  6px 20px -4px rgba(8,20,32,0.4);
+        }
+
+        /* Gold top accent — the single luxe detail */
+        .ic-topline {
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent 0%, #c5a46d 30%, #dfc08a 55%, #c5a46d 75%, transparent 100%);
+        }
+
+        /* ── Text ── */
+        .ic-name  { color: #ffffff; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+        .ic-title { color: rgba(255,255,255,0.50); font-weight: 400; letter-spacing: 0.01em; }
+        .ic-loc   { color: rgba(255,255,255,0.32); }
+
+        /* ── Divider ── */
+        .ic-rule { height: 1px; background: rgba(255,255,255,0.07); border: none; margin: 0; }
+
+        /* ── Edit button ── */
+        .ic-btn-edit {
+          background: rgba(255,255,255,0.07);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 9px;
+          padding: 6px 14px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          color: rgba(255,255,255,0.72);
+          font-size: 12px;
+          font-weight: 600;
+          font-family: 'DM Sans', sans-serif;
+          letter-spacing: 0.01em;
+          white-space: nowrap;
+          transition: background 0.18s, border-color 0.18s, color 0.18s;
+        }
+        .ic-btn-edit:hover {
+          background: #ed823b;
+          border-color: rgba(255,255,255,0.2);
+          color: #fff;
+        }
+
+        /* ── Progress ── */
+        .ic-prog-label {
+          font-size: 11px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.35);
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+        .ic-prog-pct {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.03em;
+        }
+        .ic-prog-track {
+          height: 4px;
+          background: rgba(255,255,255,0.08);
+          border-radius: 99px;
+          overflow: hidden;
+        }
+        .ic-prog-fill {
+          height: 100%;
+          border-radius: 99px;
+          background: linear-gradient(90deg, #ed823b, #f29d65);
+          transition: width 0.7s cubic-bezier(.22,.68,0,1.2);
+        }
+
+        /* ── Stats ── */
+        .ic-stat-val {
+          font-weight: 800;
+          color: #ffffff;
+          font-family: 'DM Sans', sans-serif;
+          line-height: 1;
+          letter-spacing: -0.02em;
+        }
+        .ic-stat-lbl {
+          font-size: 10px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.33);
+          margin-top: 3px;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
+        .ic-stat-rule {
+          width: 1px;
+          background: rgba(255,255,255,0.07);
+          align-self: stretch;
+          flex-shrink: 0;
+        }
+
+        /* ── Ghost buttons (CV download / replace) ── */
+        .ic-btn-ghost {
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.10);
+          border-radius: 11px;
+          color: rgba(255,255,255,0.75);
+          font-size: 12px;
+          font-weight: 600;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          letter-spacing: 0.01em;
+          transition: background 0.18s, border-color 0.18s, color 0.18s;
+          text-decoration: none;
+        }
+        .ic-btn-ghost:hover {
+          background: #ed823b;
+          border-color: rgba(255,255,255,0.17);
+          color: #fff;
+        }
+
+        /* ── Gold CTA ── */
+        .ic-btn-upload {
+          width: 100%;
+          padding: 12px;
+          background: linear-gradient(135deg, #c5a46d 0%, #dfc08a 100%);
+          border: none;
+          border-radius: 12px;
+          color: #0f1f2d;
+          font-size: 13px;
+          font-weight: 700;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          letter-spacing: 0.02em;
+          box-shadow: 0 4px 18px rgba(197,164,109,0.25);
+          transition: filter 0.18s, box-shadow 0.18s, transform 0.15s, opacity 0.18s;
+        }
+        .ic-btn-upload:hover:not(:disabled) {
+          filter: brightness(1.06);
+          box-shadow: 0 6px 24px rgba(197,164,109,0.35);
+          transform: translateY(-1px);
+        }
+        .ic-btn-upload:disabled { opacity: 0.6; cursor: not-allowed; }
+      `}</style>
+
+      <div className="ic-card">
+        <div className="ic-topline" />
+
+        <div style={{ padding: isMobile ? 20 : 28 }}>
+
+          {/* ── Header ── */}
+          {isMobile ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 22 }}>
+              <AvatarUpload initials={initials(profile)} avatarUrl={profile.avatarUrl} size={64} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8, marginBottom: 3 }}>
+                  <div className="ic-name" style={{ fontSize: 17 }}>
+                    {profile.prenom} {profile.nom}
+                  </div>
+                  <button className="ic-btn-edit" onClick={onEdit}>
+                    <Edit2 size={11} />{copy.edit}
+                  </button>
+                </div>
+                {profile.titre && <div className="ic-title" style={{ fontSize: 13, marginBottom: 4 }}>{profile.titre}</div>}
+                {profile.localisation && (
+                  <div className="ic-loc" style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
+                    <MapPin size={11} />{profile.localisation}
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", marginBottom: 22 }}>
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+                <AvatarUpload initials={initials(profile)} avatarUrl={profile.avatarUrl} size={84} />
+              </div>
+              <div className="ic-name" style={{ fontSize: 21, marginBottom: 5 }}>
                 {profile.prenom} {profile.nom}
               </div>
-              <button onClick={onEdit} style={{ flexShrink: 0, background: "none", border: "1px solid rgba(16,64,107,0.12)", borderRadius: 8, padding: "4px 8px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, color: "#5A7A96" }}>
-                <Edit2 size={11} /><span style={{ fontSize: 11, fontWeight: 600 }}>{copy.edit}</span>
+              {profile.titre && (
+                <div className="ic-title" style={{ fontSize: 13, marginBottom: 6 }}>{profile.titre}</div>
+              )}
+              {profile.localisation && (
+                <div className="ic-loc" style={{ fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginBottom: 14 }}>
+                  <MapPin size={11} />{profile.localisation}
+                </div>
+              )}
+              <button className="ic-btn-edit" onClick={onEdit}>
+                <Edit2 size={11} />{copy.editProfile}
               </button>
             </div>
-            {profile.titre && <div style={{ color: "#5A7A96", fontSize: 13, marginBottom: 4 }}>{profile.titre}</div>}
-            {profile.localisation && (
-              <div style={{ color: "#B0C4D4", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
-                <MapPin size={11} />{profile.localisation}
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div style={{ textAlign: "center", marginBottom: 0 }}>
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-            <AvatarUpload initials={initials(profile)} avatarUrl={profile.avatarUrl} size={88} />
-          </div>
-          <div className="font-display" style={{ fontSize: 22, fontWeight: 800, color: "#0D2137", marginBottom: 4 }}>
-            {profile.prenom} {profile.nom}
-          </div>
-          {profile.titre && <div style={{ color: "#5A7A96", fontSize: 14, marginBottom: 6 }}>{profile.titre}</div>}
-          {profile.localisation && (
-            <div style={{ color: "#B0C4D4", fontSize: 12, display: "flex", alignItems: "center", gap: 4, justifyContent: "center", marginBottom: 12 }}>
-              <MapPin size={11} />{profile.localisation}
-            </div>
           )}
-          <button onClick={onEdit} style={{ background: "none", border: "1px solid rgba(16,64,107,0.12)", borderRadius: 9, padding: "6px 14px", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 5, color: "#5A7A96", fontSize: 12, fontWeight: 600, fontFamily: "'DM Sans',sans-serif" }}>
-            <Edit2 size={12} /> {copy.editProfile}
-          </button>
-        </div>
-      )}
 
-      <div style={{ margin: "20px 0", padding: "16px 0", borderTop: "1px solid rgba(16,64,107,0.07)", borderBottom: "1px solid rgba(16,64,107,0.07)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-          <span style={{ fontSize: 12, color: "#5A7A96", fontWeight: 500 }}>{copy.completed}</span>
-          <span style={{ fontSize: 12, fontWeight: 700, color: pct >= 80 ? "#1A9E6F" : "#EE813D" }}>{pct}%</span>
-        </div>
-        <div style={{ height: 6, background: "#F0F4F8", borderRadius: 3, overflow: "hidden" }}>
-          <div style={{ width: `${pct}%`, height: "100%", borderRadius: 3, background: "linear-gradient(90deg, #EE813D, #2284C0)", transition: "width 0.6s" }} />
-        </div>
-      </div>
-
-      <div style={{ display: "flex", marginBottom: 20 }}>
-        {[
-          [String(exps.length), copy.experiences],
-          [String(skills.length), copy.skills],
-          [String(langs.length), copy.languages],
-        ].map(([value, label], i, arr) => (
-          <div key={label} style={{ flex: 1, textAlign: "center", borderRight: i < arr.length - 1 ? "1px solid rgba(16,64,107,0.07)" : "none", padding: "0 8px" }}>
-            <div className="font-display" style={{ fontSize: isMobile ? 18 : 20, fontWeight: 800, color: "#2284C0" }}>{value}</div>
-            <div style={{ color: "#5A7A96", fontSize: 11, marginTop: 2 }}>{label}</div>
+          {/* ── Progress ── */}
+          <hr className="ic-rule" style={{ marginBottom: 16 }} />
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+              <span className="ic-prog-label">{copy.completed}</span>
+              <span className="ic-prog-pct" style={{ color: pct >= 80 ? "#ed823b" : "#dfc08a" }}>{pct}%</span>
+            </div>
+            <div className="ic-prog-track">
+              <div className="ic-prog-fill" style={{ width: `${pct}%` }} />
+            </div>
           </div>
-        ))}
-      </div>
+          <hr className="ic-rule" style={{ marginBottom: 20 }} />
 
-      {cvUrl ? (
-        <div style={{ display: "flex", gap: 8 }}>
-          <a href={cvUrl} target="_blank" rel="noreferrer" style={{ flex: 1, textDecoration: "none" }}>
-            <button style={{ width: "100%", padding: "10px", background: "rgba(26,158,111,0.1)", border: "1px solid rgba(26,158,111,0.2)", borderRadius: 11, color: "#1A9E6F", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-              <Download size={13} /> {copy.cv}
+          {/* ── Stats ── */}
+          <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
+            {[
+              [String(exps.length),   copy.experiences],
+              [String(skills.length), copy.skills],
+              [String(langs.length),  copy.languages],
+            ].map(([value, label], i, arr) => (
+              < >
+                <div key={label} style={{ flex: 1, textAlign: "center", padding: "0 6px" }}>
+                  <div className="ic-stat-val" style={{ fontSize: isMobile ? 18 : 20 }}>{value}</div>
+                  <div className="ic-stat-lbl">{label}</div>
+                </div>
+                {i < arr.length - 1 && <div className="ic-stat-rule" key={`d${i}`} />}
+              </>
+            ))}
+          </div>
+
+          {/* ── CV ── */}
+          {cvUrl ? (
+            <div style={{ display: "flex", gap: 8 }}>
+              <a href={cvUrl} target="_blank" rel="noreferrer" style={{ flex: 1, display: "flex" }}>
+                <button className="ic-btn-ghost" style={{ flex: 1, padding: "10px 12px" }}>
+                  <Download size={13} />{copy.cv}
+                </button>
+              </a>
+              <button className="ic-btn-ghost" style={{ padding: "10px 13px" }} onClick={onUploadCv}>
+                <Upload size={14} />
+              </button>
+            </div>
+          ) : (
+            <button className="ic-btn-upload" onClick={onUploadCv} disabled={uploadPending}>
+              {uploadPending
+                ? <><Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />{copy.uploading}</>
+                : <><Upload size={14} />{copy.upload}</>
+              }
             </button>
-          </a>
-          <button onClick={onUploadCv} style={{ padding: "10px 14px", background: "rgba(238,129,61,0.08)", border: "1px solid rgba(238,129,61,0.15)", borderRadius: 11, cursor: "pointer" }}>
-            <Upload size={14} color="#EE813D" />
-          </button>
+          )}
+
         </div>
-      ) : (
-        <button onClick={onUploadCv} disabled={uploadPending} style={{ width: "100%", padding: "11px", background: "linear-gradient(135deg, #EE813D, #d4691f)", border: "none", borderRadius: 12, color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "'DM Sans',sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, boxShadow: "0 4px 14px rgba(238,129,61,0.3)", opacity: uploadPending ? 0.7 : 1 }}>
-          {uploadPending ? <Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} /> : <Upload size={14} />}
-          {uploadPending ? copy.uploading : copy.upload}
-        </button>
-      )}
-    </div>
+      </div>
+    </>
   );
 }

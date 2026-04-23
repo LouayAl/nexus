@@ -119,13 +119,21 @@ model Offre {
   id                 Int         @id @default(autoincrement())
   titre              String
   description        String
+
+  profil_recherche   String?     // NEW
+  langues            String[]    // NEW (Postgres supports arrays)
+
   type_contrat       String
   niveau_experience  String?
   localisation       String?
+
   salaire_min        Int?
   salaire_max        Int?
+  salaire_visible    Boolean     @default(true) // NEW
+
   statut             StatutOffre @default(EN_ATTENTE)
   entrepriseId       Int
+
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
 
