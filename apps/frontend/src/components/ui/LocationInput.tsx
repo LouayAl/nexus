@@ -1,3 +1,4 @@
+// frontend/src/components/ui/LocationInput.tsx
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";

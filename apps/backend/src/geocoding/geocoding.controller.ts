@@ -23,15 +23,16 @@ export class GeocodingController {
 
     const seen = new Set<string>();
     return (data.results as any[])
-      .map((d: any) => ({
+    .filter((d: any) => d.country && (d.city || d.formatted))
+    .map((d: any) => ({
         short: d.city
-          ? `${d.city}, ${d.country}`
-          : `${d.formatted.split(',')[0].trim()}, ${d.country}`,
-      }))
-      .filter(({ short }) => {
+        ? `${d.city}, ${d.country}`
+        : `${d.formatted.split(',')[0].trim()}, ${d.country}`,
+    }))
+    .filter(({ short }) => {
         if (seen.has(short)) return false;
         seen.add(short);
         return true;
-      });
+    });
   }
 }

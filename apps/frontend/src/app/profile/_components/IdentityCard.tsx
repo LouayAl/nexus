@@ -281,17 +281,22 @@ export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploa
           {/* ── Stats ── */}
           <div style={{ display: "flex", alignItems: "center", marginBottom: 20 }}>
             {[
-              [String(exps.length),   copy.experiences],
+              [String(exps.length), copy.experiences],
               [String(skills.length), copy.skills],
-              [String(langs.length),  copy.languages],
+              [String(langs.length), copy.languages],
             ].map(([value, label], i, arr) => (
-              < >
-                <div key={label} style={{ flex: 1, textAlign: "center", padding: "0 6px" }}>
-                  <div className="ic-stat-val" style={{ fontSize: isMobile ? 18 : 20 }}>{value}</div>
+              <div key={label} style={{ display: "flex", alignItems: "center", flex: 1 }}>
+                <div style={{ flex: 1, textAlign: "center", padding: "0 6px" }}>
+                  <div className="ic-stat-val" style={{ fontSize: isMobile ? 18 : 20 }}>
+                    {value}
+                  </div>
                   <div className="ic-stat-lbl">{label}</div>
                 </div>
-                {i < arr.length - 1 && <div className="ic-stat-rule" key={`d${i}`} />}
-              </>
+
+                {i < arr.length - 1 && (
+                  <div key={`divider-${i}`} className="ic-stat-rule" />
+                )}
+              </div>
             ))}
           </div>
 
