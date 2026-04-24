@@ -260,4 +260,17 @@ export class OffresService {
       include: this.includeFields(),
     });
   }
+
+  async findByEntrepriseId(entrepriseId: number) {
+    return this.prisma.offre.findMany({
+      where: { entrepriseId },
+      orderBy: { createdAt: 'desc' },
+      include: this.includeFields(),
+    });
+  }
+
+  async adminRemove(id: number) {
+    await this.prisma.offre.delete({ where: { id } });
+    return { message: 'Offre supprimée' };
+  }
 }

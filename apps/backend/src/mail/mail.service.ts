@@ -1,3 +1,4 @@
+// backend/src/mail/mail.service.ts
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
@@ -100,4 +101,29 @@ export class MailService {
       `,
     });
   }
+  async sendEntrepriseWelcome(to: string, nom: string, dashboardUrl: string) {
+  await this.transporter.sendMail({
+    from: process.env.MAIL_FROM,
+    to,
+    subject: 'Bienvenue sur Nexus — Espace Recruteur',
+    html: `
+      <div style="font-family:'DM Sans',Arial,sans-serif;max-width:620px;margin:0 auto;padding:32px 24px;background:#FAFAF8;border-radius:16px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#EE813D,#2284C0);display:inline-flex;align-items:center;justify-content:center;">
+            <span style="color:white;font-size:22px;font-weight:900;">N</span>
+          </div>
+          <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">nexus</h1>
+        </div>
+        <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue ${nom}</h2>
+        <p style="color:#5A7A96;font-size:14px;line-height:1.7;margin-bottom:10px;">
+          Votre espace recruteur est prêt. Vous pouvez compléter le profil de votre entreprise, publier des offres d'emploi et gérer vos candidatures.
+        </p>
+        <a href="${dashboardUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#EE813D,#d4691f);color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;">
+          Accéder à mon espace recruteur →
+        </a>
+        <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · Nexus Recrutement</p>
+      </div>
+    `,
+  });
+}
 }

@@ -42,7 +42,7 @@ export class AuthService {
       },
     });
 
-    await this.sendWelcomeEmail(user.email, dto.prenom || dto.nom || 'candidat');
+    await this.sendWelcomeEmail(user.email, dto.prenom || dto.nom || 'candidat', dto.role);
     return this.signToken(user.id, user.email, user.role);
   }
 
@@ -99,7 +99,7 @@ export class AuthService {
         include: { candidat: true },
       });
 
-      await this.sendWelcomeEmail(data.email, `${data.prenom} ${data.nom}`.trim() || 'candidat');
+      await this.sendWelcomeEmail(data.email, `${data.prenom} ${data.nom}`.trim() || 'candidat', 'CANDIDAT');
     } else if (user.candidat && data.avatarUrl && !user.candidat.avatarUrl) {
       user = await this.prisma.utilisateur.update({
         where: { id: user.id },
@@ -145,11 +145,15 @@ export class AuthService {
     };
   }
 
-  private async sendWelcomeEmail(email: string, nom: string) {
-    const profileUrl = `${process.env.FRONTEND_URL}/profile`;
-
+  private async sendWelcomeEmail(email: string, nom: string, role: string) {
     try {
-      await this.mailService.sendCandidateWelcome(email, nom, profileUrl);
+      if (role === 'ENTREPRISE') {
+        const dashboardUrl = `${process.env.FRONTEND_URL}/company/dashboard`;
+        await this.mailService.sendEntrepriseWelcome(email, nom, dashboardUrl);
+      } else {
+        const profileUrl = `${process.env.FRONTEND_URL}/profile`;
+        await this.mailService.sendCandidateWelcome(email, nom, profileUrl);
+      }
     } catch (error) {
       console.error('Failed to send welcome email:', error);
     }

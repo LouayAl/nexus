@@ -189,6 +189,12 @@ export const adminApi = {
 
   upsertCompetence: (nom: string) =>
     api.post<{ id: number; nom: string }>('/candidats/admin/competences', { nom }),
+  getOffresByEntreprise: (entrepriseId: number) =>
+    api.get<Offre[]>(`/offres/admin/entreprise/${entrepriseId}`),
+  updateOffreStatut: (id: number, statut: string) =>
+    api.patch(`/offres/${id}/statut`, { statut }),
+  deleteOffre: (id: number) =>
+    api.delete(`/offres/admin/${id}`),
 };
 
 export interface CandidatAdmin {
