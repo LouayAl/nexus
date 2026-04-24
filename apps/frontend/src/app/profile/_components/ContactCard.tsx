@@ -45,7 +45,7 @@ export function ContactCard({ profile, email, onEdit, onChangePw, language }: Pr
         .cc-card {
           position: relative;
           border-radius: 20px;
-          background: linear-gradient(175deg, #237bb1 0%, #237bb1 35%, #227db6 68%, #216f9f 100%);
+          background: linear-gradient(175deg, #237bb1 0%, #237bb1 35%, #216f9f 60%, #216f9f 100%);
           border: 1px solid rgba(255,255,255,0.08);
           box-shadow:
             0 1px 0 0 rgba(255,255,255,0.06) inset,

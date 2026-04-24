@@ -77,7 +77,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
         }}
       >
         <Link
-          href="/profile"
+          href={user?.role === "ADMIN" ? "/admin" : "/profile"}
           style={{
             textDecoration: "none",
             display: "flex",
@@ -123,7 +123,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
                   <div style={{ fontSize: 13, fontWeight: 600, color: "#0D2137", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email}</div>
                   <div style={{ fontSize: 11, color: "#5A7A96", marginTop: 2 }}>{copy.candidate}</div>
                 </div>
-                <Link href="/profile" onClick={() => setUserOpen(false)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: 13, fontWeight: 500, color: "#0D2137", textDecoration: "none", borderBottom: "1px solid rgba(16,64,107,0.05)" }}>
+                <Link href={user?.role === "ADMIN" ? "/admin" : "/profile"} onClick={() => setUserOpen(false)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 16px", fontSize: 13, fontWeight: 500, color: "#0D2137", textDecoration: "none", borderBottom: "1px solid rgba(16,64,107,0.05)" }}>
                   <User size={13} color="#5A7A96" /> {copy.profile}
                 </Link>
                 <button onClick={() => { logout(); setUserOpen(false); }} style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "12px 16px", fontSize: 13, fontWeight: 500, color: "#D64045", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}>
@@ -158,7 +158,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
             </div>
 
             <div style={{ borderTop: "1px solid rgba(16,64,107,0.07)", paddingTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
-              <Link href="/profile" style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 500, color: "#0D2137", textDecoration: "none" }}>
+              <Link href={user?.role === "ADMIN" ? "/admin" : "/profile"} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 500, color: "#0D2137", textDecoration: "none" }}>
                 <User size={15} color="#5A7A96" /> {copy.profile}
               </Link>
               <button onClick={() => { logout(); setMobileOpen(false); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 12, fontSize: 14, fontWeight: 500, color: "#D64045", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans',sans-serif", width: "100%", textAlign: "left" }}>

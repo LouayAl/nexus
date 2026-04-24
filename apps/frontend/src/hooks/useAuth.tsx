@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await authApi.register(payload);
     const user = await assertCandidate(data.user);
     setState({ user, loading: false });
-    router.push("/profile");
+    router.push(user.role === "ADMIN" ? "/admin" : "/profile");
   }, [assertCandidate, router]);
 
   const logout = useCallback(async () => {
