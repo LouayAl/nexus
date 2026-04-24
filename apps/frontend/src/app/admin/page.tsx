@@ -1,6 +1,7 @@
+// frontend/src/app/admin/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Shield, Clock, Building2, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { type EntrepriseAdmin } from "@/lib/api";
@@ -13,6 +14,9 @@ import { EntrepriseDetailModal }  from "./components/EntrepriseDetailModal";
 import { CreateCandidatModal }    from "./components/CreateCandidatModal";
 import { CreateEntrepriseModal }  from "./components/CreateEntrepriseModal";
 import { useAdminPending, useAdminEntreprises, useAdminCandidats } from "./_hooks/useAdminData";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
 
 type AdminTab = "offers" | "entreprises" | "candidats";
 
@@ -26,6 +30,27 @@ export default function AdminPage() {
   const { data: pending     = [], isLoading: loadingOffers      } = useAdminPending();
   const { data: entreprises = [], isLoading: loadingEntreprises } = useAdminEntreprises(true);
   const { data: candidats   = [], isLoading: loadingCandidats   } = useAdminCandidats(true);
+
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    if (user.role !== "ADMIN") {
+      router.replace("/profile");
+      return;
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user || user.role !== "ADMIN") {
+    return null;
+  }
 
   const totalCandidatures = entreprises.reduce(
     (s, e) => s + e.offres.reduce((ss, o) => ss + o._count.candidatures, 0), 0,
@@ -42,6 +67,8 @@ export default function AdminPage() {
     { label:"+ Entreprise", bg:"linear-gradient(135deg,#EE813D,#d4691f)", shadow:"rgba(238,129,61,0.3)",  onClick:() => setShowCreateEntreprise(true) },
     { label:"+ Offre",      bg:"linear-gradient(135deg,#10406B,#2284C0)", shadow:"rgba(16,64,107,0.25)",  onClick:() => setShowCreateModal(true)      },
   ];
+
+
 
   return (
     <AppShell pageTitle="Administration">

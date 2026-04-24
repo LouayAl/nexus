@@ -1,4 +1,4 @@
-// frontend/src/hooks/useAuth.tsx last version that i need to fix
+// frontend/src/hooks/useAuth.tsx 
 "use client";
 
 import {
@@ -33,33 +33,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .catch(() => setState({ user: null, loading: false }));
   }, []);
 
-  const assertCandidate = useCallback(async (user: User) => {
-    if (user.role === "CANDIDAT" || user.role === "ADMIN") return user;
+  const assertValidUser = useCallback(async (user: User) => {
+    const allowedRoles = ["CANDIDAT", "ADMIN", "ENTREPRISE"];
 
-    await authApi.logout().catch(() => undefined);
-    throw new Error("candidate_only");
+    if (!allowedRoles.includes(user.role)) {
+      await authApi.logout().catch(() => undefined);
+      throw new Error("unauthorized_role");
+    }
+
+    return user;
   }, []);
 
   const login = useCallback(async (email: string, password: string, redirectTo?: string) => {
     const { data } = await authApi.login(email, password);
-    const user = await assertCandidate(data.user);
+
+    const user = await assertValidUser(data.user);
+
     setState({ user, loading: false });
 
+    // ONLY navigation logic here (not security)
     if (user.role === "ADMIN") {
       router.push("/admin");
       return;
     }
 
-    const dest = redirectTo && redirectTo.startsWith("/profile") ? redirectTo : "/profile";
-    router.push(dest);
-  }, [assertCandidate, router]);
+    if (user.role === "ENTREPRISE") {
+      router.push("/company/dashboard");
+      return;
+    }
+
+    router.push("/profile");
+  }, [assertValidUser, router]);
 
   const register = useCallback(async (payload: RegisterPayload) => {
     const { data } = await authApi.register(payload);
-    const user = await assertCandidate(data.user);
+
+    const user = await assertValidUser(data.user);
+
     setState({ user, loading: false });
-    router.push(user.role === "ADMIN" ? "/admin" : "/profile");
-  }, [assertCandidate, router]);
+
+    router.push(
+      user.role === "ADMIN"
+        ? "/admin"
+        : user.role === "ENTREPRISE"
+        ? "/company/dashboard"
+        : "/profile"
+    );
+  }, [assertValidUser, router]);
 
   const logout = useCallback(async () => {
     try {

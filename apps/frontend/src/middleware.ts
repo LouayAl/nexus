@@ -1,67 +1,74 @@
-// frontend/src/middleware.ts last version that i need to fix
+// frontend/src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
-const AUTH_COOKIE_NAME = process.env.AUTH_COOKIE_NAME ?? "nexus_session";
 const PUBLIC_ROUTES = ["/", "/auth/login", "/auth/register", "/auth/oauth-callback"];
 const AUTH_ONLY = ["/auth/login", "/auth/register"];
 
-function getRole(token: string): string | null {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET || "nexus_secret");
+
+async function getUserFromToken(token: string | undefined) {
+  if (!token) return null;
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.role ?? null;
+    const { payload } = await jwtVerify(token, secret);
+    return payload as { role: string };
   } catch {
     return null;
   }
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const token = req.cookies.get(AUTH_COOKIE_NAME)?.value;
-  const role = token ? getRole(token) : null;
+
+  const token = req.cookies.get("nexus_session")?.value;
+  const user = await getUserFromToken(token);
+  const role = user?.role ?? null;
 
   // Already logged in → redirect away from auth pages
-  if (AUTH_ONLY.some((route) => pathname.startsWith(route)) && role) {
-    const dest = role === "ADMIN" ? "/admin" : "/profile";
-    return NextResponse.redirect(new URL(dest, req.url));
-  }
-
-  // Root redirect
-  if (pathname === "/") {
+  if (role && AUTH_ONLY.some((route) => pathname.startsWith(route))) {
     if (role === "ADMIN") return NextResponse.redirect(new URL("/admin", req.url));
     if (role === "CANDIDAT") return NextResponse.redirect(new URL("/profile", req.url));
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
-
-  // Public routes — always allowed
-  if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
-    return NextResponse.next();
+    if (role === "ENTREPRISE") return NextResponse.redirect(new URL("/company/dashboard", req.url));
   }
 
   // Not logged in → send to login
-  if (!token || !role) {
-    const url = new URL("/auth/login", req.url);
-    url.searchParams.set("from", pathname);
-    return NextResponse.redirect(url);
+  if (!user && !PUBLIC_ROUTES.some(r => pathname.startsWith(r))) {
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  // ADMIN can only access /admin/*
-  if (role === "ADMIN") {
-    if (!pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/admin", req.url));
-    }
-    return NextResponse.next();
+  // ROOT redirect
+  if (pathname === "/") {
+    if (role === "ADMIN") return NextResponse.redirect(new URL("/admin", req.url));
+    if (role === "CANDIDAT") return NextResponse.redirect(new URL("/profile", req.url));
+    if (role === "ENTREPRISE") return NextResponse.redirect(new URL("/company/dashboard", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  // CANDIDAT can only access /profile/*
-  if (role === "CANDIDAT") {
-    if (!pathname.startsWith("/profile")) {
+  // ADMIN ONLY
+  if (pathname.startsWith("/admin")) {
+    if (role !== "ADMIN") {
       return NextResponse.redirect(new URL("/profile", req.url));
     }
-    return NextResponse.next();
   }
 
-  // Any other role (ENTREPRISE etc.) → kick to login
-  return NextResponse.redirect(new URL("/auth/login", req.url));
+  // CANDIDAT
+  if (pathname.startsWith("/profile")) {
+    if (role === "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
+    if (role !== "CANDIDAT" && role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+  }
+
+  // ENTREPRISE
+  if (pathname.startsWith("/company")) {
+    if (role !== "ENTREPRISE") {
+      return NextResponse.redirect(new URL("/auth/login", req.url));
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

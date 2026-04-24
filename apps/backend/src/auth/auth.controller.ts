@@ -1,3 +1,4 @@
+// backend/src/auth/auth.controller.ts
 import { BadRequestException, Body, Controller, Get, Patch, Post, Query, Request, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { Role } from '@prisma/client';
