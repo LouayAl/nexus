@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Modal } from "./Modal";
 import { adminApi, type EntrepriseAdmin, type Offre } from "@/lib/api";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export function EntrepriseDetailModal({
   entreprise,
@@ -53,7 +54,8 @@ export function EntrepriseDetailModal({
     EN_ATTENTE:  { color: "#EE813D", bg: "rgba(238,129,61,0.1)",  label: "En attente"  },
     FERMEE:      { color: "#D64045", bg: "rgba(214,64,69,0.1)",   label: "Fermée"      },
   };
-
+  const router = useRouter();
+  
   return (
     <Modal title={view === "profile" ? "Profil entreprise" : `Offres — ${entreprise.nom}`} onClose={onClose}>
 
