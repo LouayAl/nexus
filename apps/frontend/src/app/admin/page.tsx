@@ -135,16 +135,7 @@ export default function AdminPage() {
           <p style={{ color: "#5A7A96", fontSize: 15 }}>Sélectionnez une section ou créez un nouvel élément.</p>
           
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <LanguageToggle language={language} onChange={setLanguage} />
-          <div className="adm-action-btns">
-            {actionButtons.map(b => (
-              <button key={b.label} onClick={b.onClick} style={{ background: b.bg, boxShadow: `0 4px 16px ${b.shadow}` }}>
-                {b.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        
         {/* Desktop create buttons */}
         <div className="adm-action-btns">
           {actionButtons.map(b => (
