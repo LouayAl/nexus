@@ -193,7 +193,7 @@ export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploa
         .ic-btn-upload {
           width: 100%;
           padding: 12px;
-          background: linear-gradient(135deg, #c5a46d 0%, #dfc08a 100%);
+          background: linear-gradient(90deg, #ed823b, #f29d65);
           border: none;
           border-radius: 12px;
           color: #0f1f2d;
