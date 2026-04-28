@@ -8,6 +8,8 @@ import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
 import toast from "react-hot-toast";
 import { LocationInput } from "@/components/ui/LocationInput";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
@@ -74,7 +76,15 @@ export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
           <div>
             <label style={labelStyle}>Téléphone</label>
-            <input style={inputStyle} value={form.telephone} onChange={set("telephone")} placeholder="+212 6XX XXX XXX"/>
+            <PhoneInput
+              international
+              defaultCountry="MA"
+              value={form.telephone}
+              onChange={(value) =>
+                setForm(f => ({ ...f, telephone: value || "" }))
+              }
+              style={inputStyle}
+            />
           </div>
           <div>
             <label style={labelStyle}>Localisation</label>

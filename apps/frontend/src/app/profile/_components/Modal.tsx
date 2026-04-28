@@ -12,15 +12,15 @@ export function Modal({
   return createPortal(
     <>
       <div onClick={onClose} style={{ position:"fixed", inset:0, zIndex:40, background:"rgba(13,33,55,0.3)", backdropFilter:"blur(2px)" }}/>
-      <div style={{ position:"fixed", inset:0, zIndex:50, display:"flex", alignItems:"center", justifyContent:"center", padding:24, pointerEvents:"none" }}>
-        <div style={{ background:"white", borderRadius:20, width:"100%", maxWidth:480, boxShadow:"0 24px 80px rgba(16,64,107,0.2)", pointerEvents:"all", overflow:"hidden" }}>
+      <div style={{ position:"fixed", inset:0, zIndex:50, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px 12px", pointerEvents:"none" }}>
+        <div style={{ background:"white", borderRadius:20, width:"100%", maxWidth:480, boxShadow:"0 24px 80px rgba(16,64,107,0.2)", pointerEvents:"all", overflow:"hidden", maxHeight:"90vh", display:"flex", flexDirection:"column" }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"20px 24px", borderBottom:"1px solid rgba(16,64,107,0.07)" }}>
             <h3 className="font-display" style={{ fontSize:18, fontWeight:800, color:"#0D2137" }}>{title}</h3>
             <button onClick={onClose} style={{ width:32, height:32, borderRadius:"50%", border:"none", background:"rgba(16,64,107,0.05)", display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer" }}>
               <X size={14} color="#5A7A96"/>
             </button>
           </div>
-          <div style={{ padding:"24px" }}>{children}</div>
+          <div style={{ padding:"24px", overflowY:"auto", flex:1 }}>{children}</div>
         </div>
       </div>
     </>,

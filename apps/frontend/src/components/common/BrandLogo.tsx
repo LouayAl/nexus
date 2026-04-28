@@ -7,7 +7,7 @@ const BRAND_LOGO_SRC = "/brand/Logo.webp";
 
 export function BrandLogo({
   href,
-  height = 34,
+  height = 40,
   dark = false,
 }: {
   href?: string;

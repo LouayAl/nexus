@@ -85,7 +85,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
             flexShrink: 0,
           }}
         >
-          <BrandLogo height={36} />
+          <BrandLogo height={40} />
         </Link>
 
         <div style={{ flex: 1, minWidth: 0, padding: "0 16px" }} className="hide-mobile">

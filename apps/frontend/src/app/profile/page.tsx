@@ -104,7 +104,7 @@ export default function ProfilePage() {
 
   return (
     <AppShell pageTitle={copy.title}>
-      {modal === "editProfile" && <EditProfileModal profile={profile} onClose={() => setModal(null)} />}
+      {modal === "editProfile" && <EditProfileModal profile={profile} onClose={() => setModal(null)} language={language}/>}
       {modal === "addSkill"    && <AddSkillModal    onClose={() => setModal(null)} language={language}/>}
       {modal === "addExp"      && <AddExperienceModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}
       {modal === "addForm"     && <AddFormationModal  onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}

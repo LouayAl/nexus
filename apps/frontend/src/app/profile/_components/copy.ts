@@ -104,6 +104,18 @@ export const PROFILE_COPY = {
       successEdit:  "Modifié",
       errorMsg:     "Erreur",
     },
+    editProfileModal: {
+      title: "Modifier le profil",
+      firstName: "Prénom",
+      lastName: "Nom",
+      titleLabel: "Titre professionnel",
+      bio: "Bio",
+      phone: "Téléphone",
+      location: "Localisation",
+      save: "Enregistrer",
+      success: "Profil mis à jour",
+      error: "Erreur lors de la mise à jour",
+    },
   },
 
   en: {
@@ -205,6 +217,18 @@ export const PROFILE_COPY = {
       successAdd:   "Education added",
       successEdit:  "Saved",
       errorMsg:     "Error",
+    },
+    editProfileModal: {
+      title: "Edit profile",
+      firstName: "First name",
+      lastName: "Last name",
+      titleLabel: "Professional title",
+      bio: "Bio",
+      phone: "Phone",
+      location: "Location",
+      save: "Save",
+      success: "Profile updated",
+      error: "Update failed",
     },
   },
 } as const;
