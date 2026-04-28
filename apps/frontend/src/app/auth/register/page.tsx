@@ -14,8 +14,8 @@ import { useAuth } from "@/hooks/useAuth";
 const COPY = {
   fr: {
     badge: "Inscription",
-    title: "Créer un compte candidat",
-    subtitle: "Rejoignez Nexus et complétez votre profil candidat.",
+    title: "Créer votre compte candidat(e)",
+    subtitle: "Rejoignez S3M et complétez votre profil candidat.",
     firstName: "Prénom",
     lastName: "Nom",
     email: "Adresse email",
@@ -30,7 +30,8 @@ const COPY = {
     heroTitleA: "Préparez votre",
     heroTitleB: "candidature",
     heroTitleC: "simplement.",
-    heroText: "Créez votre espace, ajoutez vos informations, puis téléversez votre CV pour finaliser votre profil.",
+    heroText1: "Des opportunités sélectionnées, des outils intelligents, des entreprises leaders.",
+    heroText2: "Créez votre espace, complétez votre profil et téléversez votre CV en quelques étapes.",
     feature1: "Inscription rapide",
     feature2: "Profil candidat complet",
     feature3: "CV prêt à envoyer",
@@ -39,7 +40,7 @@ const COPY = {
   en: {
     badge: "Sign up",
     title: "Create a candidate account",
-    subtitle: "Join Nexus and complete your candidate profile.",
+    subtitle: "Join S3M and complete your candidate profile.",
     firstName: "First name",
     lastName: "Last name",
     email: "Email address",
@@ -54,7 +55,8 @@ const COPY = {
     heroTitleA: "Prepare your",
     heroTitleB: "application",
     heroTitleC: "with ease.",
-    heroText: "Create your space, add your information, then upload your resume to complete your profile.",
+    heroText1: "Carefully selected opportunities, powerful tools, industry-leading companies.",
+    heroText2: "Create your space, refine your profile, and upload your CV effortlessly.",
     feature1: "Fast registration",
     feature2: "Complete candidate profile",
     feature3: "Resume ready to upload",
@@ -174,7 +176,10 @@ export default function RegisterPage() {
               {copy.heroTitleC}
             </h1>
             <p style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 400, marginBottom: 48 }}>
-              {copy.heroText}
+              {copy.heroText1}
+            </p>
+            <p style={{ fontSize: 16, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 400, marginBottom: 48 }}>
+              {copy.heroText2}
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

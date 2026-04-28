@@ -16,7 +16,7 @@ const COPY = {
   fr: {
     badge: "Bienvenue",
     title: "Bon retour",
-    subtitle: "Accédez à votre espace candidat Nexus.",
+    subtitle: "Accédez à votre espace candidat S3M.",
     email: "Adresse email",
     password: "Mot de passe",
     forgot: "Mot de passe oublié ?",
@@ -27,10 +27,11 @@ const COPY = {
     or: "ou",
     wrongCreds: "Email ou mot de passe incorrect.",
     heroEyebrow: "Espace candidat",
-    heroTitleA: "Votre",
-    heroTitleB: "profil",
+    heroTitleA: "L’excellence du",
+    heroTitleB: "recrutement",
     heroTitleC: "commence ici.",
-    heroText: "Connectez-vous pour compléter votre profil, ajouter vos informations, et déposer votre CV.",
+    heroText1: "Des opportunités sélectionnées, des outils intelligents, des entreprises leaders.",
+    heroText2: "Créez votre espace, complétez votre profil et téléversez votre CV en quelques étapes.",
     feature1: "Complétez votre profil candidat",
     feature2: "Ajoutez vos expériences et compétences",
     feature3: "Téléversez votre CV",
@@ -38,7 +39,7 @@ const COPY = {
   en: {
     badge: "Welcome",
     title: "Welcome back",
-    subtitle: "Access your Nexus candidate space.",
+    subtitle: "Access your S3M candidate space.",
     email: "Email address",
     password: "Password",
     forgot: "Forgot password?",
@@ -49,10 +50,11 @@ const COPY = {
     or: "or",
     wrongCreds: "Incorrect email or password.",
     heroEyebrow: "Candidate space",
-    heroTitleA: "Your",
-    heroTitleB: "profile",
-    heroTitleC: "starts here.",
-    heroText: "Sign in to complete your profile, add your information, and upload your resume.",
+    heroTitleA: "Redefining",
+    heroTitleB: "recruitment",
+    heroTitleC: "for what’s next.",
+    heroText1: "Carefully selected opportunities, powerful tools, industry-leading companies.",
+    heroText2: "Create your space, refine your profile, and upload your CV effortlessly.",
     feature1: "Complete your candidate profile",
     feature2: "Add your experience and skills",
     feature3: "Upload your resume",
@@ -163,8 +165,11 @@ function LoginForm() {
               <span style={{ color: "transparent", backgroundImage: "linear-gradient(90deg, #EE813D, #F5A761)", WebkitBackgroundClip: "text", backgroundClip: "text" }}>{copy.heroTitleB}</span><br />
               {copy.heroTitleC}
             </h1>
-            <p style={{ fontSize: 17, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 420, marginBottom: 48 }}>
-              {copy.heroText}
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 420, marginBottom: 20 }}>
+              {copy.heroText1}
+            </p>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.6)", lineHeight: 1.75, maxWidth: 420, marginBottom: 48 }}>
+              {copy.heroText2}
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {[copy.feature1, copy.feature2, copy.feature3].map((text, i) => (
@@ -195,7 +200,7 @@ function LoginForm() {
           <div style={{ marginBottom: 24 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(238,129,61,0.08)", borderRadius: 99, padding: "4px 12px", marginBottom: 14, border: "1px solid rgba(238,129,61,0.15)" }}>
               <Sparkles size={12} color="#EE813D" />
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#EE813D", letterSpacing: "0.06em", textTransform: "uppercase" }}>{copy.badge}</span>
+              <span style={{ fontSize: 17, fontWeight: 800, color: "#EE813D", letterSpacing: "0.09em", textTransform: "uppercase" }}>{copy.badge}</span>
             </div>
             <h2 className="font-display" style={{ fontSize: "clamp(22px,4vw,28px)", fontWeight: 900, color: "#0D2137", marginBottom: 4 }}>{copy.title}</h2>
             <p style={{ fontSize: 14, color: "#5A7A96" }}>{copy.subtitle}</p>

@@ -94,7 +94,7 @@ export function CreateEntrepriseModal({ onClose }: Props) {
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]:e.target.value }));
 
-  const credentialsText = `Identifiants Nexus — ${form.nomEntreprise}\n\nEmail : ${form.email}\nMot de passe temporaire : ${form.password}\n\nConnectez-vous sur : ${process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3000"}/auth/login\n\n⚠️ Changez votre mot de passe dès votre première connexion.`;
+  const credentialsText = `Identifiants S3M — ${form.nomEntreprise}\n\nEmail : ${form.email}\nMot de passe temporaire : ${form.password}\n\nConnectez-vous sur : ${process.env.NEXT_PUBLIC_API_URL?.replace("/api","") ?? "http://localhost:3000"}/auth/login\n\n⚠️ Changez votre mot de passe dès votre première connexion.`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(credentialsText);
@@ -140,7 +140,7 @@ export function CreateEntrepriseModal({ onClose }: Props) {
           <Field label="Mot de passe temporaire">
             <div style={{ position:"relative" }}>
               <Lock size={13} color="#B0C4D4" style={{ position:"absolute", left:12, top:"50%", transform:"translateY(-50%)", pointerEvents:"none" }}/>
-              <input type="text" style={{ ...inputStyle, paddingLeft:34 }} value={form.password} onChange={set("password")} placeholder="Ex: Nexus2026!" required minLength={6}/>
+              <input type="text" style={{ ...inputStyle, paddingLeft:34 }} value={form.password} onChange={set("password")} placeholder="Ex: S3M2026!" required minLength={6}/>
             </div>
             <div style={{ fontSize:11, color:"#B0C4D4", marginTop:5 }}>Mot de passe mémorable à communiquer au recruteur</div>
           </Field>

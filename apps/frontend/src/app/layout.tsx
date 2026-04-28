@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 
 export const metadata: Metadata = {
-  title: "NEXUS — Recruitment Platform",
+  title: "S3M — Recruitment Platform",
   description: "The future of recruitment.",
 };
 
