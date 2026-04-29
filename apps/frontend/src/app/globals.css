@@ -279,3 +279,257 @@ body {
 .section-title {
   font-size: clamp(20px, 3vw, 32px);
 }
+
+/* Experience date picker */
+.experience-date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.experience-date-picker,
+.experience-date-picker .react-datepicker-wrapper,
+.experience-date-picker .react-datepicker__input-container {
+  width: 100%;
+  display: block;
+}
+
+.experience-date-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.experience-date-combo {
+  display: grid;
+  grid-template-columns: minmax(92px, 1fr) auto 56px;
+  align-items: center;
+  width: 100%;
+  min-height: 41px;
+  padding: 4px 34px 4px 12px;
+  border: 1.5px solid rgba(16,64,107,0.14);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.88), rgba(250,250,248,0.96)),
+    #FAFAF8;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(16,64,107,0.04);
+  box-sizing: border-box;
+  color: #0D2137;
+  cursor: text;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.experience-date-combo:hover {
+  border-color: rgba(34,132,192,0.32);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 6px 18px rgba(16,64,107,0.08);
+}
+
+.experience-date-input-wrap:focus-within .experience-date-combo {
+  background: #FFFFFF;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(34,132,192,0.11), 0 8px 24px rgba(16,64,107,0.1);
+}
+
+.experience-date-month-input,
+.experience-date-year-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.experience-date-month-shell {
+  position: relative;
+  min-width: 0;
+}
+
+.experience-date-month-input {
+  position: relative;
+  z-index: 1;
+  padding: 7px 0;
+}
+
+.experience-date-month-ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: rgba(90,122,150,0.42);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.experience-date-month-ghost-hidden {
+  color: transparent;
+}
+
+.experience-date-year-input {
+  padding: 7px 4px;
+  border-radius: 8px;
+  text-align: center;
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.experience-date-year-input:focus {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(16,64,107,0.22);
+}
+
+.experience-date-separator {
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 900;
+  padding: 0 5px;
+  user-select: none;
+}
+
+.experience-date-month-input::placeholder,
+.experience-date-year-input::placeholder {
+  color: rgba(90,122,150,0.72);
+  font-weight: 600;
+}
+
+.experience-date-year-input:focus::placeholder {
+  color: rgba(255,255,255,0.72);
+}
+
+.experience-date-input-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--blue);
+  pointer-events: none;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.experience-date-input-wrap:focus-within .experience-date-input-icon {
+  color: var(--orange);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.experience-date-calendar.react-datepicker {
+  overflow: hidden;
+  border: 1px solid rgba(16,64,107,0.12);
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 18px 45px rgba(13,33,55,0.16);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.experience-date-calendar .react-datepicker__triangle {
+  display: none;
+}
+
+.experience-date-calendar .react-datepicker__header {
+  border: 0;
+  border-bottom: 1px solid rgba(16,64,107,0.08);
+  background:
+    linear-gradient(135deg, rgba(34,132,192,0.1), rgba(238,129,61,0.1)),
+    #FFFFFF;
+  padding: 14px 12px 10px;
+}
+
+.experience-date-calendar .react-datepicker__current-month {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 76px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(16,64,107,0.22);
+}
+
+.experience-date-calendar .react-datepicker__navigation {
+  top: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.experience-date-calendar .react-datepicker__navigation:hover {
+  background: rgba(34,132,192,0.1);
+  transform: translateY(-1px);
+}
+
+.experience-date-calendar .react-datepicker__navigation-icon::before {
+  border-color: var(--navy);
+  border-width: 2px 2px 0 0;
+  top: 9px;
+}
+
+.experience-date-calendar .react-datepicker__month-container {
+  width: 272px;
+}
+
+.experience-date-calendar .react-datepicker__month {
+  margin: 10px;
+}
+
+.experience-date-calendar .react-datepicker__month-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.experience-date-calendar .react-datepicker__month-text {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 9px 6px;
+  border-radius: 10px;
+  color: var(--text-sub);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.experience-date-calendar .react-datepicker__month-text:hover {
+  background: rgba(34,132,192,0.1);
+  color: var(--navy);
+  transform: translateY(-1px);
+}
+
+.experience-date-calendar .react-datepicker__month-text--keyboard-selected,
+.experience-date-calendar .react-datepicker__month-text--selected {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #FFFFFF;
+  box-shadow: 0 8px 18px rgba(16,64,107,0.22);
+}
+
+.experience-date-calendar .react-datepicker__month-text--disabled {
+  background: transparent;
+  color: rgba(176,196,212,0.72);
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .experience-date-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-date-calendar .react-datepicker__month-container {
+    width: min(272px, calc(100vw - 32px));
+  }
+}
