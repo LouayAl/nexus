@@ -25,16 +25,14 @@ export class MailService {
     await this.transporter.sendMail({
       from:    process.env.MAIL_FROM,
       to,
-      subject: `Vos identifiants Nexus`,
+      subject: `Vos identifiants S3M`,
       html: `
         <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#FAFAF8;border-radius:16px;">
           <div style="text-align:center;margin-bottom:24px;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#EE813D,#2284C0);display:inline-flex;align-items:center;justify-content:center;">
-              <span style="color:white;font-size:22px;font-weight:900;">N</span>
-            </div>
-            <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">nexus</h1>
+              <img src="https://recrutement.ifmia.ma/brand/Logo.webp" alt="S3M" style="height:32px;width:auto;" />
+            <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">S3M</h1>
           </div>
-          <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue sur Nexus !</h2>
+          <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue sur S3M !</h2>
           <p style="color:#5A7A96;font-size:14px;line-height:1.6;margin-bottom:24px;">
             Votre compte ${roleLabel} a été créé. Voici vos identifiants de connexion :
           </p>
@@ -52,7 +50,7 @@ export class MailService {
           <a href="${data.loginUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#10406B,#2284C0);color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;">
             Se connecter →
           </a>
-          <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · Nexus Recrutement</p>
+          <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · S3M Recrutement</p>
         </div>
       `,
     });
@@ -62,11 +60,11 @@ export class MailService {
     await this.transporter.sendMail({
       from:    process.env.MAIL_FROM,
       to,
-      subject: 'Votre mot de passe Nexus a été modifié',
+      subject: 'Votre mot de passe S3M a été modifié',
       html: `
         <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;">
           <h2 style="color:#10406B;">Mot de passe modifié</h2>
-          <p style="color:#5A7A96;">Bonjour ${nom}, votre mot de passe Nexus a été modifié avec succès.</p>
+          <p style="color:#5A7A96;">Bonjour ${nom}, votre mot de passe S3M a été modifié avec succès.</p>
           <p style="color:#5A7A96;">Si vous n'êtes pas à l'origine de cette modification, contactez-nous immédiatement.</p>
         </div>
       `,
@@ -77,14 +75,12 @@ export class MailService {
     await this.transporter.sendMail({
       from: process.env.MAIL_FROM,
       to,
-      subject: 'Bienvenue sur Nexus / Welcome to Nexus',
+      subject: 'Bienvenue sur S3M / Welcome to S3M',
       html: `
         <div style="font-family:'DM Sans',Arial,sans-serif;max-width:620px;margin:0 auto;padding:32px 24px;background:#FAFAF8;border-radius:16px;">
           <div style="text-align:center;margin-bottom:24px;">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#EE813D,#2284C0);display:inline-flex;align-items:center;justify-content:center;">
-              <span style="color:white;font-size:22px;font-weight:900;">N</span>
-            </div>
-            <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">nexus</h1>
+              <img src="https://recrutement.ifmia.ma/brand/Logo.webp" alt="S3M" style="height:42px;width:auto;" />
+            <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">S3M</h1>
           </div>
           <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue ${nom}</h2>
           <p style="color:#5A7A96;font-size:14px;line-height:1.7;margin-bottom:10px;">
@@ -96,7 +92,7 @@ export class MailService {
           <a href="${profileUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#10406B,#2284C0);color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;">
             Accéder à mon profil / Open my profile
           </a>
-          <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · Nexus Recrutement</p>
+          <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · S3M Recrutement</p>
         </div>
       `,
     });
@@ -105,14 +101,12 @@ export class MailService {
   await this.transporter.sendMail({
     from: process.env.MAIL_FROM,
     to,
-    subject: 'Bienvenue sur Nexus — Espace Recruteur',
+    subject: 'Bienvenue sur S3M — Espace Recruteur',
     html: `
       <div style="font-family:'DM Sans',Arial,sans-serif;max-width:620px;margin:0 auto;padding:32px 24px;background:#FAFAF8;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
-          <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#EE813D,#2284C0);display:inline-flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:22px;font-weight:900;">N</span>
-          </div>
-          <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">nexus</h1>
+            <img src="https://recrutement.ifmia.ma/brand/Logo.webp" alt="S3M" style="height:42px;width:auto;" />
+          <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">S3M</h1>
         </div>
         <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue ${nom}</h2>
         <p style="color:#5A7A96;font-size:14px;line-height:1.7;margin-bottom:10px;">
@@ -121,7 +115,7 @@ export class MailService {
         <a href="${dashboardUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#EE813D,#d4691f);color:white;padding:14px;border-radius:12px;text-decoration:none;font-weight:700;font-size:14px;">
           Accéder à mon espace recruteur →
         </a>
-        <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · Nexus Recrutement</p>
+        <p style="text-align:center;font-size:11px;color:#B0C4D4;margin-top:24px;">Powered by S3M · S3M Recrutement</p>
       </div>
     `,
   });
