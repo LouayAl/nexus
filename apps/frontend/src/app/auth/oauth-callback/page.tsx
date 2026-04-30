@@ -3,6 +3,7 @@
 import { Suspense, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api";
+import { BrandLogo } from "@/components/common/BrandLogo";
 
 function OAuthHandler() {
   const router = useRouter();
@@ -34,17 +35,7 @@ function OAuthHandler() {
       gap: 16,
       background: "#FAFAF8",
     }}>
-      <div style={{
-        width: 44,
-        height: 44,
-        borderRadius: 12,
-        background: "linear-gradient(135deg, #EE813D, #2284C0)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-        <span className="font-display" style={{ color: "white", fontSize: 20, fontWeight: 900 }}>N</span>
-      </div>
+        <BrandLogo height={42} dark />
       <div style={{ color: "#5A7A96", fontSize: 14 }}>Connexion en cours...</div>
     </div>
   );
