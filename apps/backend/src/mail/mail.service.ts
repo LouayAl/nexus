@@ -29,7 +29,7 @@ export class MailService {
       html: `
         <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#FAFAF8;border-radius:16px;">
           <div style="text-align:center;margin-bottom:24px;">
-              <img src="https://recrutement.ifmia.ma/brand/Logo.webp" alt="S3M" style="height:32px;width:auto;" />
+              <img src="https://recrutement.ifmia.ma/brand/Logo.webp" alt="S3M" style ="height:32px;width:auto;" />
             <h1 style="font-size:22px;font-weight:900;color:#10406B;margin:12px 0 4px;">S3M</h1>
           </div>
           <h2 style="font-size:18px;font-weight:700;color:#0D2137;margin-bottom:8px;">Bienvenue sur S3M !</h2>

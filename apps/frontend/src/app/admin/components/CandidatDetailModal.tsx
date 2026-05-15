@@ -129,10 +129,10 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
           {/* ── Stats ── */}
           <div className="cdm-stats">
             {[
-              { label:"Candidatures", value:candidat.candidatures?.length ?? 0, color:"#2284C0" },
-              { label:"Compétences",  value:candidat.competences?.length  ?? 0, color:"#1A9E6F" },
-              { label:"Expériences",  value:candidat.experiences?.length  ?? 0, color:"#EE813D" },
               { label:"Formations",   value:candidat.formations?.length   ?? 0, color:"#7C3AED" },
+              { label:"Expériences",  value:candidat.experiences?.length  ?? 0, color:"#EE813D" },
+              { label:"Compétences",  value:candidat.competences?.length  ?? 0, color:"#1A9E6F" },
+              { label:"Candidatures", value:candidat.candidatures?.length ?? 0, color:"#2284C0" },
             ].map(s => (
               <div key={s.label} style={{ background:"#F7F8FA", borderRadius:10, padding:"12px 8px", textAlign:"center", border:"1px solid rgba(16,64,107,0.07)" }}>
                 <div style={{ fontSize:"clamp(18px,4vw,22px)", fontWeight:900, color:s.color, fontFamily:"'Fraunces',serif" }}>{s.value}</div>
@@ -149,18 +149,18 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
             </div>
           )}
 
-          {/* ── Compétences ── */}
-          {(candidat.competences?.length ?? 0) > 0 && (
+          {/* ── Formations ── */}
+          {(candidat.formations?.length ?? 0) > 0 && (
             <div>
-              <SectionTitle icon={<Star size={12}/>}>Compétences</SectionTitle>
+              <SectionTitle icon={<GraduationCap size={12}/>}>Formations</SectionTitle>
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                {candidat.competences!.map(c => (
-                  <div key={c.competenceId} className="cdm-skill-row">
-                    <div className="cdm-skill-label">{c.competence.nom}</div>
-                    <div style={{ flex:1, height:6, borderRadius:99, background:"rgba(16,64,107,0.08)", overflow:"hidden" }}>
-                      <div style={{ height:"100%", borderRadius:99, width:`${c.niveau}%`, background:"linear-gradient(90deg,#10406B,#2284C0)" }}/>
+                {candidat.formations!.map(f => (
+                  <div key={f.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, padding:"10px 14px", background:"#F7F8FA", borderRadius:10, border:"1px solid rgba(16,64,107,0.06)" }}>
+                    <div style={{ minWidth:0 }}>
+                      <div style={{ fontWeight:600, fontSize:13, color:"#0D2137", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.diplome}</div>
+                      <div style={{ fontSize:12, color:"#5A7A96" }}>{f.ecole}</div>
                     </div>
-                    <div style={{ fontSize:11, color:"#5A7A96", width:30, textAlign:"right", flexShrink:0 }}>{c.niveau}%</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#2284C0", flexShrink:0 }}>{f.annee}</div>
                   </div>
                 ))}
               </div>
@@ -195,24 +195,24 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
             </div>
           )}
 
-          {/* ── Formations ── */}
-          {(candidat.formations?.length ?? 0) > 0 && (
+          {/* ── Compétences ── */}
+          {(candidat.competences?.length ?? 0) > 0 && (
             <div>
-              <SectionTitle icon={<GraduationCap size={12}/>}>Formations</SectionTitle>
+              <SectionTitle icon={<Star size={12}/>}>Compétences</SectionTitle>
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                {candidat.formations!.map(f => (
-                  <div key={f.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:10, padding:"10px 14px", background:"#F7F8FA", borderRadius:10, border:"1px solid rgba(16,64,107,0.06)" }}>
-                    <div style={{ minWidth:0 }}>
-                      <div style={{ fontWeight:600, fontSize:13, color:"#0D2137", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{f.diplome}</div>
-                      <div style={{ fontSize:12, color:"#5A7A96" }}>{f.ecole}</div>
+                {candidat.competences!.map(c => (
+                  <div key={c.competenceId} className="cdm-skill-row">
+                    <div className="cdm-skill-label">{c.competence.nom}</div>
+                    <div style={{ flex:1, height:6, borderRadius:99, background:"rgba(16,64,107,0.08)", overflow:"hidden" }}>
+                      <div style={{ height:"100%", borderRadius:99, width:`${c.niveau}%`, background:"linear-gradient(90deg,#10406B,#2284C0)" }}/>
                     </div>
-                    <div style={{ fontSize:12, fontWeight:700, color:"#2284C0", flexShrink:0 }}>{f.annee}</div>
+                    <div style={{ fontSize:11, color:"#5A7A96", width:30, textAlign:"right", flexShrink:0 }}>{c.niveau}%</div>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
+          
           {/* ── Langues ── */}
           {(candidat.langues?.length ?? 0) > 0 && (
             <div>
