@@ -53,6 +53,16 @@ model Candidat {
   bio            String?
   cvUrl          String?
   avatarUrl      String?
+
+  salaireActuel         String?
+  primes                Boolean   @default(false)
+  vehiculeFonction      Boolean   @default(false)
+  vehiculeService       Boolean   @default(false)
+  avantagesSociaux      String[]  @default([])
+  pretentionsSalariales String?
+  
+  adminNote      AdminCandidatNote?
+
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -64,6 +74,19 @@ model Candidat {
   langues        Langue[]
 
   @@map("candidats")
+}
+
+model AdminCandidatNote {
+  id             Int      @id @default(autoincrement())
+  candidatId     Int      @unique
+  qualifie       Boolean  @default(false)
+  compteRendu    String?
+  pieceJointeUrl String?
+  updatedAt      DateTime @updatedAt
+
+  candidat       Candidat @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+
+  @@map("admin_candidat_notes")
 }
 
 model Entreprise {

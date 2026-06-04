@@ -179,6 +179,8 @@ export class CandidatsService {
         experiences: { orderBy: { dateDebut: 'desc' } },
         formations:  { orderBy: { annee: 'desc' } },
         langues:     true,
+        adminNote: true,
+
         candidatures: {
           orderBy: { createdAt: 'desc' },
           include: {
@@ -247,4 +249,40 @@ export class CandidatsService {
     const l = await this.prisma.langue.findUnique({ where: { id } });
     if (!l || l.candidatId !== candidat.id) throw new ForbiddenException('Non autorisé');
   }
+
+  // ── Rémunération (candidat self-service) ──────────────────────────────────
+  async updateRemuneration(userId: number, data: {
+    salaireActuel?:         string;
+    primes?:                boolean;
+    vehiculeFonction?:      boolean;
+    vehiculeService?:       boolean;
+    avantagesSociaux?:      string[];
+    pretentionsSalariales?: string;
+  }) {
+    const candidat = await this.getCandidatOrFail(userId);
+    return this.prisma.candidat.update({
+      where: { id: candidat.id },
+      data,
+    });
+  }
+
+  // ── Admin note (upsert) ───────────────────────────────────────────────────
+async upsertAdminNote(candidatId: number, data: {
+  qualifie?:       boolean;
+  compteRendu?:    string;
+  pieceJointeUrl?: string;
+}) {
+  return this.prisma.adminCandidatNote.upsert({
+    where:  { candidatId },
+    update: { ...data, updatedAt: new Date() },
+    create: { candidatId, ...data },
+  });
+}
+
+async getAdminNote(candidatId: number) {
+  return this.prisma.adminCandidatNote.findUnique({
+    where: { candidatId },
+  });
+}
+
 }

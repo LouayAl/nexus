@@ -145,6 +145,11 @@ export class CandidatsController {
   deleteLangue(@Request() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.candidats.deleteLangue(req.user.id, id);
   }
+
+  @Patch('remuneration')
+  updateRemuneration(@Request() req: any, @Body() body: any) {
+    return this.candidats.updateRemuneration(req.user.id, body);
+  }
 }
 
 // ── Admin routes (role: ADMIN) ────────────────────────────────────────────────
@@ -176,5 +181,36 @@ export class CandidatsAdminController {
   @Post('competences')
   upsertCompetence(@Body('nom') nom: string) {
     return this.candidats.upsertCompetence(nom);
+  }
+  
+  @Patch(':id/note')
+  upsertNote(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { qualifie?: boolean; compteRendu?: string; pieceJointeUrl?: string },
+  ) {
+    return this.candidats.upsertAdminNote(id, body);
+  }
+
+  @Post(':id/note/piece-jointe')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: (req, file, cb) => {
+        const dir = join(__dirname, '..', '..', '..', 'uploads', 'notes');
+        require('fs').mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+      },
+      filename: (req, file, cb) => {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `note-${unique}${extname(file.originalname)}`);
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 },
+  }))
+  async uploadNoteFile(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const pieceJointeUrl = `/uploads/notes/${file.filename}`;
+    return this.candidats.upsertAdminNote(id, { pieceJointeUrl });
   }
 }

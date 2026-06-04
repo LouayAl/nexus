@@ -38,6 +38,7 @@ export type ModalType =
   | "addExp"
   | "addForm"
   | "addLang"
+  | "remuneration"
   | "changePw";
 
   export function skillColor(niveau: number): string {

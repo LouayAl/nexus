@@ -121,6 +121,15 @@ export const candidatsApi = {
   addLangue:    (data: LangueDto)                      => api.post<Langue>("/candidats/langues", data),
   updateLangue: (id: number, data: Partial<LangueDto>) => api.patch<Langue>(`/candidats/langues/${id}`, data),
   deleteLangue: (id: number)                           => api.delete(`/candidats/langues/${id}`),
+
+  updateRemuneration: (data: {
+    salaireActuel?:         string;
+    primes?:                boolean;
+    vehiculeFonction?:      boolean;
+    vehiculeService?:       boolean;
+    avantagesSociaux?:      string[];
+    pretentionsSalariales?: string;
+  }) => api.patch('/candidats/remuneration', data),
 };
 
 // ── ENTREPRISES ───────────────────────────────────────────────────────────────
@@ -195,6 +204,20 @@ export const adminApi = {
     api.patch(`/offres/${id}/statut`, { statut }),
   deleteOffre: (id: number) =>
     api.delete(`/offres/admin/${id}`),
+
+  upsertCandidatNote: (id: number, data: {
+    qualifie?: boolean;
+    compteRendu?: string;
+    pieceJointeUrl?: string;
+  }) => api.patch(`/candidats/admin/${id}/note`, data),
+
+  uploadCandidatNoteFile: (id: number, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api.post(`/candidats/admin/${id}/note/piece-jointe`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 export interface CandidatAdmin {
@@ -222,6 +245,18 @@ export interface CandidatAdmin {
     experiences?: number;
     formations?:  number;
   };
+  adminNote?: {
+    qualifie:       boolean;
+    compteRendu:    string | null;
+    pieceJointeUrl: string | null;
+  } | null;
+  // Rémunération
+  salaireActuel?:         string;
+  pretentionsSalariales?: string;
+  primes?:                boolean;
+  vehiculeFonction?:      boolean;
+  vehiculeService?:       boolean;
+  avantagesSociaux?:      string[];
 }
 
 
@@ -320,6 +355,13 @@ export interface CandidatProfile {
   langues?:      Langue[];
   utilisateur?:  { email: string; createdAt: string };
   avatarUrl?: string | null;
+
+  salaireActuel?:         string;
+  primes?:                boolean;
+  vehiculeFonction?:      boolean;
+  vehiculeService?:       boolean;
+  avantagesSociaux?:      string[];
+  pretentionsSalariales?: string;
 }
 
 export interface CandidatProfileUpdate {

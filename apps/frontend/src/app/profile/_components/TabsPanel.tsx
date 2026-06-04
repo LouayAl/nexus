@@ -1,7 +1,7 @@
 // frontend/src/app/profile/_components/TabsPanel.tsx
 "use client";
 
-import { Star, Briefcase, Award, Globe2, Plus, Edit2, Trash2 } from "lucide-react";
+import { Star, Briefcase, Award, Globe2, Plus, Edit2, Trash2, DollarSign } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { candidatsApi, type CandidatProfile } from "@/lib/api";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ import { SKILL_COLORS, LANGUE_NIVEAU_COLORS, skillLevelLabel, skillColor } from 
 import { PROFILE_COPY } from "./copy";
 import type { AppLanguage } from "@/hooks/useAppLanguage";
 
-type Tab = "skills" | "experience" | "formation" | "langues";
+type Tab = "skills" | "experience" | "formation" | "langues" | "remuneration";
 
 interface Props {
   profile:      CandidatProfile;
@@ -22,13 +22,14 @@ interface Props {
   onEditExp:    (item: any) => void;
   onEditForm:   (item: any) => void;
   onEditLang:   (item: any) => void;
+  onEditRemuneration: () => void;
   language:     AppLanguage;
 }
 
 export function TabsPanel({
   profile, tab, onTabChange,
   onAddSkill, onAddExp, onAddForm, onAddLang,
-  onEditExp, onEditForm, onEditLang, language,
+  onEditExp, onEditForm, onEditLang, onEditRemuneration, language,
 }: Props) {
   const qc     = useQueryClient();
   const copy   = PROFILE_COPY[language];
@@ -48,10 +49,11 @@ export function TabsPanel({
   const langs  = profile.langues     ?? [];
 
   const tabs = [
-    { key: "formation"  as Tab, label: copy.tabs.formation,  icon: Award,     count: forms.length  },
-    { key: "experience" as Tab, label: copy.tabs.experience, icon: Briefcase, count: exps.length   },
-    { key: "skills"     as Tab, label: copy.tabs.skills,     icon: Star,      count: skills.length },
-    { key: "langues"    as Tab, label: copy.tabs.langues,    icon: Globe2,    count: langs.length  },
+    { key: "formation"    as Tab, label: copy.tabs.formation,  icon: Award,     count: forms.length  },
+    { key: "experience"   as Tab, label: copy.tabs.experience, icon: Briefcase, count: exps.length   },
+    { key: "skills"       as Tab, label: copy.tabs.skills,     icon: Star,      count: skills.length },
+    { key: "langues"      as Tab, label: copy.tabs.langues,    icon: Globe2,    count: langs.length  },
+    { key: "remuneration" as Tab, label: copy.tabs.remuneration, icon: DollarSign, count: 0 },
   ];
 
   const addBtn = (onClick: () => void) => (
@@ -486,6 +488,66 @@ export function TabsPanel({
                     </div>
                   )
                 }
+              </div>
+            )}
+
+            {tab === "remuneration" && (
+              <div>
+                {sectionHeader(copy.remunerationTitle, addBtn(onEditRemuneration))}
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+
+                  {/* Salaire actuel */}
+                  <div style={{ background: "#F7F8FA", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 6 }}>
+                      {copy.salaireActuel}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0D2137" }}>
+                      {profile.salaireActuel ?? <span style={{ color: "#B0C4D4" }}>{copy.notFilled}</span>}
+                    </div>
+                  </div>
+
+                  {/* Toggles */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                    {[
+                      { label: copy.primes,           value: profile.primes           },
+                      { label: copy.vehiculeFonction, value: profile.vehiculeFonction },
+                      { label: copy.vehiculeService,  value: profile.vehiculeService  },
+                    ].map(({ label, value }) => (
+                      <div key={label} style={{ background: "#F7F8FA", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 12, padding: "12px 14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontSize: 13, color: "#5A7A96", fontWeight: 500 }}>{label}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: value ? "#1A9E6F" : "#D64045" }}>
+                          {value ? copy.yes : copy.no}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Avantages sociaux */}
+                  <div style={{ background: "#F7F8FA", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 8 }}>
+                      {copy.avantagesSociaux}
+                    </div>
+                    {(profile.avantagesSociaux ?? []).length === 0
+                      ? <span style={{ color: "#B0C4D4", fontSize: 13 }}>{copy.notFilled}</span>
+                      : <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {(profile.avantagesSociaux ?? []).map(a => (
+                            <span key={a} style={{ background: "rgba(34,132,192,0.08)", color: "#2284C0", fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 8 }}>{a}</span>
+                          ))}
+                        </div>
+                    }
+                  </div>
+
+                  {/* Prétentions */}
+                  <div style={{ background: "#F7F8FA", border: "1px solid rgba(16,64,107,0.08)", borderRadius: 12, padding: "14px 16px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 6 }}>
+                      {copy.pretentions}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#0D2137" }}>
+                      {profile.pretentionsSalariales ?? <span style={{ color: "#B0C4D4" }}>{copy.notFilled}</span>}
+                    </div>
+                  </div>
+
+                </div>
               </div>
             )}
 

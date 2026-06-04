@@ -22,8 +22,9 @@ import { EditProfileModal } from "./_components/EditProfileModal";
 import { IdentityCard } from "./_components/IdentityCard";
 import { TabsPanel } from "./_components/TabsPanel";
 import { type ModalType } from "./_components/types";
+import { RemunerationModal } from "./_components/RemunerationModal";
 
-type Tab = "skills" | "experience" | "formation" | "langues";
+type Tab = "skills" | "experience" | "formation" | "langues" | "remuneration";
 
 const COPY = {
   fr: { loading: "Chargement du profil...", eyebrow: "Mon espace", title: "Mon Profil" },
@@ -84,6 +85,7 @@ export default function ProfilePage() {
     onEditExp:   (item: any) => { setEditingItem(item); setModal("addExp"); },
     onEditForm:  (item: any) => { setEditingItem(item); setModal("addForm"); },
     onEditLang:  (item: any) => { setEditingItem(item); setModal("addLang"); },
+    onEditRemuneration: () => setModal("remuneration"), 
   };
 
   const contactProps = {
@@ -109,6 +111,7 @@ export default function ProfilePage() {
       {modal === "addExp"      && <AddExperienceModal onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}
       {modal === "addForm"     && <AddFormationModal  onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language}/>}
       {modal === "addLang"     && <AddLangueModal     onClose={() => { setModal(null); setEditingItem(null); }} existing={editingItem} language={language} />}
+      {modal === "remuneration" && <RemunerationModal profile={profile} onClose={() => setModal(null)} language={language}/>}
       {showChangePw && <ChangePasswordModal onClose={() => setShowChangePw(false)} />}
 
       <input

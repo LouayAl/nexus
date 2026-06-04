@@ -11,6 +11,7 @@ export const PROFILE_COPY = {
       experience: "Expérience",
       skills:     "Compétences",
       langues:    "Langues",
+      remuneration: "Rémunération",
     },
     add:              "Ajouter",
     skills:           "Compétences techniques",
@@ -26,6 +27,20 @@ export const PROFILE_COPY = {
     deleteSkillSuccess:"Compétence supprimée",
     deleteError:      "Erreur lors de la suppression",
     error:            "Erreur",
+    remuneration: "Rémunération",
+    remunerationTitle: "Rémunération & Prétentions",
+    salaireActuel: "Salaire actuel / dernier",
+    notFilled: "Non renseigné",
+    primes: "Primes",
+    vehiculeFonction: "Véhicule de fonction",
+    vehiculeService: "Véhicule de service",
+    avantagesSociaux: "Avantages sociaux",
+    pretentions: "Prétentions salariales",
+    yes: "✓ Oui",
+    no: "✗ Non",
+    edit: "Modifier",
+
+
 
     // ── AddLangueModal ───────────────────────────────────────────────────────
     langueModal: {
@@ -125,6 +140,7 @@ export const PROFILE_COPY = {
       experience: "Experience",
       skills:     "Skills",
       langues:    "Languages",
+      remuneration: "Remuneration"
     },
     add:              "Add",
     skills:           "Technical skills",
@@ -140,6 +156,19 @@ export const PROFILE_COPY = {
     deleteSkillSuccess:"Skill deleted",
     deleteError:      "Error while deleting",
     error:            "Error",
+
+    remuneration: "Compensation",
+    remunerationTitle: "Compensation & Expectations",
+    salaireActuel: "Current / last salary",
+    notFilled: "Not filled in",
+    primes: "Bonuses",
+    vehiculeFonction: "Company car",
+    vehiculeService: "Service vehicle",
+    avantagesSociaux: "Social benefits",
+    pretentions: "Salary expectations",
+    yes: "✓ Yes",
+    no: "✗ No",
+    edit: "Edit",
 
     // ── AddLangueModal ───────────────────────────────────────────────────────
     langueModal: {
