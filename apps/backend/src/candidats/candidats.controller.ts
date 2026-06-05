@@ -13,6 +13,9 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '@prisma/client';
 
+import { Query } from '@nestjs/common';
+import { AdminCandidatsQueryDto } from './dto/admin-candidats-query.dto';
+
 // ── Candidat routes (role: CANDIDAT) ─────────────────────────────────────────
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.CANDIDAT)
@@ -160,8 +163,8 @@ export class CandidatsAdminController {
   constructor(private candidats: CandidatsService) {}
 
   @Get('all')
-  getAllCandidats() {
-    return this.candidats.getAllCandidats();
+  getAllCandidats(@Query() query: any) {
+    return this.candidats.getAllCandidats(query);
   }
 
   @Get(':id')

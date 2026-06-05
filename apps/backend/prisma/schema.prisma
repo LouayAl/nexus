@@ -60,7 +60,7 @@ model Candidat {
   vehiculeService       Boolean   @default(false)
   avantagesSociaux      String[]  @default([])
   pretentionsSalariales String?
-  
+
   adminNote      AdminCandidatNote?
 
   createdAt      DateTime  @default(now())
@@ -72,7 +72,9 @@ model Candidat {
   experiences    Experience[]
   formations     Formation[]
   langues        Langue[]
-
+  
+  @@index([prenom, nom])
+  @@index([localisation])
   @@map("candidats")
 }
 

@@ -1,6 +1,7 @@
 // src/candidats/candidats.service.ts
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { AdminCandidatsQueryDto } from './dto/admin-candidats-query.dto';
 
 @Injectable()
 export class CandidatsService {
@@ -46,7 +47,7 @@ export class CandidatsService {
         }),
       },
       include: {
-        competences: { include: { competence: true } },
+        competences: { include: { competence: true }, take: 5 },
         experiences: true,
         formations:  true,
         langues:     true,
@@ -153,20 +154,80 @@ export class CandidatsService {
   // ── ADMIN ──────────────────────────────────────────────────────────────────
 
   /** List all candidats with lightweight counts for the admin grid */
-  async getAllCandidats() {
-    return this.prisma.candidat.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        utilisateur: { select: { email: true, createdAt: true } },
-        competences: { include: { competence: true } },
-        _count: {
-          select: {
-            candidatures: true,
-            competences:  true,
+  async getAllCandidats(query: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    localisation?: string;
+    competence?: string;
+    qualifie?: string;
+  }) {
+    const t0 = Date.now();  
+    const page  = Number(query.page)  || 1;
+    const limit = Number(query.limit) || 24;
+    const skip  = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (query.search) {
+      where.OR = [
+        { prenom:      { contains: query.search, mode: 'insensitive' } },
+        { nom:         { contains: query.search, mode: 'insensitive' } },
+        { titre:       { contains: query.search, mode: 'insensitive' } },
+        { localisation:{ contains: query.search, mode: 'insensitive' } },
+        { utilisateur: { email: { contains: query.search, mode: 'insensitive' } } },
+      ];
+    }
+
+    if (query.localisation) {
+      where.localisation = { contains: query.localisation, mode: 'insensitive' };
+    }
+
+    if (query.competence) {
+      where.competences = {
+        some: {
+          competence: { nom: { contains: query.competence, mode: 'insensitive' } },
+        },
+      };
+    }
+
+    if (query.qualifie === 'true') {
+      where.adminNote = { qualifie: true };
+    } else if (query.qualifie === 'false') {
+      where.OR = [
+        { adminNote: { is: null } },           // no note at all
+        { adminNote: { qualifie: false } },    // note exists but not qualified
+      ];
+    }
+
+    const [candidats, total] = await Promise.all([
+      this.prisma.candidat.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          utilisateur: { select: { email: true, createdAt: true } },
+          competences: { include: { competence: true } },
+          adminNote:   { select: { qualifie: true } },
+          _count: {
+            select: { candidatures: true, competences: true },
           },
         },
-      },
-    });
+      }),
+      this.prisma.candidat.count({ where }),
+    ]);
+  
+    console.log(`getAllCandidats took ${Date.now() - t0}ms`);
+
+    return {
+      data: candidats,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+
   }
 
   /** Full candidat profile including all candidatures + offer details */
@@ -284,5 +345,4 @@ async getAdminNote(candidatId: number) {
     where: { candidatId },
   });
 }
-
 }

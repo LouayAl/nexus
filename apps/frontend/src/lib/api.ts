@@ -181,9 +181,23 @@ export const adminApi = {
   rejectOffre:         (id: number)                => api.patch(`/offres/${id}/statut`, { statut: "FERMEE" }),
   createForEntreprise: (data: AdminCreateOffreDto) => api.post<Offre>("/offres/admin/create", data),
   getAllEntreprises:   ()                          => api.get<EntrepriseAdmin[]>("/entreprises/admin/all"),
+  
   /** GET /candidats/admin/all */
-  getAllCandidats: () =>
-    api.get<CandidatAdmin[]>("/candidats/admin/all"),
+  getAllCandidats: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    localisation?: string;
+    competence?: string;
+    qualifie?: string;
+  }) =>
+    api.get<{
+      data: CandidatAdmin[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>("/candidats/admin/all", { params }),
  
   /** GET /candidats/admin/:id  (full profile + candidatures) */
   getCandidatById: (id: number) =>

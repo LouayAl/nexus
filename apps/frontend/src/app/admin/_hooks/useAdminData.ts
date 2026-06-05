@@ -1,13 +1,12 @@
-// src/app/admin/_hooks/useAdminData.ts
 import { useQuery } from "@tanstack/react-query";
-import { adminApi } from "@/lib/api";
+import { adminApi, type CandidatAdmin } from "@/lib/api";
 
-const STALE = 90_000; // 90s — data stays fresh, no re-fetch on tab switch
+const STALE = 90_000;
 
 export function useAdminPending() {
   return useQuery({
-    queryKey:  ["admin-pending"],
-    queryFn:   () => adminApi.getPending().then(r => r.data),
+    queryKey: ["admin-pending"],
+    queryFn:  () => adminApi.getPending().then(r => r.data),
     staleTime: STALE,
   });
 }
@@ -24,7 +23,7 @@ export function useAdminEntreprises(enabled = true) {
 export function useAdminCandidats(enabled = true) {
   return useQuery({
     queryKey:  ["admin-candidats"],
-    queryFn:   () => adminApi.getAllCandidats().then(r => r.data),
+    queryFn:   () => adminApi.getAllCandidats().then(r => r.data.data as CandidatAdmin[]),
     enabled,
     staleTime: STALE,
   });
