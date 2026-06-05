@@ -194,9 +194,14 @@ export class CandidatsService {
     if (query.qualifie === 'true') {
       where.adminNote = { qualifie: true };
     } else if (query.qualifie === 'false') {
-      where.OR = [
-        { adminNote: { is: null } },           // no note at all
-        { adminNote: { qualifie: false } },    // note exists but not qualified
+      where.AND = [
+        ...(where.AND ?? []),
+        {
+          OR: [
+            { adminNote: { is: null } },
+            { adminNote: { qualifie: false } },
+          ],
+        },
       ];
     }
 
