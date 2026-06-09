@@ -28,10 +28,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
-    console.log("AUTH INIT");
     authApi.me()
       .then(({ data }) => {
-        console.log("AUTH USER", data);
         setState({ user: data, loading: false });
       })
       .catch(() => {
