@@ -1,12 +1,13 @@
 "use client";
 
-import { Search, X, ShieldCheck } from "lucide-react";
+import { Search, X, ShieldCheck, Handshake } from "lucide-react";
 
 interface FilterState {
   search:      string;
   localisation:string;
   competence:  string;
   qualifie:    "" | "true" | "false";
+  accompagnement: "" | "true" | "false";
 }
 
 interface CandidatFiltersProps {
@@ -37,7 +38,7 @@ export function CandidatFilters({ filters, onChange, onReset, total, isLoading }
   const set = (key: keyof FilterState) => (val: string) =>
     onChange({ ...filters, [key]: val });
 
-  const hasFilters = filters.search || filters.localisation || filters.competence || filters.qualifie;
+  const hasFilters = filters.search || filters.localisation || filters.competence || filters.qualifie || filters.accompagnement;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
@@ -105,6 +106,34 @@ export function CandidatFilters({ filters, onChange, onReset, total, isLoading }
                 }}
               >
                 {v === "true" && <ShieldCheck size={12}/>}
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ display: "flex", gap: 6 }}>
+          {(["", "true", "false"] as const).map(v => {
+            const active  = filters.accompagnement === v;
+            const label   = v === "" ? "Tous acc." : v === "true" ? "Acc. oui" : "Acc. non";
+            const color   = v === "true" ? "#2284C0" : v === "false" ? "#D64045" : "#5A7A96";
+            return (
+              <button
+                key={v}
+                onClick={() => set("accompagnement")(v)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 5,
+                  padding: "8px 12px", borderRadius: 10, fontSize: 12,
+                  fontWeight: 700, cursor: "pointer",
+                  fontFamily: "'DM Sans',sans-serif",
+                  border: `1.5px solid ${active ? color : "rgba(16,64,107,0.12)"}`,
+                  background: active ? `${color}12` : "#FAFAF8",
+                  color: active ? color : "#5A7A96",
+                  transition: "all 0.15s",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {v === "true" && <Handshake size={12}/>}
                 {label}
               </button>
             );

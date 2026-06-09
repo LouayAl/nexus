@@ -41,6 +41,8 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 
   console.log(`🚀 API running on port ${port}`);
+
+  console.log("MAIN JWT_SECRET =", process.env.JWT_SECRET);
 }
 
 bootstrap();

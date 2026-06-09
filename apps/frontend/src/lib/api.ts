@@ -190,6 +190,7 @@ export const adminApi = {
     localisation?: string;
     competence?: string;
     qualifie?: string;
+    accompagnement?: string;
   }) =>
     api.get<{
       data: CandidatAdmin[];
@@ -221,6 +222,7 @@ export const adminApi = {
 
   upsertCandidatNote: (id: number, data: {
     qualifie?: boolean;
+    accompagnement?: boolean | null;
     compteRendu?: string;
     pieceJointeUrl?: string;
   }) => api.patch(`/candidats/admin/${id}/note`, data),
@@ -261,6 +263,7 @@ export interface CandidatAdmin {
   };
   adminNote?: {
     qualifie:       boolean;
+    accompagnement: boolean | null;
     compteRendu:    string | null;
     pieceJointeUrl: string | null;
   } | null;

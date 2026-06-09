@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { adminApi, type CandidatAdmin } from "@/lib/api";
+import { adminApi } from "@/lib/api";
 
 const STALE = 90_000;
 
@@ -23,7 +23,7 @@ export function useAdminEntreprises(enabled = true) {
 export function useAdminCandidats(enabled = true) {
   return useQuery({
     queryKey:  ["admin-candidats"],
-    queryFn:   () => adminApi.getAllCandidats().then(r => r.data.data as CandidatAdmin[]),
+    queryFn:   () => adminApi.getAllCandidats({ page: 1, limit: 1 }).then(r => r.data),
     enabled,
     staleTime: STALE,
   });

@@ -28,9 +28,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
+    console.log("AUTH INIT");
     authApi.me()
-      .then(({ data }) => setState({ user: data, loading: false }))
-      .catch(() => setState({ user: null, loading: false }));
+      .then(({ data }) => {
+        console.log("AUTH USER", data);
+        setState({ user: data, loading: false });
+      })
+      .catch(() => {
+        console.log("AUTH FAILED");
+        setState({ user: null, loading: false });
+      });
   }, []);
 
   const assertValidUser = useCallback(async (user: User) => {

@@ -26,4 +26,8 @@ export class AdminCandidatsQueryDto {
   @IsOptional()
   @IsString()
   qualifie?: string;
+
+  @IsOptional()
+  @IsString()
+  accompagnement?: string;
 }

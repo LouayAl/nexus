@@ -2,7 +2,7 @@
 
 import { useState, useEffect  } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, MapPin, Briefcase, Star, FileText, ChevronRight, ShieldCheck } from "lucide-react";
+import { Loader2, MapPin, Briefcase, Star, FileText, ChevronRight, ShieldCheck, Handshake } from "lucide-react";
 import { adminApi, type CandidatAdmin } from "@/lib/api";
 import { CandidatDetailModal } from "./CandidatDetailModal";
 import { CandidatFilters } from "./CandidatFilters";
@@ -14,10 +14,11 @@ type FilterState = {
   localisation: string;
   competence:   string;
   qualifie:     "" | "true" | "false";
+  accompagnement: "" | "true" | "false";
 };
 
 const EMPTY_FILTERS: FilterState = {
-  search: "", localisation: "", competence: "", qualifie: "",
+  search: "", localisation: "", competence: "", qualifie: "", accompagnement: "",
 };
 
 export function CandidatsTab() {
@@ -48,6 +49,7 @@ export function CandidatsTab() {
       localisation: debouncedFilters.localisation || undefined,
       competence:   debouncedFilters.competence   || undefined,
       qualifie:     debouncedFilters.qualifie     || undefined,
+      accompagnement: debouncedFilters.accompagnement || undefined,
     }).then(r => r.data),
     placeholderData: prev => prev,
   });
@@ -107,6 +109,7 @@ function CandidatCard({ candidat: c, onClick }: { candidat: CandidatAdmin; onCli
   const nbCandidatures = c._count?.candidatures ?? 0;
   const nbCompetences  = c._count?.competences  ?? 0;
   const qualifie       = c.adminNote?.qualifie ?? false;
+  const accompagnement = c.adminNote?.accompagnement ?? null;
   const avatarSrc      = resolveAvatarUrl(c.avatarUrl);
 
   const gradients = [
@@ -160,9 +163,22 @@ function CandidatCard({ candidat: c, onClick }: { candidat: CandidatAdmin; onCli
           padding: "3px 8px", borderRadius: 99,
           background: "rgba(26,158,111,0.1)",
           border: "1px solid rgba(26,158,111,0.25)",
-          color: "#1A9E6F", fontSize: 10, fontWeight: 700,
+          color: "#1A9E6F", fontSize: 10, fontWeight: 700, zIndex: 1,
         }}>
           <ShieldCheck size={10}/> Qualifié
+        </div>
+      )}
+
+      {accompagnement !== null && (
+        <div style={{
+          position: "absolute", top: qualifie ? 36 : 10, right: 10,
+          display: "flex", alignItems: "center", gap: 4,
+          padding: "3px 8px", borderRadius: 99,
+          background: accompagnement ? "rgba(34,132,192,0.1)" : "rgba(214,64,69,0.08)",
+          border: `1px solid ${accompagnement ? "rgba(34,132,192,0.22)" : "rgba(214,64,69,0.18)"}`,
+          color: accompagnement ? "#2284C0" : "#D64045", fontSize: 10, fontWeight: 700, zIndex: 1,
+        }}>
+          <Handshake size={10}/> Acc. {accompagnement ? "Oui" : ""}
         </div>
       )}
 

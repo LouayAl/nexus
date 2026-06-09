@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import {
   MapPin, Mail, Phone, Briefcase, GraduationCap, Globe,
   Star, FileText, Loader2, Calendar, Building2, Download,
-  ShieldCheck, Upload, DollarSign, ClipboardList,
+  ShieldCheck, Upload, DollarSign, ClipboardList,UserCheck
 } from "lucide-react";
 import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
@@ -54,7 +54,7 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
   }
 
   const noteMut = useMutation({
-    mutationFn: (data: { qualifie?: boolean; compteRendu?: string; pieceJointeUrl?: string }) =>
+    mutationFn: (data: { qualifie?: boolean; compteRendu?: string; pieceJointeUrl?: string; accompagnement?: boolean | null; }) =>
       adminApi.upsertCandidatNote(candidatId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-candidat", candidatId] });
@@ -165,7 +165,7 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
             </div>
 
             {/* ── Profil qualifié — below hero row, full width, no overlap ── */}
-            <div style={{ marginTop:14, paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.15)", display:"flex", justifyContent:"center" }}>
+            <div style={{ marginTop:14, paddingTop:14, borderTop:"1px solid rgba(255,255,255,0.15)", display:"flex", justifyContent:"center", gap:12, flexWrap:"wrap", }}>
               <button
                 onClick={() => noteMut.mutate({ qualifie: !(note?.qualifie ?? false) })}
                 style={{
@@ -181,6 +181,42 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
                 <ShieldCheck size={15}/>
                 {note?.qualifie ? "Profil qualifié ✓" : "Qualifier ce profil"}
               </button>
+              {/* Accompagnement */}
+              <button
+                onClick={() =>
+                  noteMut.mutate({
+                    accompagnement: !(note?.accompagnement ?? false),
+                  })
+                }
+                style={{
+                  display:"flex",
+                  alignItems:"center",
+                  gap:8,
+                  padding:"9px 20px",
+                  borderRadius:99,
+                  cursor:"pointer",
+                  border:`2px solid ${
+                    note?.accompagnement
+                      ? "#F59E0B"
+                      : "rgba(255,255,255,0.3)"
+                  }`,
+                  background: note?.accompagnement
+                    ? "rgba(245,158,11,0.2)"
+                    : "rgba(255,255,255,0.08)",
+                  color: note?.accompagnement
+                    ? "#FBBF24"
+                    : "rgba(255,255,255,0.7)",
+                  fontFamily:"'DM Sans',sans-serif",
+                  fontSize:13,
+                  fontWeight:700,
+                  transition:"all 0.2s",
+                }}
+              >
+                <UserCheck size={15} />
+                {note?.accompagnement
+                  ? "Accompagnement ✓"
+                  : "Mettre en accompagnement"}
+            </button>
             </div>
           </div>
 

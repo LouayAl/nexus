@@ -46,15 +46,32 @@ export class AuthService {
     return this.signToken(user.id, user.email, user.role);
   }
 
-  async login(dto: LoginDto) {
-    const user = await this.prisma.utilisateur.findUnique({ where: { email: dto.email } });
-    if (!user) throw new UnauthorizedException('Identifiants invalides');
+async login(dto: LoginDto) {
+  console.log("LOGIN ATTEMPT:", dto.email);
 
-    const valid = await bcrypt.compare(dto.password, user.password);
-    if (!valid) throw new UnauthorizedException('Identifiants invalides');
+  const user = await this.prisma.utilisateur.findUnique({
+    where: { email: dto.email },
+  });
 
-    return this.signToken(user.id, user.email, user.role);
+  console.log("USER FOUND:", !!user);
+
+  if (!user) {
+    console.log("USER NOT FOUND");
+    throw new UnauthorizedException();
   }
+
+  const valid = await bcrypt.compare(dto.password, user.password);
+
+  console.log("PASSWORD VALID:", valid);
+
+  if (!valid) {
+    throw new UnauthorizedException();
+  }
+
+  console.log("LOGIN SUCCESS:", user.role);
+
+  return this.signToken(user.id, user.email, user.role);
+}
 
   async me(userId: number) {
     return this.prisma.utilisateur.findUnique({

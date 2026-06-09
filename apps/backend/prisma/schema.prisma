@@ -82,6 +82,7 @@ model AdminCandidatNote {
   id             Int      @id @default(autoincrement())
   candidatId     Int      @unique
   qualifie       Boolean  @default(false)
+  accompagnement Boolean?
   compteRendu    String?
   pieceJointeUrl String?
   updatedAt      DateTime @updatedAt

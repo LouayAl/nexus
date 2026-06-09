@@ -17,7 +17,7 @@ import { useAppLanguage } from "@/hooks/useAppLanguage";
 export default function AdminPage() {
   const { data: pending     = [], isLoading: loadingOffers      } = useAdminPending();
   const { data: entreprises = [], isLoading: loadingEntreprises } = useAdminEntreprises(true);
-  const { data: candidats   = [], isLoading: loadingCandidats   } = useAdminCandidats(true);
+  const { data: candidatsPage, isLoading: loadingCandidats      } = useAdminCandidats(true);
 
   const { user, loading } = useAuth();
   const router = useRouter();
@@ -26,6 +26,10 @@ export default function AdminPage() {
   const [showCreateCandidat,   setShowCreateCandidat]   = useState(false);
   const [showCreateEntreprise, setShowCreateEntreprise] = useState(false);
   const { language, setLanguage } = useAppLanguage();
+  console.log("ADMIN PAGE", {
+    user,
+    loading
+  });
 
   useEffect(() => {
     if (loading) return;
@@ -73,7 +77,7 @@ export default function AdminPage() {
       color:      "#1A9E6F",
       bg:         "rgba(26,158,111,0.1)",
       title:      "Candidats",
-      value:      candidats.length,
+      value:      candidatsPage?.total ?? 0,
       desc:       "Gérer les profils candidats",
       badge:      `${totalCandidatures} candidatures`,
       badgeBg:    "rgba(26,158,111,0.1)",

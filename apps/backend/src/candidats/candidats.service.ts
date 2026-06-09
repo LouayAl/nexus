@@ -161,6 +161,7 @@ export class CandidatsService {
     localisation?: string;
     competence?: string;
     qualifie?: string;
+    accompagnement?: string;
   }) {
     const t0 = Date.now();  
     const page  = Number(query.page)  || 1;
@@ -191,18 +192,47 @@ export class CandidatsService {
       };
     }
 
+    const adminNoteFilters: any[] = [];
+
     if (query.qualifie === 'true') {
-      where.adminNote = { qualifie: true };
+      adminNoteFilters.push({ adminNote: { qualifie: true } });
     } else if (query.qualifie === 'false') {
-      where.AND = [
-        ...(where.AND ?? []),
-        {
-          OR: [
-            { adminNote: { is: null } },
-            { adminNote: { qualifie: false } },
-          ],
-        },
-      ];
+      adminNoteFilters.push({
+        OR: [
+          { adminNote: { is: null } },
+          { adminNote: { qualifie: false } },
+        ],
+      });
+    }
+
+    if (query.accompagnement === 'true') {
+      adminNoteFilters.push({ adminNote: { accompagnement: true } });
+    } else if (query.accompagnement === 'false') {
+      adminNoteFilters.push({
+        OR: [
+          {
+            adminNote: null,
+          },
+          {
+            adminNote: {
+              is: {
+                accompagnement: false,
+              },
+            },
+          },
+          {
+            adminNote: {
+              is: {
+                accompagnement: null,
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    if (adminNoteFilters.length > 0) {
+      where.AND = [...(where.AND ?? []), ...adminNoteFilters];
     }
 
     const [candidats, total] = await Promise.all([
@@ -214,7 +244,7 @@ export class CandidatsService {
         include: {
           utilisateur: { select: { email: true, createdAt: true } },
           competences: { include: { competence: true } },
-          adminNote:   { select: { qualifie: true } },
+          adminNote:   { select: { qualifie: true, accompagnement: true } },
           _count: {
             select: { candidatures: true, competences: true },
           },
@@ -335,6 +365,7 @@ export class CandidatsService {
   // ── Admin note (upsert) ───────────────────────────────────────────────────
 async upsertAdminNote(candidatId: number, data: {
   qualifie?:       boolean;
+  accompagnement?: boolean | null;
   compteRendu?:    string;
   pieceJointeUrl?: string;
 }) {

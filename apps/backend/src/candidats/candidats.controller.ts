@@ -189,7 +189,7 @@ export class CandidatsAdminController {
   @Patch(':id/note')
   upsertNote(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: { qualifie?: boolean; compteRendu?: string; pieceJointeUrl?: string },
+    @Body() body: { qualifie?: boolean; accompagnement?: boolean | null; compteRendu?: string; pieceJointeUrl?: string },
   ) {
     return this.candidats.upsertAdminNote(id, body);
   }

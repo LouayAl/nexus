@@ -6,23 +6,53 @@ const PUBLIC_ROUTES = ["/", "/auth/login", "/auth/register", "/auth/oauth-callba
 const AUTH_ONLY = ["/auth/login", "/auth/register"];
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET || "nexus_secret");
+console.log(
+  "MIDDLEWARE JWT_SECRET:",
+  process.env.JWT_SECRET
+);
 
 async function getUserFromToken(token: string | undefined) {
-  if (!token) return null;
+  if (!token) {
+    console.log("NO TOKEN");
+    return null;
+  }
+
   try {
     const { payload } = await jwtVerify(token, secret);
+
+    console.log("JWT VERIFIED", payload);
+
     return payload as { role: string };
-  } catch {
+  } catch (e) {
+    console.error("JWT VERIFY ERROR", e);
+
     return null;
   }
 }
 
 export async function middleware(req: NextRequest) {
+
+  
   const { pathname } = req.nextUrl;
 
   const token = req.cookies.get("nexus_session")?.value;
   const user = await getUserFromToken(token);
   const role = user?.role ?? null;
+
+
+
+  console.log("==============");
+  console.log("PATH:", pathname);
+  console.log("TOKEN EXISTS:", !!token);
+
+
+  console.log("USER:", user);
+
+
+  console.log("ROLE:", role);
+
+  console.log("PATH:", pathname);
+console.log("REFERER:", req.headers.get("referer"));
 
   // Already logged in → redirect away from auth pages
   if (role && AUTH_ONLY.some((route) => pathname.startsWith(route))) {
