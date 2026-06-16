@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  // console.log('🌱 Seeding database...');
 
   const hash = (p: string) => bcrypt.hash(p, 10);
 
@@ -44,7 +44,7 @@ async function main() {
     createdCompanies.push(user.entreprise);
   }
 
-  console.log(`✅ ${createdCompanies.length} entreprises créées`);
+  // console.log(`✅ ${createdCompanies.length} entreprises créées`);
 
   // ── OFFRES ─────────────────────────────────────────────────────────────────
   const offres = [
@@ -207,8 +207,8 @@ async function main() {
     offreCount++;
   }
 
-  console.log(`✅ ${offreCount} offres créées`);
-  console.log('🎉 Seed terminé !');
+  // console.log(`✅ ${offreCount} offres créées`);
+  // console.log('🎉 Seed terminé !');
 }
 
 main()

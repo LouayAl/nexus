@@ -53,6 +53,16 @@ model Candidat {
   bio            String?
   cvUrl          String?
   avatarUrl      String?
+
+  salaireActuel         String?
+  primes                Boolean   @default(false)
+  vehiculeFonction      Boolean   @default(false)
+  vehiculeService       Boolean   @default(false)
+  avantagesSociaux      String[]  @default([])
+  pretentionsSalariales String?
+
+  adminNote      AdminCandidatNote?
+
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
@@ -62,8 +72,24 @@ model Candidat {
   experiences    Experience[]
   formations     Formation[]
   langues        Langue[]
-
+  
+  @@index([prenom, nom])
+  @@index([localisation])
   @@map("candidats")
+}
+
+model AdminCandidatNote {
+  id             Int      @id @default(autoincrement())
+  candidatId     Int      @unique
+  qualifie       Boolean  @default(false)
+  accompagnement Boolean?
+  compteRendu    String?
+  pieceJointeUrl String?
+  updatedAt      DateTime @updatedAt
+
+  candidat       Candidat @relation(fields: [candidatId], references: [id], onDelete: Cascade)
+
+  @@map("admin_candidat_notes")
 }
 
 model Entreprise {
@@ -119,13 +145,21 @@ model Offre {
   id                 Int         @id @default(autoincrement())
   titre              String
   description        String
+
+  profil_recherche   String?     // NEW
+  langues            String[]    // NEW (Postgres supports arrays)
+
   type_contrat       String
   niveau_experience  String?
   localisation       String?
+
   salaire_min        Int?
   salaire_max        Int?
+  salaire_visible    Boolean     @default(true) // NEW
+
   statut             StatutOffre @default(EN_ATTENTE)
   entrepriseId       Int
+
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
 
@@ -161,6 +195,8 @@ model Notification {
   createdAt      DateTime @default(now())
 
   utilisateur    Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+  
+  metadata  Json?
 
   @@map("notifications")
 }

@@ -1,6 +1,9 @@
 // src/offres/dto/offre.dto.ts
-import { IsString, IsOptional, IsInt, IsEnum, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsString, IsOptional, IsInt, IsEnum,
+  IsBoolean, IsArray, Min,
+} from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { StatutOffre } from '@prisma/client';
 
 export class CreateOffreDto {
@@ -9,6 +12,17 @@ export class CreateOffreDto {
 
   @IsString()
   description!: string;
+
+  /** NEW — profile the recruiter is looking for */
+  @IsString()
+  @IsOptional()
+  profil_recherche?: string;
+
+  /** NEW — required languages e.g. ["Français", "Anglais"] */
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  langues?: string[];
 
   @IsString()
   type_contrat!: string;
@@ -33,6 +47,16 @@ export class CreateOffreDto {
   @Type(() => Number)
   salaire_max?: number;
 
+  /** NEW — false = salary hidden from candidates */
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  salaire_visible?: boolean;
+
   @IsOptional()
   competences?: string[];
 }
@@ -45,6 +69,15 @@ export class UpdateOffreDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsString()
+  @IsOptional()
+  profil_recherche?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  langues?: string[];
 
   @IsString()
   @IsOptional()
@@ -67,6 +100,15 @@ export class UpdateOffreDto {
   @IsOptional()
   @Type(() => Number)
   salaire_max?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  salaire_visible?: boolean;
 
   @IsEnum(StatutOffre)
   @IsOptional()
@@ -106,6 +148,4 @@ export class FilterOffreDto {
   @IsOptional()
   @Type(() => Number)
   limit?: number;
-
-
 }

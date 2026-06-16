@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/CreateCandidatModal.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,6 +7,9 @@ import { Loader2, UserPlus } from "lucide-react";
 import { Modal } from "./Modal";
 import { adminApi } from "@/lib/api";
 import toast from "react-hot-toast";
+import { LocationInput } from "@/components/ui/LocationInput";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
@@ -51,17 +55,17 @@ export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
           <div>
             <label style={labelStyle}>Prénom *</label>
-            <input style={inputStyle} value={form.prenom} onChange={set("prenom")} placeholder="Jean"/>
+            <input style={inputStyle} value={form.prenom} onChange={set("prenom")} placeholder="Prénom"/>
           </div>
           <div>
             <label style={labelStyle}>Nom *</label>
-            <input style={inputStyle} value={form.nom} onChange={set("nom")} placeholder="Dupont"/>
+            <input style={inputStyle} value={form.nom} onChange={set("nom")} placeholder="Nom"/>
           </div>
         </div>
 
         <div>
           <label style={labelStyle}>Email *</label>
-          <input style={inputStyle} type="email" value={form.email} onChange={set("email")} placeholder="jean@example.com"/>
+          <input style={inputStyle} type="email" value={form.email} onChange={set("email")} placeholder="contact@exemple.com"/>
         </div>
 
         <div>
@@ -72,11 +76,24 @@ export function CreateCandidatModal({ onClose }: { onClose: () => void }) {
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
           <div>
             <label style={labelStyle}>Téléphone</label>
-            <input style={inputStyle} value={form.telephone} onChange={set("telephone")} placeholder="+212 6XX XXX XXX"/>
+            <PhoneInput
+              international
+              defaultCountry="MA"
+              value={form.telephone}
+              onChange={(value) =>
+                setForm(f => ({ ...f, telephone: value || "" }))
+              }
+              style={inputStyle}
+            />
           </div>
           <div>
             <label style={labelStyle}>Localisation</label>
-            <input style={inputStyle} value={form.localisation} onChange={set("localisation")} placeholder="Casablanca"/>
+            <LocationInput
+              style={inputStyle}
+              value={form.localisation}
+              onChange={v => setForm(f => ({ ...f, localisation: v }))}
+              placeholder="Tanger, Maroc"
+            />
           </div>
         </div>
 

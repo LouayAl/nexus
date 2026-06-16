@@ -93,7 +93,7 @@ export function JobDrawer({ offre, onClose }: Props) {
   if (!offre) return null;
 
   const contract = CONTRACT_COLORS[offre.type_contrat] ?? { bg:"rgba(16,64,107,0.08)", color:"#10406B" };
-  const salary   = offre.salaire_min && offre.salaire_max
+  const salary = offre.salaire_visible !== false && offre.salaire_min && offre.salaire_max
     ? `${Math.round(offre.salaire_min/1000)}K – ${Math.round(offre.salaire_max/1000)}K  MAD / an`
     : null;
   const skills = offre.competences?.map(c => c.competence) ?? [];

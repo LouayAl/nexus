@@ -1,3 +1,4 @@
+// backend/src/entreprises/entreprises.controller.ts
 import { Controller, Get, Patch, Body, UseGuards, Request } from '@nestjs/common';
 import { EntreprisesService } from './entreprises.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

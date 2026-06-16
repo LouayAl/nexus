@@ -94,4 +94,20 @@ export class OffresController {
     return this.offres.createForEntreprise(body);
   }
 
+  // Admin — get all offers for a specific entreprise
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Get('admin/entreprise/:entrepriseId')
+  getOffresByEntreprise(@Param('entrepriseId', ParseIntPipe) entrepriseId: number) {
+    return this.offres.findByEntrepriseId(entrepriseId);
+  }
+
+  // Admin — delete any offer
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete('admin/:id')
+  adminRemove(@Param('id', ParseIntPipe) id: number) {
+    return this.offres.adminRemove(id);
+  }
+
 }

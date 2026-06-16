@@ -1,10 +1,9 @@
-// apps/frontend/src/hooks/useNotificationSocket.ts
+// frontend/src/hooks/useNotificationSocket.ts
 "use client";
 
 import { useEffect, useRef } from "react";
 import { io, type Socket } from "socket.io-client";
 import toast from "react-hot-toast";
-import { getToken } from "@/lib/api";
 
 export function useNotificationSocket(userId: number | null) {
   const socketRef = useRef<Socket | null>(null);
@@ -12,14 +11,17 @@ export function useNotificationSocket(userId: number | null) {
   useEffect(() => {
     if (!userId) return;
 
-    const socket = io(
-      process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3001",
-      {
-        auth:         { token: getToken() },
-        transports:   ["websocket"],
-        reconnection: true,
-      }
-    );
+    const WS_URL =
+      process.env.NEXT_PUBLIC_WS_URL ??
+      (process.env.NODE_ENV === "production"
+        ? "https://recrutement.ifmia.ma"
+        : "http://localhost:3001");
+
+    const socket = io(WS_URL, {
+      withCredentials: true,
+      transports: ["websocket"],
+      reconnection: true,
+    });
 
     socket.on("connect", () => {
       socket.emit("join", { userId });
@@ -29,12 +31,18 @@ export function useNotificationSocket(userId: number | null) {
       message: string;
       type?: "success" | "info" | "warning";
     }) => {
-      if (payload.type === "success") toast.success(payload.message, { duration: 5000 });
-      else                            toast(payload.message,         { duration: 5000 });
+      if (payload.type === "success") {
+        toast.success(payload.message, { duration: 5000 });
+      } else {
+        toast(payload.message, { duration: 5000 });
+      }
     });
 
     socketRef.current = socket;
-    return () => { socket.disconnect(); };
+
+    return () => {
+      socket.disconnect();
+    };
   }, [userId]);
 
   return socketRef;

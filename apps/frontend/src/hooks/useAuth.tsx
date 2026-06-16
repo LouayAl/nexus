@@ -1,63 +1,101 @@
-// apps/frontend/src/hooks/useAuth.tsx
+// frontend/src/hooks/useAuth.tsx 
 "use client";
 
 import {
-  createContext, useContext, useState, useEffect, useCallback,
+  createContext, useCallback, useContext, useEffect, useState,
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import { authApi, setToken, removeToken, type User, type RegisterPayload } from "@/lib/api";
+import { useQueryClient } from "@tanstack/react-query"; 
+import { authApi, type RegisterPayload, type User } from "@/lib/api";
 
 interface AuthState {
-  user:    User | null;
+  user: User | null;
   loading: boolean;
 }
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string, redirectTo?: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>({ user: null, loading: true });
 
   useEffect(() => {
     authApi.me()
-      .then(({ data }) => setState({ user: data, loading: false }))
-      .catch(()        => setState({ user: null, loading: false }));
+      .then(({ data }) => {
+        setState({ user: data, loading: false });
+      })
+      .catch(() => {
+        // console.log("AUTH FAILED");
+        setState({ user: null, loading: false });
+      });
   }, []);
 
-  // In useAuth.tsx — update login to accept a redirect destination
+  const assertValidUser = useCallback(async (user: User) => {
+    const allowedRoles = ["CANDIDAT", "ADMIN", "ENTREPRISE"];
+
+    if (!allowedRoles.includes(user.role)) {
+      await authApi.logout().catch(() => undefined);
+      throw new Error("unauthorized_role");
+    }
+
+    return user;
+  }, []);
+
   const login = useCallback(async (email: string, password: string, redirectTo?: string) => {
     const { data } = await authApi.login(email, password);
-    setToken(data.access_token);
-    setState({ user: data.user, loading: false });
-    const dest = redirectTo ?? (
-      data.user.role === "ADMIN"      ? "/admin"             :
-      data.user.role === "ENTREPRISE" ? "/company/dashboard" :
-      "/discover"
-    );
-    router.push(dest);
-  }, [router]);
+
+    const user = await assertValidUser(data.user);
+
+    setState({ user, loading: false });
+
+    // ONLY navigation logic here (not security)
+    if (user.role === "ADMIN") {
+      router.push("/admin");
+      return;
+    }
+
+    if (user.role === "ENTREPRISE") {
+      router.push("/company/dashboard");
+      return;
+    }
+
+    router.push("/profile");
+  }, [assertValidUser, router]);
 
   const register = useCallback(async (payload: RegisterPayload) => {
     const { data } = await authApi.register(payload);
-    setToken(data.access_token);
-    setState({ user: data.user, loading: false });
-    const dest =
-      data.user.role === "ENTREPRISE" ? "/company/dashboard" : "/discover";
-    router.push(dest);
-  }, [router]);
 
-  const logout = useCallback(() => {
-    removeToken();
+    const user = await assertValidUser(data.user);
+
+    setState({ user, loading: false });
+
+    router.push(
+      user.role === "ADMIN"
+        ? "/admin"
+        : user.role === "ENTREPRISE"
+        ? "/company/dashboard"
+        : "/profile"
+    );
+  }, [assertValidUser, router]);
+
+  const logout = useCallback(async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // Keep the UI signed out even if the cookie is already gone.
+    }
+    queryClient.clear();
     setState({ user: null, loading: false });
     router.push("/auth/login");
-  }, [router]);
+  }, [router, queryClient]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, register, logout }}>

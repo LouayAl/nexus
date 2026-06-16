@@ -61,15 +61,13 @@ export class OffresService {
     const limit = Number(filters.limit) || 10;
     const skip  = (page - 1) * limit;
 
-    // Allow filtering by statut
     const where: any = {};
     if (filters.statut) {
-      where.statut = filters.statut; // OUVERTE / FERMEE
+      where.statut = filters.statut;
     } else {
-      where.statut = 'OUVERTE'; // default
+      where.statut = 'OUVERTE';
     }
 
-    // existing keyword / localisation / type_contrat / niveau_experience filters
     if (filters.keyword) {
       where.OR = [
         { titre: { contains: filters.keyword, mode: 'insensitive' } },
@@ -145,9 +143,7 @@ export class OffresService {
   ) {
     const offre = await this.findOne(id);
 
-    const user = await this.prisma.utilisateur.findUnique({
-      where: { id: userId },
-    });
+    const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
     if (!user) throw new ForbiddenException('Utilisateur introuvable');
 
     const isOwner = async () => {
@@ -161,12 +157,29 @@ export class OffresService {
 
     if (user.role !== 'ADMIN') await isOwner();
 
+    // ── When opening: notify the entreprise owner ──
+    if (statut === 'OUVERTE' && offre.statut === 'EN_ATTENTE') {
+      const entrepriseOwner = await this.prisma.utilisateur.findFirst({
+        where: { entreprise: { id: offre.entrepriseId } },
+      });
+      if (entrepriseOwner) {
+        await this.prisma.notification.create({
+          data: {
+            utilisateurId: entrepriseOwner.id,
+            titre:         'Offre approuvée',
+            message:       `Votre offre "${offre.titre}" a été approuvée et est maintenant visible par les candidats.`,
+            metadata:      { type: 'offre', offreId: offre.id },
+          },
+        });
+      }
+    }
+
     // ── When closing: refuse all pending candidatures + notify candidates ──
     if (statut === 'FERMEE') {
       const affectedCandidatures = await this.prisma.candidature.findMany({
         where: {
           offreId: id,
-          statut: { notIn: ['ACCEPTE', 'REFUSE'] }, // only non-decided ones
+          statut: { notIn: ['ACCEPTE', 'REFUSE'] },
         },
         include: {
           candidat: {
@@ -176,7 +189,6 @@ export class OffresService {
       });
 
       if (affectedCandidatures.length > 0) {
-        // Bulk refuse
         await this.prisma.candidature.updateMany({
           where: {
             offreId: id,
@@ -185,12 +197,13 @@ export class OffresService {
           data: { statut: 'REFUSE' },
         });
 
-        // Notify each affected candidate
         await this.prisma.notification.createMany({
           data: affectedCandidatures.map((c) => ({
             utilisateurId: c.candidat.utilisateur.id,
-            titre: 'Offre clôturée',
-            message: `L'offre "${offre.titre}" a été clôturée. Votre candidature a été automatiquement refusée.`,
+            titre:         'Offre clôturée',
+            message:       `L'offre "${offre.titre}" a été clôturée. Votre candidature a été automatiquement refusée.`,
+            // metadata with createMany requires Prisma 5+; use individual creates if on Prisma 4
+            metadata:      { type: 'offre', offreId: offre.id },
           })),
         });
       }
@@ -259,5 +272,18 @@ export class OffresService {
       },
       include: this.includeFields(),
     });
+  }
+
+  async findByEntrepriseId(entrepriseId: number) {
+    return this.prisma.offre.findMany({
+      where: { entrepriseId },
+      orderBy: { createdAt: 'desc' },
+      include: this.includeFields(),
+    });
+  }
+
+  async adminRemove(id: number) {
+    await this.prisma.offre.delete({ where: { id } });
+    return { message: 'Offre supprimée' };
   }
 }

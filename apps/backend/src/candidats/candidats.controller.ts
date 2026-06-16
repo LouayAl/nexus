@@ -13,6 +13,9 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role } from '@prisma/client';
 
+import { Query } from '@nestjs/common';
+import { AdminCandidatsQueryDto } from './dto/admin-candidats-query.dto';
+
 // ── Candidat routes (role: CANDIDAT) ─────────────────────────────────────────
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.CANDIDAT)
@@ -41,6 +44,11 @@ export class CandidatsController {
     @Param('competenceId', ParseIntPipe) competenceId: number,
   ) {
     return this.candidats.deleteCompetence(req.user.id, competenceId);
+  }
+  
+  @Get('competences/all')
+  getAllCompetences() {
+    return this.candidats.getAllCompetences();
   }
 
   // ── CV Upload ──────────────────────────────────────────────────────────────
@@ -86,7 +94,7 @@ export class CandidatsController {
     limits: { fileSize: 5 * 1024 * 1024 },
   }))
   async uploadAvatar(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
-    console.log('file received:', file);
+    // console.log('file received:', file);
     if (!file) throw new Error('No file received — multer rejected it');
     const avatarUrl = `/uploads/avatars/${file.filename}`;
     return this.candidats.updateAvatarUrl(req.user.id, avatarUrl);
@@ -140,6 +148,11 @@ export class CandidatsController {
   deleteLangue(@Request() req: any, @Param('id', ParseIntPipe) id: number) {
     return this.candidats.deleteLangue(req.user.id, id);
   }
+
+  @Patch('remuneration')
+  updateRemuneration(@Request() req: any, @Body() body: any) {
+    return this.candidats.updateRemuneration(req.user.id, body);
+  }
 }
 
 // ── Admin routes (role: ADMIN) ────────────────────────────────────────────────
@@ -149,17 +162,58 @@ export class CandidatsController {
 export class CandidatsAdminController {
   constructor(private candidats: CandidatsService) {}
 
-  /** GET /candidats/admin/all — list every candidat with counts */
   @Get('all')
-  getAllCandidats() {
-    return this.candidats.getAllCandidats();
+  getAllCandidats(@Query() query: any) {
+    return this.candidats.getAllCandidats(query);
   }
 
-  /** GET /candidats/admin/:id — full profile + candidatures */
   @Get(':id')
   getCandidatById(@Param('id', ParseIntPipe) id: number) {
     return this.candidats.getCandidatByIdForAdmin(id);
   }
 
+  // ── Competences ────────────────────────────────────────────────────────────
+
+  /** GET /candidats/admin/competences — full list for the picker */
+  @Get('competences/all')
+  getAllCompetences() {
+    return this.candidats.getAllCompetences();
+  }
+
+  /** POST /candidats/admin/competences — create or return existing */
+  @Post('competences')
+  upsertCompetence(@Body('nom') nom: string) {
+    return this.candidats.upsertCompetence(nom);
+  }
   
+  @Patch(':id/note')
+  upsertNote(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { qualifie?: boolean; accompagnement?: boolean | null; compteRendu?: string; pieceJointeUrl?: string },
+  ) {
+    return this.candidats.upsertAdminNote(id, body);
+  }
+
+  @Post(':id/note/piece-jointe')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: (req, file, cb) => {
+        const dir = join(__dirname, '..', '..', '..', 'uploads', 'notes');
+        require('fs').mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+      },
+      filename: (req, file, cb) => {
+        const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `note-${unique}${extname(file.originalname)}`);
+      },
+    }),
+    limits: { fileSize: 10 * 1024 * 1024 },
+  }))
+  async uploadNoteFile(
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const pieceJointeUrl = `/uploads/notes/${file.filename}`;
+    return this.candidats.upsertAdminNote(id, { pieceJointeUrl });
+  }
 }

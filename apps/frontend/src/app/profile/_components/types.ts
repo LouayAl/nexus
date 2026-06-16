@@ -2,9 +2,9 @@
 import type { CandidatProfile } from "@/lib/api";
 
 export const SKILL_COLORS = ["#2284C0","#10406B","#1A9E6F","#EE813D","#7C3AED","#D64045"];
-export const NIVEAU_OPTIONS = ["Débutant","Intermédiaire","Avancé","Natif"];
+export const NIVEAU_OPTIONS = ["Débutant","Intermédiaire","Avancé","Bilingue","Natif"];
 export const LANGUE_NIVEAU_COLORS: Record<string, string> = {
-  "Débutant":"#B0C4D4", "Intermédiaire":"#2284C0", "Avancé":"#1A9E6F", "Natif":"#10406B",
+  "Débutant":"#B0C4D4", "Intermédiaire":"#2284C0", "Avancé":"#1A9E6F","Bilingue":"#7C3AED", "Natif":"#10406B", 
 };
 
 export function initials(p: CandidatProfile) {
@@ -38,4 +38,12 @@ export type ModalType =
   | "addExp"
   | "addForm"
   | "addLang"
+  | "remuneration"
   | "changePw";
+
+  export function skillColor(niveau: number): string {
+  if (niveau >= 85) return "#1A9E6F"; // Expert        — green
+  if (niveau >= 65) return "#2284C0"; // Avancé        — blue
+  if (niveau >= 40) return "#EE813D"; // Intermédiaire — orange
+  return "#B0C4D4";                   // Débutant      — grey
+}

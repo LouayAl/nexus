@@ -1,44 +1,41 @@
 // frontend/src/lib/api.ts
 import axios from "axios";
-import Cookies from "js-cookie";
 
-const TOKEN_KEY = "nexus_token";
+const isProd = process.env.NODE_ENV === "production";
+
+const baseURL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (isProd ? "https://recrutement.ifmia.ma/api" : "http://localhost:3001/api");
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api",
+  baseURL,
   timeout: 10_000,
-});
-
-api.interceptors.request.use((config) => {
-  const token = Cookies.get(TOKEN_KEY);
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     const url = err.config?.url ?? "";
-    const isAuthRoute = url.includes("/auth/me") || url.includes("/auth/login") || url.includes("/auth/register");
+    const isAuthRoute =
+      url.includes("/auth/me") ||
+      url.includes("/auth/login") ||
+      url.includes("/auth/register") ||
+      url.includes("/auth/logout");
     if (err.response?.status === 401 && !isAuthRoute) {
-      Cookies.remove(TOKEN_KEY);
       if (typeof window !== "undefined") window.location.href = "/auth/login";
     }
     return Promise.reject(err);
   }
 );
 
-export const setToken    = (token: string) =>
-  Cookies.set(TOKEN_KEY, token, { expires: 7, sameSite: "strict" });
-export const removeToken = () => Cookies.remove(TOKEN_KEY);
-export const getToken    = () => Cookies.get(TOKEN_KEY);
-
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 export const authApi = {
   login:    (email: string, password: string) =>
-    api.post<{ access_token: string; user: User }>("/auth/login", { email, password }),
+    api.post<{ user: User }>("/auth/login", { email, password }),
   register: (data: RegisterPayload) =>
-    api.post<{ access_token: string; user: User }>("/auth/register", data),
+    api.post<{ user: User }>("/auth/register", data),
+  logout: () => api.post<{ message: string }>("/auth/logout"),
   me: () => api.get<UserFull>("/auth/me"),
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.patch("/auth/change-password", data),
@@ -92,6 +89,8 @@ export const candidatsApi = {
     api.post("/candidats/competences", data),
   deleteSkill: (competenceId: number) =>
     api.delete(`/candidats/competences/${competenceId}`),
+  getAllCompetences: () =>
+    api.get<{ id: number; nom: string }[]>('/candidats/competences/all'),
 
   // CV
   uploadCv: (file: File) => {
@@ -122,6 +121,15 @@ export const candidatsApi = {
   addLangue:    (data: LangueDto)                      => api.post<Langue>("/candidats/langues", data),
   updateLangue: (id: number, data: Partial<LangueDto>) => api.patch<Langue>(`/candidats/langues/${id}`, data),
   deleteLangue: (id: number)                           => api.delete(`/candidats/langues/${id}`),
+
+  updateRemuneration: (data: {
+    salaireActuel?:         string;
+    primes?:                boolean;
+    vehiculeFonction?:      boolean;
+    vehiculeService?:       boolean;
+    avantagesSociaux?:      string[];
+    pretentionsSalariales?: string;
+  }) => api.patch('/candidats/remuneration', data),
 };
 
 // ── ENTREPRISES ───────────────────────────────────────────────────────────────
@@ -135,6 +143,22 @@ export const entreprisesApi = {
 // ── ADMIN ─────────────────────────────────────────────────────────────────────
 export interface AdminCreateOffreDto extends CreateOffreDto {
   entrepriseId: number;
+
+  titre: string;
+  description: string;
+  type_contrat: string;
+
+  niveau_experience?: string;
+  localisation?: string;
+
+  salaire_min?: number;
+  salaire_max?: number;
+  salaire_visible?: boolean;   // <-- ADD THIS
+
+  profil_recherche?: string;   // <-- already used
+  langues?: string[];          // <-- already used
+
+  competences?: string[];
 }
 
 export interface EntrepriseAdmin {
@@ -157,9 +181,24 @@ export const adminApi = {
   rejectOffre:         (id: number)                => api.patch(`/offres/${id}/statut`, { statut: "FERMEE" }),
   createForEntreprise: (data: AdminCreateOffreDto) => api.post<Offre>("/offres/admin/create", data),
   getAllEntreprises:   ()                          => api.get<EntrepriseAdmin[]>("/entreprises/admin/all"),
+  
   /** GET /candidats/admin/all */
-  getAllCandidats: () =>
-    api.get<CandidatAdmin[]>("/candidats/admin/all"),
+  getAllCandidats: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    localisation?: string;
+    competence?: string;
+    qualifie?: string;
+    accompagnement?: string;
+  }) =>
+    api.get<{
+      data: CandidatAdmin[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>("/candidats/admin/all", { params }),
  
   /** GET /candidats/admin/:id  (full profile + candidatures) */
   getCandidatById: (id: number) =>
@@ -169,7 +208,32 @@ export const adminApi = {
     api.post("/auth/admin/create-candidat", { ...data, role: "CANDIDAT" }),
   createEntreprise: (data: { email: string; password: string; nomEntreprise: string }) =>
     api.post("/auth/admin/create-entreprise", { ...data, role: "ENTREPRISE" }),
+  getAllCompetences: () =>
+    api.get<{ id: number; nom: string }[]>('/candidats/admin/competences/all'),
 
+  upsertCompetence: (nom: string) =>
+    api.post<{ id: number; nom: string }>('/candidats/admin/competences', { nom }),
+  getOffresByEntreprise: (entrepriseId: number) =>
+    api.get<Offre[]>(`/offres/admin/entreprise/${entrepriseId}`),
+  updateOffreStatut: (id: number, statut: string) =>
+    api.patch(`/offres/${id}/statut`, { statut }),
+  deleteOffre: (id: number) =>
+    api.delete(`/offres/admin/${id}`),
+
+  upsertCandidatNote: (id: number, data: {
+    qualifie?: boolean;
+    accompagnement?: boolean | null;
+    compteRendu?: string;
+    pieceJointeUrl?: string;
+  }) => api.patch(`/candidats/admin/${id}/note`, data),
+
+  uploadCandidatNoteFile: (id: number, file: File) => {
+    const form = new FormData();
+    form.append('file', file);
+    return api.post(`/candidats/admin/${id}/note/piece-jointe`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
 
 export interface CandidatAdmin {
@@ -197,6 +261,19 @@ export interface CandidatAdmin {
     experiences?: number;
     formations?:  number;
   };
+  adminNote?: {
+    qualifie:       boolean;
+    accompagnement: boolean | null;
+    compteRendu:    string | null;
+    pieceJointeUrl: string | null;
+  } | null;
+  // Rémunération
+  salaireActuel?:         string;
+  pretentionsSalariales?: string;
+  primes?:                boolean;
+  vehiculeFonction?:      boolean;
+  vehiculeService?:       boolean;
+  avantagesSociaux?:      string[];
 }
 
 
@@ -295,6 +372,13 @@ export interface CandidatProfile {
   langues?:      Langue[];
   utilisateur?:  { email: string; createdAt: string };
   avatarUrl?: string | null;
+
+  salaireActuel?:         string;
+  primes?:                boolean;
+  vehiculeFonction?:      boolean;
+  vehiculeService?:       boolean;
+  avantagesSociaux?:      string[];
+  pretentionsSalariales?: string;
 }
 
 export interface CandidatProfileUpdate {
@@ -317,6 +401,9 @@ export interface Offre {
   localisation?:     string;
   salaire_min?:      number;
   salaire_max?:      number;
+  salaire_visible?:  boolean;
+  profil_recherche?: string;
+  langues?:          string[];
   createdAt:         string;
   entreprise:        { id: number; nom: string; logoUrl?: string; localisation?: string };
   competences?:      { competenceId: number; competence: { id: number; nom: string } }[];
@@ -349,6 +436,9 @@ export interface CreateOffreDto {
   salaire_min?:       number;
   salaire_max?:       number;
   competences?:       string[];
+  salaire_visible?:   boolean;
+  profil_recherche?:  string;
+  langues?:           string[];
 }
 
 export interface Candidature {
@@ -389,4 +479,9 @@ export interface Notification {
   message:       string;
   lu:            boolean;
   createdAt:     string;
+  metadata?:     {
+    type?:           'offre' | 'candidature';
+    offreId?:        number;
+    candidatureId?:  number;
+  } | null;
 }

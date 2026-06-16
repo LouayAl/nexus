@@ -1,3 +1,4 @@
+// frontend/src/app/admin/components/OffresTab.tsx
 "use client";
 
 import { useState } from "react";

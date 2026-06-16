@@ -1,3 +1,4 @@
+// frontend/src/app/company/profile/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,14 +14,68 @@ import { entreprisesApi, offresApi, type EntrepriseProfile } from "@/lib/api";
 import toast from "react-hot-toast";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
-
+import { LocationInput } from "@/components/ui/LocationInput";
 import { ChangePasswordModal } from "@/components/auth/ChangePasswordModal";
+import { ColoredSelect } from "@/app/admin/components/ColoredSelect";
+
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const SECTEURS = [
-  "Tech & Logiciel","Data & IA","Cloud & DevOps","Cybersécurité",
-  "Design & Produit","Marketing & Growth","Finance & Fintech",
-  "MedTech & Santé","GreenTech","E-commerce","Conseil","Autre",
+  // Tech
+  "Tech & Logiciel",
+  "Data & Intelligence Artificielle",
+  "Cloud & DevOps",
+  "Cybersécurité",
+  "Télécommunications",
+
+  // Business & Finance
+  "Finance & Banque",
+  "Fintech & Paiement",
+  "Comptabilité & Audit",
+  "Assurance",
+  "Conseil & Management",
+
+  // Marketing & Commerce
+  "Marketing & Communication",
+  "Publicité & Médias",
+  "E-commerce & Retail",
+  "Ventes & Business Development",
+
+  // Industrie & Ingénierie
+  "Industrie & Manufacturing",
+  "Automobile & Mobilité",
+  "Aéronautique & Défense",
+  "Énergie & Utilities",
+  "BTP & Immobilier",
+  "Chimie & Matériaux",
+
+  // Santé & Sciences
+  "Santé & Médical",
+  "Pharmacie & Biotechnologie",
+  "Recherche & Sciences",
+
+  // RH & Services
+  "Ressources Humaines",
+  "Formation & Éducation",
+  "Juridique & Conformité",
+  "Logistique & Supply Chain",
+  "Transport & Livraison",
+  "Tourisme & Hôtellerie",
+  "Restauration & Alimentation",
+
+  // Créatif & Design
+  "Design & UX/UI",
+  "Architecture & Urbanisme",
+  "Médias & Divertissement",
+  "Mode & Luxe",
+
+  // Impact & Public
+  "GreenTech & Environnement",
+  "Agriculture & Agritech",
+  "Administration Publique",
+  "ONG & Associations",
+
+  "Autre",
 ];
 
 function completionPct(p: EntrepriseProfile) {
@@ -121,13 +176,20 @@ function EditProfileModal({ profile, onClose }: { profile: EntrepriseProfile; on
           <input style={iSx} value={form.nom} onChange={set("nom")} required onFocus={focusBorder} onBlur={blurBorder} placeholder="TechNova SAS"/>
         </Field>
         <Field label="Secteur d'activité">
-          <select style={iSx} value={form.secteur} onChange={set("secteur")} onFocus={focusBorder} onBlur={blurBorder}>
-            <option value="">— Sélectionner —</option>
-            {SECTEURS.map(s => <option key={s}>{s}</option>)}
-          </select>
+          <ColoredSelect
+            value={form.secteur}
+            onChange={v => setForm(f => ({ ...f, secteur: v }))}
+            placeholder="— Sélectionner —"
+            searchable
+            options={SECTEURS.map(s => ({ value: s, label: s }))}
+          />
         </Field>
         <Field label="Localisation">
-          <input style={iSx} value={form.localisation} onChange={set("localisation")} onFocus={focusBorder} onBlur={blurBorder} placeholder="Paris, France"/>
+          <LocationInput
+            style={iSx}
+            value={form.localisation}
+            onChange={v => setForm(f => ({ ...f, localisation: v }))}
+          />
         </Field>
         <Field label="Site web">
           <input style={iSx} value={form.siteWeb} onChange={set("siteWeb")} onFocus={focusBorder} onBlur={blurBorder} placeholder="https://monentreprise.com"/>

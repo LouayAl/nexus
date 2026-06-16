@@ -17,12 +17,12 @@ function Footer() {
     <footer style={{ background:"#10406B", padding:"40px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         <div style={{ width:32, height:32, borderRadius:8, background:"linear-gradient(135deg, #EE813D, #2284C0)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <span className="font-display" style={{ color:"white", fontSize:16, fontWeight:900 }}>N</span>
+          <span className="font-display" style={{ color:"white", fontSize:16, fontWeight:900 }}>S</span>
         </div>
-        <span className="font-display" style={{ fontSize:18, fontWeight:800, color:"white" }}>nexus</span>
+        <span className="font-display" style={{ fontSize:18, fontWeight:800, color:"white" }}>S3M</span>
       </div>
       <div style={{ fontSize:13, color:"rgba(255,255,255,0.4)", textAlign:"center" }}>
-        © 2026 Nexus · La plateforme de recrutement de demain
+        © 2026 S3M · La plateforme de recrutement de demain
       </div>
       <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"center" }}>
         {["Confidentialité","CGU","Contact"].map(link => (

@@ -9,6 +9,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { CandidatsModule } from './candidats/candidats.module';
 import { EntreprisesModule } from './entreprises/entreprises.module';
 import { MailModule } from './mail/mail.module';
+import { GeocodingController } from './geocoding/geocoding.controller';
 
 @Module({
   imports: [
@@ -22,5 +23,6 @@ import { MailModule } from './mail/mail.module';
     EntreprisesModule,
     MailModule,
   ],
+  controllers: [GeocodingController],
 })
 export class AppModule {}
