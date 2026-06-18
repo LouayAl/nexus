@@ -1,4 +1,3 @@
-// frontend/src/app/admin/entreprises/[id]/offres/OffreEditPanel.tsx
 "use client";
 
 import { useState } from "react";
@@ -35,32 +34,39 @@ interface Props {
 }
 
 export function OffreEditPanel({ offre, onDone }: Props) {
-  const [titre,       setTitre]       = useState(offre.titre);
-  const [description, setDescription] = useState(offre.description);
-  const [contrat,     setContrat]     = useState(offre.type_contrat);
-  const [niveau,      setNiveau]      = useState(offre.niveau_experience ?? "");
-  const [localisation,setLocalisation]= useState(offre.localisation ?? "");
-  const [salaireMin, setSalaireMin] = useState(String(offre.salaire_min ?? ""));
-  const [salaireMax, setSalaireMax] = useState(String(offre.salaire_max ?? ""));
-  const [statut,      setStatut]      = useState(offre.statut);
-  const [competences, setCompetences] = useState(
+  const [titre,        setTitre]        = useState(offre.titre);
+  const [description,  setDescription]  = useState(offre.description);
+  const [profil,       setProfil]       = useState(offre.profil_recherche ?? "");
+  const [contrat,      setContrat]      = useState(offre.type_contrat);
+  const [niveau,       setNiveau]       = useState(offre.niveau_experience ?? "");
+  const [localisation, setLocalisation] = useState(offre.localisation ?? "");
+  const [salaireMin,   setSalaireMin]   = useState(String(offre.salaire_min ?? ""));
+  const [salaireMax,   setSalaireMax]   = useState(String(offre.salaire_max ?? ""));
+  const [statut,       setStatut]       = useState(offre.statut);
+  const [competences,  setCompetences]  = useState(
     offre.competences?.map((c: any) => c.competence.nom).join(", ") ?? ""
+  );
+  const [langues, setLangues] = useState(
+    offre.langues?.join(", ") ?? ""
   );
 
   const mut = useMutation({
     mutationFn: () => {
       const comps = competences.split(",").map(s => s.trim()).filter(Boolean);
+      const langs = langues.split(",").map(s => s.trim()).filter(Boolean);
       return offresApi.update(offre.id, {
-        titre, description, type_contrat: contrat,
+        titre, description,
+        profil_recherche: profil || undefined,
+        type_contrat: contrat,
         niveau_experience: niveau || undefined,
         localisation: localisation || undefined,
         salaire_min: salaireMin ? Number(salaireMin) : undefined,
         salaire_max: salaireMax ? Number(salaireMax) : undefined,
         competences: comps.length ? comps : undefined,
+        langues: langs.length ? langs : undefined,
       });
     },
     onSuccess: async () => {
-      // update statut separately if changed
       if (statut !== offre.statut) {
         await adminApi.updateOffreStatut(offre.id, statut);
       }
@@ -77,6 +83,39 @@ export function OffreEditPanel({ offre, onDone }: Props) {
         <div style={{ gridColumn: "1 / -1" }}>
           <label style={labelSx}>Titre</label>
           <input style={iSx} value={titre} onChange={e => setTitre(e.target.value)} />
+        </div>
+
+        {/* Description */}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <label style={labelSx}>Description</label>
+          <textarea
+            style={{ ...iSx, minHeight: 120, resize: "vertical" }}
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+          />
+        </div>
+
+        {/* Profil recherché */}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <label style={labelSx}>Profil recherché</label>
+          <textarea
+            style={{ ...iSx, minHeight: 90, resize: "vertical" }}
+            value={profil}
+            onChange={e => setProfil(e.target.value)}
+            placeholder="Décrivez le profil idéal pour ce poste…"
+          />
+        </div>
+
+        {/* Competences */}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <label style={labelSx}>Compétences (séparées par virgule)</label>
+          <input style={iSx} value={competences} onChange={e => setCompetences(e.target.value)} placeholder="React, Node.js, SQL…" />
+        </div>
+
+        {/* Langues */}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <label style={labelSx}>Langues (séparées par virgule)</label>
+          <input style={iSx} value={langues} onChange={e => setLangues(e.target.value)} placeholder="Français, Anglais…" />
         </div>
 
         {/* Contrat */}
@@ -102,16 +141,6 @@ export function OffreEditPanel({ offre, onDone }: Props) {
           <input style={iSx} value={localisation} onChange={e => setLocalisation(e.target.value)} placeholder="Casablanca…" />
         </div>
 
-        {/* Salaire */}
-        <div>
-            <label style={labelSx}>Salaire min (MAD)</label>
-            <input style={iSx} type="number" value={salaireMin} onChange={e => setSalaireMin(e.target.value)} placeholder="8000" />
-        </div>
-        <div>
-            <label style={labelSx}>Salaire max (MAD)</label>
-            <input style={iSx} type="number" value={salaireMax} onChange={e => setSalaireMax(e.target.value)} placeholder="12000" />
-        </div>
-
         {/* Statut */}
         <div>
           <label style={labelSx}>Statut</label>
@@ -120,20 +149,14 @@ export function OffreEditPanel({ offre, onDone }: Props) {
           </select>
         </div>
 
-        {/* Competences */}
+        {/* Salaire */}
         <div>
-          <label style={labelSx}>Compétences (séparées par virgule)</label>
-          <input style={iSx} value={competences} onChange={e => setCompetences(e.target.value)} placeholder="React, Node.js, SQL…" />
+          <label style={labelSx}>Salaire min (MAD)</label>
+          <input style={iSx} type="number" value={salaireMin} onChange={e => setSalaireMin(e.target.value)} placeholder="8000" />
         </div>
-
-        {/* Description */}
-        <div style={{ gridColumn: "1 / -1" }}>
-          <label style={labelSx}>Description</label>
-          <textarea
-            style={{ ...iSx, minHeight: 120, resize: "vertical" }}
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
+        <div>
+          <label style={labelSx}>Salaire max (MAD)</label>
+          <input style={iSx} type="number" value={salaireMax} onChange={e => setSalaireMax(e.target.value)} placeholder="12000" />
         </div>
       </div>
 

@@ -277,7 +277,7 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
               fontSize: 11, fontWeight: 700, textTransform: "uppercase",
               letterSpacing: "0.07em", color: "#5A7A96",
             }}>
-              Salaire (MAD/an) — optionnel
+              Salaire (MAD/mois) — optionnel
             </label>
 
             {/* salaire_visible toggle */}

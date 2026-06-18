@@ -203,7 +203,7 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
               fontSize: 11, fontWeight: 700, textTransform: "uppercase",
               letterSpacing: "0.07em", color: "#5A7A96",
             }}>
-              Salaire (MAD/an) — optionnel
+              Salaire (MAD/mois) — optionnel
             </label>
 
             <button
@@ -257,7 +257,7 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
                 fontSize: 12, fontWeight: 600,
                 color: form.salaire_visible ? "#1A9E6F" : "#D64045",
               }}>
-                {Math.round(form.salaire_min / 1000)}K – {Math.round(form.salaire_max / 1000)}K MAD / an
+                {Math.round(form.salaire_min / 1000)}K – {Math.round(form.salaire_max / 1000)}K MAD / mois
                 {!form.salaire_visible && " · masqué pour les candidats"}
               </span>
             </div>

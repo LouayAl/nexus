@@ -96,33 +96,38 @@ export class OffresService {
     return offre;
   }
 
-  async update(id: number, userId: number, dto: UpdateOffreDto) {
-    const offre = await this.findOne(id);
-    const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
+async update(id: number, userId: number, dto: UpdateOffreDto) {
+  const offre = await this.findOne(id);
 
+  const user = await this.prisma.utilisateur.findUnique({ where: { id: userId } });
+  if (!user) throw new ForbiddenException('Utilisateur introuvable');
+
+  if (user.role !== 'ADMIN') {
+    const entreprise = await this.prisma.entreprise.findUnique({ where: { utilisateurId: userId } });
     if (!entreprise || offre.entrepriseId !== entreprise.id) {
       throw new ForbiddenException('Non autorisé');
     }
-
-    const { competences, ...data } = dto;
-
-    if (competences) {
-      await this.prisma.competenceOffre.deleteMany({ where: { offreId: id } });
-    }
-
-    return this.prisma.offre.update({
-      where: { id },
-      data: {
-        ...data,
-        ...(competences && {
-          competences: {
-            create: await this.resolveCompetences(competences),
-          },
-        }),
-      },
-      include: this.includeFields(),
-    });
   }
+
+  const { competences, ...data } = dto;
+
+  if (competences) {
+    await this.prisma.competenceOffre.deleteMany({ where: { offreId: id } });
+  }
+
+  return this.prisma.offre.update({
+    where: { id },
+    data: {
+      ...data,
+      ...(competences && {
+        competences: {
+          create: await this.resolveCompetences(competences),
+        },
+      }),
+    },
+    include: this.includeFields(),
+  });
+}
 
   async remove(id: number, userId: number) {
     const offre = await this.findOne(id);

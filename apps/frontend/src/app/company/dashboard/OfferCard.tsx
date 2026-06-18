@@ -13,7 +13,7 @@ interface OfferCardProps {
 export function OfferCard({ offre, onClick, selectable, selected, onSelect }: OfferCardProps) {
   const [hov, setHov] = useState(false);
   const contract     = CONTRACT_COLORS[offre.type_contrat] ?? { bg: "rgba(16,64,107,0.08)", color: "#10406B" };
-  const salary       = offre.salaire_min && offre.salaire_max ? `${Math.round(offre.salaire_min / 1000)}K – ${Math.round(offre.salaire_max / 1000)}K MAD` : null;
+  const salary       = offre.salaire_min && offre.salaire_max ? `${Math.round(offre.salaire_min / 1000)}K – ${Math.round(offre.salaire_max / 1000)}K MAD/mois` : null;
   const skills       = offre.competences?.map(c => c.competence) ?? [];
   const statutConfig = OFFRE_STATUT_CONFIG[offre.statut] ?? OFFRE_STATUT_CONFIG.FERMEE;
   const candidateCount = offre._count?.candidatures ?? 0;
@@ -77,7 +77,7 @@ export function OfferCard({ offre, onClick, selectable, selected, onSelect }: Of
           <span style={{ fontWeight: 700, color: "#10406B" }}>{candidateCount}</span>
           {" "}candidat{candidateCount !== 1 ? "s" : ""}
         </div>
-        {salary && <div style={{ fontSize: 12, fontWeight: 700, color: "#10406B" }}>{salary}/an</div>}
+        {salary && <div style={{ fontSize: 12, fontWeight: 700, color: "#10406B" }}>{salary}/mois</div>}
         {!selectable && <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: hov ? "#2284C0" : "#B0C4D4", fontWeight: 600, transition: "color 0.2s" }}>Voir <ChevronRight size={12} /></div>}
       </div>
     </div>
