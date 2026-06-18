@@ -209,7 +209,7 @@ body {
 .stagger-children > *:nth-child(5) { animation-delay: 320ms; }
 .stagger-children > *:nth-child(6) { animation-delay: 400ms; }
 
-/* ── Infinite carousel ── */
+/* ── Infinite carousel (replace old .carousel-track block) ── */
 .carousel-track {
   display: flex;
   width: max-content;
@@ -218,9 +218,22 @@ body {
 }
 .carousel-track:hover { animation-play-state: paused; }
 
+.carousel-track-infinite {
+  display: flex;
+  width: max-content;
+  animation: carousel-scroll-infinite 35s linear infinite;
+  will-change: transform;
+}
+.carousel-track-infinite:hover { animation-play-state: paused; }
+
 @keyframes carousel-scroll {
   from { transform: translateX(0); }
   to   { transform: translateX(-33.333%); }
+}
+
+@keyframes carousel-scroll-infinite {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-25%); }
 }
 
 /* ── Scrollable row ── */
