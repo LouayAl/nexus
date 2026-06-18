@@ -5,7 +5,7 @@ const isProd = process.env.NODE_ENV === "production";
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL ??
-  (isProd ? "https://recrutement.ifmia.ma/api" : "http://localhost:3001/api");
+  (isProd ? "https://hirin.ma/api" : "http://localhost:3001/api");
 
 export const api = axios.create({
   baseURL,

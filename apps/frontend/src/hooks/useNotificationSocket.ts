@@ -14,7 +14,7 @@ export function useNotificationSocket(userId: number | null) {
     const WS_URL =
       process.env.NEXT_PUBLIC_WS_URL ??
       (process.env.NODE_ENV === "production"
-        ? "https://recrutement.ifmia.ma"
+        ? "https://hirin.ma"
         : "http://localhost:3001");
 
     const socket = io(WS_URL, {
