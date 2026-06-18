@@ -97,7 +97,7 @@ export default function DiscoverPage() {
         onKeyword={setKeyword} onLocation={setLocation}
         onSearch={handleSearch} onTag={handleTag}
       />
-      <StatsBar />
+      {/* <StatsBar /> */}
       <FeaturedSlider
         offres={featured}
         loading={loadingOffres}
