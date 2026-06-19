@@ -1,8 +1,9 @@
-// backend/src/auth/auth.controller.ts
+// apps/backend/src/auth/auth.controller.ts
 import { BadRequestException, Body, Controller, Get, Patch, Post, Query, Request, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
 import { Role } from '@prisma/client';
 import { AuthGuard } from '@nestjs/passport';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -18,6 +19,7 @@ export class AuthController {
     private linkedinStrategy: LinkedInStrategy,
   ) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per minute per IP
   @Post('register')
   async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
     const session = await this.auth.register({ ...dto, role: Role.CANDIDAT });
@@ -25,6 +27,7 @@ export class AuthController {
     return { user: session.user };
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // 5 attempts per minute per IP
   @Post('login')
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const session = await this.auth.login(dto);
