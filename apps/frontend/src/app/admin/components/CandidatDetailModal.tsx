@@ -84,8 +84,45 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
         .cdm-stats     { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
         .cdm-exp-row   { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
         .cdm-cand-row  { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
-        .cdm-skill-row { display:flex; align-items:center; gap:10px; }
-        .cdm-skill-label { width:100px; font-size:12px; font-weight:600; color:#0D2137; flex-shrink:0; }
+        .cdm-skill-row {
+          display:flex;
+          flex-direction:column;
+          gap:6px;
+          padding:10px 12px;
+          background:#F7F8FA;
+          border-radius:10px;
+          border:1px solid rgba(16,64,107,0.06);
+        }
+        .cdm-skill-top {
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap:10px;
+        }
+        .cdm-skill-label {
+          font-size:12px;
+          font-weight:600;
+          color:#0D2137;
+          line-height:1.4;
+        }
+        .cdm-skill-pct {
+          font-size:11px;
+          font-weight:700;
+          color:#2284C0;
+          flex-shrink:0;
+          white-space:nowrap;
+        }
+        .cdm-skill-bar-track {
+          height:6px;
+          border-radius:99px;
+          background:rgba(16,64,107,0.08);
+          overflow:hidden;
+        }
+        .cdm-skill-bar-fill {
+          height:100%;
+          border-radius:99px;
+          background:linear-gradient(90deg,#10406B,#2284C0);
+        }
         @media(max-width:520px) {
           .cdm-hero      { flex-direction:column; }
           .cdm-stats     { grid-template-columns:repeat(2,1fr); }
@@ -296,11 +333,13 @@ export function CandidatDetailModal({ candidatId, onClose }: { candidatId: numbe
               <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                 {candidat.competences!.map(c => (
                   <div key={c.competenceId} className="cdm-skill-row">
-                    <div className="cdm-skill-label">{c.competence.nom}</div>
-                    <div style={{ flex:1, height:6, borderRadius:99, background:"rgba(16,64,107,0.08)", overflow:"hidden" }}>
-                      <div style={{ height:"100%", borderRadius:99, width:`${c.niveau}%`, background:"linear-gradient(90deg,#10406B,#2284C0)" }}/>
+                    <div className="cdm-skill-top">
+                      <div className="cdm-skill-label">{c.competence.nom}</div>
+                      <div className="cdm-skill-pct">{c.niveau}%</div>
                     </div>
-                    <div style={{ fontSize:11, color:"#5A7A96", width:30, textAlign:"right", flexShrink:0 }}>{c.niveau}%</div>
+                    <div className="cdm-skill-bar-track">
+                      <div className="cdm-skill-bar-fill" style={{ width:`${c.niveau}%` }}/>
+                    </div>
                   </div>
                 ))}
               </div>

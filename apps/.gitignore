@@ -34,3 +34,5 @@ uploads/
 
 __pycache__/
 *.pyc
+docker-compose.yml
+docker-compose.yaml
