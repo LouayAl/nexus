@@ -1,12 +1,13 @@
-// src/candidats/candidats.controller.ts
 import {
   Controller, Get, Post, Patch, Delete,
   Body, Param, UseGuards, Request, ParseIntPipe,
-  UploadedFile, UseInterceptors,
+  UploadedFile, UseInterceptors, BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
+import { readFile, unlink } from 'fs/promises';
+import * as FileType from 'file-type';
 import { CandidatsService } from './candidats.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -16,7 +17,13 @@ import { Role } from '@prisma/client';
 import { Query } from '@nestjs/common';
 import { AdminCandidatsQueryDto } from './dto/admin-candidats-query.dto';
 
-// ── Candidat routes (role: CANDIDAT) ─────────────────────────────────────────
+const CV_MIME_WHITELIST = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+const IMAGE_MIME_WHITELIST = ['image/jpeg', 'image/png', 'image/webp'];
+
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.CANDIDAT)
 @Controller('candidats')
@@ -45,7 +52,7 @@ export class CandidatsController {
   ) {
     return this.candidats.deleteCompetence(req.user.id, competenceId);
   }
-  
+
   @Get('competences/all')
   getAllCompetences() {
     return this.candidats.getAllCompetences();
@@ -63,15 +70,29 @@ export class CandidatsController {
     }),
     fileFilter: (req, file, cb) => {
       const allowed = ['.pdf', '.doc', '.docx'];
-      cb(null, allowed.includes(extname(file.originalname).toLowerCase()));
+      if (!allowed.includes(extname(file.originalname).toLowerCase())) {
+        return cb(new BadRequestException('Type de fichier non autorisé'), false);
+      }
+      cb(null, true);
     },
     limits: { fileSize: 5 * 1024 * 1024 },
   }))
   async uploadCv(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
+    if (!file) throw new BadRequestException('Aucun fichier reçu');
+
+    // Verify actual file content matches an allowed type (magic-byte check)
+    const buffer = await readFile(file.path);
+    const detected = await FileType.fromBuffer(buffer);
+    if (!detected || !CV_MIME_WHITELIST.includes(detected.mime)) {
+      await unlink(file.path).catch(() => {});
+      throw new BadRequestException('Le contenu du fichier ne correspond pas à un CV valide');
+    }
+
     const cvUrl = `/uploads/cv/${file.filename}`;
     return this.candidats.updateCvUrl(req.user.id, cvUrl);
   }
 
+  // ── Avatar Upload ──────────────────────────────────────────────────────────
   @Post('avatar')
   @UseInterceptors(FileInterceptor('avatar', {
     storage: diskStorage({
@@ -87,21 +108,27 @@ export class CandidatsController {
     }),
     fileFilter: (req, file, cb) => {
       if (!file.mimetype.startsWith('image/')) {
-        return cb(new Error(`Invalid file type: ${file.mimetype}`), false);
+        return cb(new BadRequestException(`Type de fichier invalide: ${file.mimetype}`), false);
       }
       cb(null, true);
     },
     limits: { fileSize: 5 * 1024 * 1024 },
   }))
   async uploadAvatar(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
-    // console.log('file received:', file);
-    if (!file) throw new Error('No file received — multer rejected it');
+    if (!file) throw new BadRequestException('Aucun fichier reçu');
+
+    const buffer = await readFile(file.path);
+    const detected = await FileType.fromBuffer(buffer);
+    if (!detected || !IMAGE_MIME_WHITELIST.includes(detected.mime)) {
+      await unlink(file.path).catch(() => {});
+      throw new BadRequestException('Le contenu du fichier ne correspond pas à une image valide');
+    }
+
     const avatarUrl = `/uploads/avatars/${file.filename}`;
     return this.candidats.updateAvatarUrl(req.user.id, avatarUrl);
   }
 
-
-  // ── Experiences ────────────────────────────────────────────────────────────
+  // ── Experiences / Formations / Langues / Remuneration unchanged ────────────
   @Post('experiences')
   addExperience(@Request() req: any, @Body() body: any) {
     return this.candidats.addExperience(req.user.id, body);
@@ -117,7 +144,6 @@ export class CandidatsController {
     return this.candidats.deleteExperience(req.user.id, id);
   }
 
-  // ── Formations ─────────────────────────────────────────────────────────────
   @Post('formations')
   addFormation(@Request() req: any, @Body() body: any) {
     return this.candidats.addFormation(req.user.id, body);
@@ -133,7 +159,6 @@ export class CandidatsController {
     return this.candidats.deleteFormation(req.user.id, id);
   }
 
-  // ── Langues ────────────────────────────────────────────────────────────────
   @Post('langues')
   addLangue(@Request() req: any, @Body() body: any) {
     return this.candidats.addLangue(req.user.id, body);
@@ -172,20 +197,16 @@ export class CandidatsAdminController {
     return this.candidats.getCandidatByIdForAdmin(id);
   }
 
-  // ── Competences ────────────────────────────────────────────────────────────
-
-  /** GET /candidats/admin/competences — full list for the picker */
   @Get('competences/all')
   getAllCompetences() {
     return this.candidats.getAllCompetences();
   }
 
-  /** POST /candidats/admin/competences — create or return existing */
   @Post('competences')
   upsertCompetence(@Body('nom') nom: string) {
     return this.candidats.upsertCompetence(nom);
   }
-  
+
   @Patch(':id/note')
   upsertNote(
     @Param('id', ParseIntPipe) id: number,
@@ -194,6 +215,7 @@ export class CandidatsAdminController {
     return this.candidats.upsertAdminNote(id, body);
   }
 
+  // ── Note attachment upload — now with type whitelist + magic-byte check ───
   @Post(':id/note/piece-jointe')
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
@@ -207,12 +229,29 @@ export class CandidatsAdminController {
         cb(null, `note-${unique}${extname(file.originalname)}`);
       },
     }),
+    fileFilter: (req, file, cb) => {
+      const allowed = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+      if (!allowed.includes(extname(file.originalname).toLowerCase())) {
+        return cb(new BadRequestException('Type de fichier non autorisé'), false);
+      }
+      cb(null, true);
+    },
     limits: { fileSize: 10 * 1024 * 1024 },
   }))
   async uploadNoteFile(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!file) throw new BadRequestException('Aucun fichier reçu');
+
+    const buffer = await readFile(file.path);
+    const detected = await FileType.fromBuffer(buffer);
+    const allowedMimes = [...CV_MIME_WHITELIST, ...IMAGE_MIME_WHITELIST];
+    if (!detected || !allowedMimes.includes(detected.mime)) {
+      await unlink(file.path).catch(() => {});
+      throw new BadRequestException('Le contenu du fichier ne correspond pas à un type autorisé');
+    }
+
     const pieceJointeUrl = `/uploads/notes/${file.filename}`;
     return this.candidats.upsertAdminNote(id, { pieceJointeUrl });
   }
