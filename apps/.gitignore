@@ -1,3 +1,4 @@
+# apps/.gitignore
 # dependencies
 node_modules/
 
