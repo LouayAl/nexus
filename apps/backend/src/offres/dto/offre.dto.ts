@@ -57,6 +57,15 @@ export class CreateOffreDto {
   })
   salaire_visible?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  entreprise_visible?: boolean;
+
   @IsOptional()
   competences?: string[];
 }
@@ -109,6 +118,15 @@ export class UpdateOffreDto {
     return value;
   })
   salaire_visible?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
+  })
+  entreprise_visible?: boolean;
 
   @IsEnum(StatutOffre)
   @IsOptional()

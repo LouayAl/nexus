@@ -402,6 +402,7 @@ export interface Offre {
   salaire_min?:      number;
   salaire_max?:      number;
   salaire_visible?:  boolean;
+  entreprise_visible?: boolean;
   profil_recherche?: string;
   langues?:          string[];
   createdAt:         string;
@@ -437,6 +438,7 @@ export interface CreateOffreDto {
   salaire_max?:       number;
   competences?:       string[];
   salaire_visible?:   boolean;
+  entreprise_visible?: boolean;
   profil_recherche?:  string;
   langues?:           string[];
 }

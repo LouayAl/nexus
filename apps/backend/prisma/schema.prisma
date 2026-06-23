@@ -155,7 +155,8 @@ model Offre {
 
   salaire_min        Int?
   salaire_max        Int?
-  salaire_visible    Boolean     @default(true) // NEW
+  salaire_visible    Boolean     @default(true)
+  entreprise_visible Boolean     @default(true)
 
   statut             StatutOffre @default(EN_ATTENTE)
   entrepriseId       Int
