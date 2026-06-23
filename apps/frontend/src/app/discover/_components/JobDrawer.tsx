@@ -189,12 +189,16 @@ export function JobDrawer({ offre, onClose }: Props) {
                   : offre.entreprise.nom
                 }
               </span>
-              {offre.entreprise_visible !== false && offre.localisation && (
+              {offre.entreprise_visible !== false  && (
                 <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 13, color: "#5A7A96" }}>
                   <MapPin size={12} /> {offre.localisation}
                 </span>
               )}
-
+              {offre.localisation && (
+                <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 13, color: "#5A7A96" }}>
+                  <MapPin size={12} /> {offre.localisation}
+                </span>
+              )}
               {offre.niveau_experience && (
                 <span style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 13, color: "#5A7A96" }}>
                   <Briefcase size={12} /> {offre.niveau_experience}

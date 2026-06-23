@@ -54,17 +54,19 @@ export function JobCard({ offre, featured = false, onApply, selectedId, forceAct
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background:   isSelected ? "rgba(34,132,192,0.04)" : "#F7F8FA",
-        border: `1.5px solid ${isSelected ? "#2284C0" : active ? "rgba(34,132,192,0.25)" : "rgba(16,64,107,0.09)"}`,
-        borderRadius: 20,
-        padding:      featured ? "28px 24px" : "22px 20px",
-        flexShrink:   0,
-        width:        "100%",
-        display:      "flex", flexDirection: "column", gap: 14,
-        cursor:       "pointer",
-        transition:   "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
-        boxShadow:    isSelected ? "0 0 0 3px rgba(34,132,192,0.15)" : "none",
-        position:     "relative", overflow: "hidden",
+        background:    isSelected ? "rgba(34,132,192,0.04)" : "#F7F8FA",
+        border:        `1.5px solid ${isSelected ? "#2284C0" : active ? "rgba(34,132,192,0.25)" : "rgba(16,64,107,0.09)"}`,
+        borderRadius:  20,
+        padding:       featured ? "28px 24px" : "22px 20px",
+        flexShrink:    0,
+        width:         "100%",
+        height:        "100%",          // ← fills whatever row height the grid gives it
+        boxSizing:     "border-box",
+        display:       "flex", flexDirection: "column", gap: 14,
+        cursor:        "pointer",
+        transition:    "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
+        boxShadow:     isSelected ? "0 0 0 3px rgba(34,132,192,0.15)" : "none",
+        position:      "relative", overflow: "hidden",
       }}
     >
       {/* Top accent bar */}
@@ -122,16 +124,19 @@ export function JobCard({ offre, featured = false, onApply, selectedId, forceAct
             </span>
           )}
         </div>
+
         <div className="font-display" style={{ fontSize: 16, fontWeight: 700, color: "#0D2137", marginBottom: 4, lineHeight: 1.3 }}>
           {offre.titre}
         </div>
+
+        {/* Company + location — always show location regardless of confidentiality */}
         <div style={{ fontSize: 13, color: "#5A7A96", display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
           <Building2 size={11} />
           {isConfidential
             ? <span style={{ fontStyle: "italic", color: "#B0C4D4" }}>Confidentiel</span>
             : offre.entreprise.nom
           }
-          {!isConfidential && offre.localisation && (
+          {offre.localisation && (
             <><span>&nbsp;·&nbsp;</span><MapPin size={11} /> {offre.localisation}</>
           )}
         </div>
@@ -160,8 +165,11 @@ export function JobCard({ offre, featured = false, onApply, selectedId, forceAct
         </div>
       )}
 
+      {/* Spacer — pushes salary+CTA to the bottom on all cards */}
+      <div style={{ flex: 1 }} />
+
       {/* Salary + CTA */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         {salary
           ? <div style={{ fontSize: 14, fontWeight: 700, color: "#10406B" }}>{salary} / mois</div>
           : <div />

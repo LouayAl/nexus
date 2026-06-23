@@ -24,7 +24,7 @@ function useIsMobile() {
   return isMobile;
 }
 
-const CARD_WIDTH = 280; // px — fixed width on mobile
+const CARD_WIDTH = 280;
 
 export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -32,7 +32,6 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
   const isMobile  = useIsMobile();
   const [activeIdx, setActiveIdx] = useState(0);
 
-  // ── Center a specific card index ──────────────────────────────────────────
   const scrollTo = useCallback((idx: number) => {
     const el        = cardRefs.current[idx];
     const container = sliderRef.current;
@@ -41,7 +40,6 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
     container.scrollTo({ left: offset, behavior: "smooth" });
   }, []);
 
-  // ── IntersectionObserver — mark the most-visible card as active ───────────
   useEffect(() => {
     if (!isMobile || !sliderRef.current || offres.length === 0) return;
     const observers: IntersectionObserver[] = [];
@@ -57,7 +55,6 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
     return () => observers.forEach(o => o.disconnect());
   }, [isMobile, offres]);
 
-  // ── Arrow navigation ──────────────────────────────────────────────────────
   const goMobile = (dir: "left" | "right") => {
     const next = dir === "left"
       ? Math.max(0, activeIdx - 1)
@@ -146,11 +143,12 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
         <div
           ref={sliderRef}
           style={{
-            display: "flex",
-            gap: 16,
-            padding: isMobile ? "16px 0 28px" : "16px 4px 24px",
-            overflowX: "auto",
-            overflowY: "visible",
+            display:    "flex",
+            alignItems: "stretch",   // ← all children grow to the tallest card's height
+            gap:        16,
+            padding:    isMobile ? "16px 0 28px" : "16px 4px 24px",
+            overflowX:  "auto",
+            overflowY:  "visible",
             scrollbarWidth: "none",
             scrollSnapType: isMobile ? "x mandatory" : "none",
             WebkitOverflowScrolling: "touch",
@@ -160,7 +158,6 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
             .featured-track::-webkit-scrollbar { display: none; }
           `}</style>
 
-          {/* Left spacer — pulls first card to center */}
           {isMobile && (
             <div style={{ flexShrink: 0, width: `calc(50vw - ${CARD_WIDTH / 2}px)` }} />
           )}
@@ -183,16 +180,21 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
                     ref={el => { cardRefs.current[idx] = el; }}
                     style={{
                       flexShrink: 0,
-                      width: isMobile ? CARD_WIDTH : 320,
+                      width:      isMobile ? CARD_WIDTH : 320,
+                      // height: "100%" is implicit via alignItems: stretch on the parent
                       scrollSnapAlign: isMobile ? "center" : "none",
-                      // Active card pops forward; inactive cards recede
                       transform:  isActive ? "scale(1.04)" : isMobile ? "scale(0.93)" : "none",
                       opacity:    isMobile && !isActive ? 0.5 : 1,
                       transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease",
+                      display:    "flex",        // ← so the shadow wrapper below can stretch too
+                      flexDirection: "column",
                     }}
                   >
-                    {/* Shadow wrapper — elevated on active */}
+                    {/* Shadow wrapper */}
                     <div style={{
+                      flex:       1,             // ← fills the stretched height
+                      display:    "flex",
+                      flexDirection: "column",
                       borderRadius: 20,
                       boxShadow: isActive
                         ? "0 20px 56px rgba(16,64,107,0.2)"
@@ -204,7 +206,7 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
                         featured
                         onApply={onApply}
                         selectedId={selectedId}
-                        forceActive={isActive}  // tells JobCard to render as if hovered
+                        forceActive={isActive}
                       />
                     </div>
                   </div>
@@ -212,7 +214,6 @@ export function FeaturedSlider({ offres, loading, onApply, selectedId }: Props) 
               })
           }
 
-          {/* Right spacer — pulls last card to center */}
           {isMobile && (
             <div style={{ flexShrink: 0, width: `calc(50vw - ${CARD_WIDTH / 2}px)` }} />
           )}

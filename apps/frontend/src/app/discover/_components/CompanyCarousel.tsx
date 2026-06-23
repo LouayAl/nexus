@@ -32,9 +32,7 @@ export function CompanyCarousel({ entreprises }: { entreprises: EntreprisePublic
                 </div>
                 <div>
                   <div style={{ fontSize:14, fontWeight:700, color:"#0D2137", whiteSpace:"nowrap" }}>{co.nom}</div>
-                  <div style={{ fontSize:11, color:"#5A7A96", display:"flex", alignItems:"center", gap:3, marginTop:1 }}>
-                    <Globe size={10}/> {co._count.offres} offre{co._count.offres > 1 ? "s" : ""} actives
-                  </div>
+                  
                 </div>
               </div>
             ))
