@@ -128,36 +128,6 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
   return (
     <Modal title={isEdit ? "Modifier l'offre" : "Créer une nouvelle offre"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-
-        {/* ── Titre ── */}
-        <Field label="Titre du poste">
-          <input style={inputStyle} value={form.titre} onChange={handleChange("titre")}
-            placeholder="Ex: Senior React Developer" required />
-        </Field>
-
-        {/* ── Contrat + Expérience ── */}
-        <div style={{ display: "flex", gap: 12 }}>
-          <Field label="Type de contrat" half>
-            <select style={inputStyle} value={form.type_contrat} onChange={handleChange("type_contrat")}>
-              {["CDI", "CDD", "Freelance", "Stage", "Alternance", "Intérim"].map(t => (
-                <option key={t}>{t}</option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Niveau d'expérience" half>
-            <select style={inputStyle} value={form.niveau_experience} onChange={handleChange("niveau_experience")}>
-              <option value="">— Sélectionner —</option>
-              {["Junior", "Confirmé", "Senior", "Expert"].map(n => <option key={n}>{n}</option>)}
-            </select>
-          </Field>
-        </div>
-
-        {/* ── Localisation ── */}
-        <Field label="Localisation">
-          <input style={inputStyle} value={form.localisation} onChange={handleChange("localisation")}
-            placeholder="Casablanca, Maroc · Remote…" />
-        </Field>
-
         {/* ── Visibilité entreprise ── */}
         <div style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
@@ -194,6 +164,37 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
             </div>
           )}
         </div>
+
+        {/* ── Titre ── */}
+        <Field label="Titre du poste">
+          <input style={inputStyle} value={form.titre} onChange={handleChange("titre")}
+            placeholder="Ex: Senior React Developer" required />
+        </Field>
+
+        {/* ── Contrat + Expérience ── */}
+        <div style={{ display: "flex", gap: 12 }}>
+          <Field label="Type de contrat" half>
+            <select style={inputStyle} value={form.type_contrat} onChange={handleChange("type_contrat")}>
+              {["CDI", "CDD", "Freelance", "Stage", "Alternance", "Intérim"].map(t => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Niveau d'expérience" half>
+            <select style={inputStyle} value={form.niveau_experience} onChange={handleChange("niveau_experience")}>
+              <option value="">— Sélectionner —</option>
+              {["Junior", "Confirmé", "Senior", "Expert"].map(n => <option key={n}>{n}</option>)}
+            </select>
+          </Field>
+        </div>
+
+        {/* ── Localisation ── */}
+        <Field label="Localisation">
+          <input style={inputStyle} value={form.localisation} onChange={handleChange("localisation")}
+            placeholder="Casablanca, Maroc · Remote…" />
+        </Field>
+
+        
 
         {/* ── Salaire ── */}
         <div style={{ marginBottom: 16 }}>
