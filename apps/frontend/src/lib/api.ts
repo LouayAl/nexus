@@ -138,6 +138,11 @@ export const entreprisesApi = {
   getProfile:    () => api.get<EntrepriseProfile>("/entreprises/profile"),
   updateProfile: (data: Partial<EntrepriseProfile>) =>
     api.patch<EntrepriseProfile>("/entreprises/profile", data),
+  uploadLogo: (file: File) => {
+    const form = new FormData();
+    form.append("logo", file);
+    return api.post<{ logoUrl: string }>("/entreprises/logo", form);
+  },
 };
 
 // ── ADMIN ─────────────────────────────────────────────────────────────────────

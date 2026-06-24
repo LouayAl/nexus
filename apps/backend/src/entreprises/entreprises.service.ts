@@ -53,4 +53,11 @@ export class EntreprisesService {
       },
     });
   }
+
+  async updateLogoUrl(userId: number, logoUrl: string) {
+  return this.prisma.entreprise.update({
+    where: { utilisateurId: userId },
+    data:  { logoUrl },
+  });
+}
 }

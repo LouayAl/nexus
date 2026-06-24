@@ -17,6 +17,8 @@ import Link from "next/link";
 import { LocationInput } from "@/components/ui/LocationInput";
 import { ChangePasswordModal } from "@/components/auth/ChangePasswordModal";
 import { ColoredSelect } from "@/app/admin/components/ColoredSelect";
+import { LogoUpload } from "@/components/LogoUpload";
+
 
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -264,25 +266,12 @@ export default function CompanyProfilePage() {
 
       {/* Avatar row */}
       <div style={{ display:"flex", alignItems:"center", gap:16, marginBottom:20 }}>
-        <div style={{ position:"relative", flexShrink:0 }}>
-          <div style={{
-            width: isMobile ? 64 : 80, height: isMobile ? 64 : 80,
-            borderRadius:18, background:"linear-gradient(135deg, #10406B, #2284C0)",
-            display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize: isMobile ? 22 : 28, fontWeight:900, color:"white",
-            fontFamily:"'Fraunces',serif", boxShadow:"0 8px 24px rgba(16,64,107,0.2)",
-          }}>
-            {initials}
-          </div>
-          <button onClick={() => setShowEdit(true)} style={{
-            position:"absolute", bottom:-2, right:-2,
-            width:24, height:24, borderRadius:"50%",
-            background:"#EE813D", border:"2px solid white",
-            display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer",
-          }}>
-            <Edit2 size={11} color="white"/>
-          </button>
-        </div>
+        <LogoUpload
+          nom={profile.nom}
+          logoUrl={profile.logoUrl}
+          size={isMobile ? 64 : 80}
+          queryKey="entreprise-profile"
+        />
         <div style={{ flex:1, minWidth:0 }}>
           <div className="font-display" style={{ fontSize: isMobile ? 18 : 22, fontWeight:800, color:"#0D2137", marginBottom:3 }}>{profile.nom}</div>
           {profile.secteur && <div style={{ color:"#2284C0", fontSize:13, fontWeight:600, marginBottom:3 }}>{profile.secteur}</div>}
