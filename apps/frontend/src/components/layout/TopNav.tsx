@@ -101,7 +101,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
   return (
     <>
       <header style={{
-        position:     "sticky", top: 0, zIndex: 100, height: 66,
+        position:     "sticky", top: 0, zIndex: 100, height: 85,
         display:      "flex", alignItems: "center", padding: "0 24px", gap: 8,
         background:   scrolled ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.85)",
         backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
@@ -110,7 +110,7 @@ export function TopNav({ pageTitle }: { pageTitle: string }) {
         boxShadow:    scrolled ? "0 2px 20px rgba(16,64,107,0.07)" : "none",
       }}>
         <Link href={logoHref} style={{ textDecoration: "none", display: "flex", alignItems: "center", flexShrink: 0 }}>
-          <BrandLogo height={40} />
+          <BrandLogo height={60} />
         </Link>
 
         {/* Desktop nav */}

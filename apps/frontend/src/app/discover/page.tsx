@@ -16,21 +16,76 @@ import { BrandLogo } from "@/components/common/BrandLogo";
 
 function Footer() {
   return (
-    <footer style={{ background:"#10406B", padding:"40px 32px", display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:16 }}>
-      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-        <div style={{ width:52, height:32, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <BrandLogo height={60} dark />
-        </div>
-        <span className="font-display" style={{ fontSize:18, fontWeight:800, color:"white" }}>S3M</span>
+    <footer
+      style={{
+        background:
+          "linear-gradient(135deg, #0D2137 0%, #10406B 50%, #2284C0 100%)",
+        padding: "64px 32px 32px",
+        textAlign: "center",
+        borderTop: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      {/* Logo */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginBottom: 20,
+          
+        }}
+      >
+        <BrandLogo height={100} dark />
       </div>
-      <div style={{ fontSize:13, color:"rgba(255,255,255,0.4)", textAlign:"center" }}>
+
+      {/* Tagline */}
+      <p
+        style={{
+          color: "rgba(255,255,255,0.78)",
+          fontSize: 15,
+          lineHeight: 1.8,
+          maxWidth: 650,
+          margin: "0 auto 28px",
+          fontWeight: 500,
+        }}
+      >
+        La plateforme qui connecte les meilleurs talents aux entreprises qui
+        recrutent. <br />
+        Trouvez les opportunités qui correspondent à vos ambitions
+        professionnelles.
+      </p>
+
+      {/* Divider */}
+      <div
+        style={{
+          width: 100,
+          height: 1,
+          background: "rgba(255,255,255,0.15)",
+          margin: "0 auto 28px",
+        }}
+      />
+
+      {/* Footer Links */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: 28,
+          flexWrap: "wrap",
+          marginBottom: 10,
+        }}
+      >
+      </div>
+
+      {/* Copyright */}
+      <div
+        style={{
+          fontSize: 13,
+          color: "rgba(255,255,255,0.45)",
+          letterSpacing: "0.02em",
+        }}
+      >
         © 2026 S3M · La plateforme de recrutement de demain
       </div>
-      {/* <div style={{ display:"flex", gap:20, flexWrap:"wrap", justifyContent:"center" }}>
-        {["Confidentialité","CGU","Contact"].map(link => (
-          <span key={link} style={{ fontSize:13, color:"rgba(255,255,255,0.45)", cursor:"pointer", fontWeight:500 }}>{link}</span>
-        ))}
-      </div> */}
     </footer>
   );
 }

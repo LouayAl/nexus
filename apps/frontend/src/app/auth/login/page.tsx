@@ -4,7 +4,7 @@
 import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Sparkles, UserRound   } from "lucide-react";
 import toast from "react-hot-toast";
 import { OAuthButtons } from "@/components/auth/OAuthButtons";
 import { BrandLogo } from "@/components/common/BrandLogo";
@@ -150,8 +150,15 @@ function LoginForm() {
         }}>
           <div style={{ position: "absolute", inset: 0, opacity: 0.07, backgroundImage: "radial-gradient(ellipse at 20% 20%, #EE813D 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, #2284C0 0%, transparent 50%)" }} />
 
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <BrandLogo height={42} dark />
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              display: "flex",
+              justifyContent: "flex-start",
+            }}
+          >
+            <BrandLogo height={80} dark />
           </div>
 
           <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 0" }}>
@@ -193,8 +200,16 @@ function LoginForm() {
             <LanguageToggle language={language} onChange={setLanguage} />
           </div>
 
-          <div className="login-mobile-logo" style={{ alignItems: "center", marginBottom: 28 }}>
-            <BrandLogo height={34} />
+          <div
+            className="login-mobile-logo"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 20,
+            }}
+          >
+            <BrandLogo height={54} />
           </div>
 
           <div style={{ marginBottom: 24 }}>
@@ -204,6 +219,33 @@ function LoginForm() {
             </div>
             {/* <h2 className="font-display" style={{ fontSize: "clamp(22px,4vw,28px)", fontWeight: 900, color: "#0D2137", marginBottom: 4 }}>{copy.title}</h2> */}
             <p style={{ fontSize: 14, color: "#5A7A96" }}>{copy.subtitle}</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: 24,
+              }}
+            >
+              <div
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: "50%",
+                  background:
+                    "linear-gradient(135deg, rgba(16,64,107,0.08), rgba(34,132,192,0.12))",
+                  border: "1px solid rgba(16,64,107,0.08)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <UserRound  
+                  size={50}
+                  color="#10406B"
+                  strokeWidth={1.8}
+                />
+              </div>
+            </div>
           </div>
 
           <OAuthButtons mode="login" />

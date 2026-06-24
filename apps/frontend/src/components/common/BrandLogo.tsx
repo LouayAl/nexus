@@ -30,17 +30,39 @@ export function BrandLogo({
       s3m
     </span>
   ) : (
-    <img
-      src={BRAND_LOGO_SRC}
-      alt="S3M"
-      onError={() => setHasError(true)}
+    <div
       style={{
-        height,
-        width: "auto",
-        display: "block",
-        objectFit: "contain",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+
+        borderRadius: 24,
+
+        background:
+          "radial-gradient(circle at center, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 55%, rgba(255,255,255,0) 100%)",
+
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+
+
+        padding: "6px",
+
+        width: "fit-content",
+        height: "fit-content",
       }}
-    />
+    >
+      <img
+        src={BRAND_LOGO_SRC}
+        alt="S3M"
+        onError={() => setHasError(true)}
+        style={{
+          height,
+          width: "auto",
+          display: "block",
+          objectFit: "contain",
+        }}
+      />
+    </div>
   );
 
   if (!href) {
