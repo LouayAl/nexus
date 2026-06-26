@@ -1,4 +1,4 @@
-// frontend/src/app/auth/login/page.tsx last version that i need to fix
+// frontend/src/app/auth/login/page.tsx 
 "use client";
 
 import { Suspense, useState, type FormEvent } from "react";
@@ -223,7 +223,7 @@ function LoginForm() {
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: 24,
+                marginBottom: 40,
               }}
             >
               <div
