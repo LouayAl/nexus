@@ -212,13 +212,13 @@ function LoginForm() {
             <BrandLogo height={54} />
           </div>
 
-          <div style={{ marginBottom: 40 }}>
+          <div style={{ marginBottom: 20 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(238,129,61,0.08)", borderRadius: 99, padding: "4px 12px", marginBottom: 14, border: "1px solid rgba(238,129,61,0.15)" }}>
               <Sparkles size={12} color="#EE813D" />
               <span style={{ fontSize: 17, fontWeight: 800, color: "#EE813D", letterSpacing: "0.09em", textTransform: "uppercase" }}>{copy.badge}</span>
             </div>
             {/* <h2 className="font-display" style={{ fontSize: "clamp(22px,4vw,28px)", fontWeight: 900, color: "#0D2137", marginBottom: 4 }}>{copy.title}</h2> */}
-            <p style={{ fontSize: 14, color: "#5A7A96" }}>{copy.subtitle}</p>
+            <p style={{ fontSize: 14, color: "#5A7A96", marginBottom: 20 }}>{copy.subtitle}</p>
             <div
               style={{
                 display: "flex",
