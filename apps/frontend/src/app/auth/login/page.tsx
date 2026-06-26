@@ -212,7 +212,7 @@ function LoginForm() {
             <BrandLogo height={54} />
           </div>
 
-          <div style={{ marginBottom: 24 }}>
+          <div style={{ marginBottom: 40 }}>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(238,129,61,0.08)", borderRadius: 99, padding: "4px 12px", marginBottom: 14, border: "1px solid rgba(238,129,61,0.15)" }}>
               <Sparkles size={12} color="#EE813D" />
               <span style={{ fontSize: 17, fontWeight: 800, color: "#EE813D", letterSpacing: "0.09em", textTransform: "uppercase" }}>{copy.badge}</span>
@@ -223,7 +223,7 @@ function LoginForm() {
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: 40,
+                marginBottom: 20,
               }}
             >
               <div
