@@ -228,6 +228,9 @@ body {
 
 .carousel-track-infinite:hover { animation-play-state: paused; }
 
+.carousel-card { background: #F7F8FA; }
+.carousel-card:hover { background: #DAF4FF; }
+
 @keyframes carousel-scroll {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
