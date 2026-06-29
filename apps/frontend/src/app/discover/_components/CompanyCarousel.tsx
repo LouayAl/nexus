@@ -124,7 +124,7 @@ export function CompanyCarousel({ entreprises }: { entreprises: EntreprisePublic
             willChange: "transform",
           }}
         >
-          {[...Array(3)].map((_, setIndex) =>
+          {[...Array(2)].map((_, setIndex) =>
             entreprises.map((co, i) => {
               const logoSrc = resolveAvatarUrl(co.logoUrl);
               return (

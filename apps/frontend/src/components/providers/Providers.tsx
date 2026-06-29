@@ -10,15 +10,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime:            5 * 60_000,  // 5 min — data stays fresh longer
-        gcTime:               10 * 60_000, // 10 min in cache after unmount
+        staleTime:            0,  // 5 min — data stays fresh longer
+        gcTime:               5 * 60_000, // 10 min in cache after unmount
         retry: (failureCount, error: any) => {
           const status = error?.response?.status;
           if (status && status >= 400 && status < 500) return false;
           return failureCount < 2;
         },
         refetchOnWindowFocus: false,
-        refetchOnReconnect:   false,       // don't refetch on network reconnect
+        refetchOnReconnect:   true,       // don't refetch on network reconnect
       },
       mutations: {
         retry: false,

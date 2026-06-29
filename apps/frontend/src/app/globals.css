@@ -216,6 +216,7 @@ body {
   animation: carousel-scroll 40s linear infinite;
   will-change: transform;
 }
+
 .carousel-track:hover { animation-play-state: paused; }
 
 .carousel-track-infinite {
@@ -224,11 +225,12 @@ body {
   animation: carousel-scroll-infinite 35s linear infinite;
   will-change: transform;
 }
+
 .carousel-track-infinite:hover { animation-play-state: paused; }
 
 @keyframes carousel-scroll {
   from { transform: translateX(0); }
-  to   { transform: translateX(-33.333%); }
+  to   { transform: translateX(-50%); }
 }
 
 @keyframes carousel-scroll-infinite {
