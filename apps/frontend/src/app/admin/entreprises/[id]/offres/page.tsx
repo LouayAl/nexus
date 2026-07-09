@@ -225,8 +225,11 @@ export default function EntrepriseOffresPage() {
                     <div style={{ paddingTop: 16 }}>
                       {/* Description */}
                       <div style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "#5A7A96", marginBottom: 8 }}>Description</div>
-                      <p style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.75, marginBottom: 16, whiteSpace: "pre-wrap" }}>{offre.description}</p>
-
+                      <div
+                        className="rte-content"
+                        style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.75, marginBottom: 16 }}
+                        dangerouslySetInnerHTML={{ __html: offre.description }}
+                      />
                       {/* Competences */}
                       {offre.competences && offre.competences.length > 0 && (
                         <div style={{ marginBottom: 16 }}>

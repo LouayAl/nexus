@@ -117,11 +117,12 @@ export function RichTextEditor({ value, onChange, placeholder, minHeight = 110 }
         .rte-content .ProseMirror p { margin: 0 0 8px; }
         .rte-content .ProseMirror h2 { font-size: 17px; font-weight: 800; font-family: 'Fraunces',serif; color: #0D2137; margin: 10px 0 6px; }
         .rte-content .ProseMirror h3 { font-size: 15px; font-weight: 700; color: #0D2137; margin: 8px 0 4px; }
-        .rte-content .ProseMirror ul, .rte-content .ProseMirror ol { padding-left: 20px; margin: 4px 0; }
+        .rte-content .ProseMirror ul { list-style-type: disc; list-style-position: outside; padding-left: 20px; margin: 4px 0; }
+        .rte-content .ProseMirror ol { list-style-type: decimal; list-style-position: outside; padding-left: 20px; margin: 4px 0; }
         .rte-content .ProseMirror li { margin: 2px 0; }
         .rte-content .ProseMirror strong { font-weight: 700; }
         .rte-content .ProseMirror em { font-style: italic; }
-      `}</style>
+        `}</style>
     </div>
   );
 }
