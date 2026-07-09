@@ -10,6 +10,10 @@ import toast from "react-hot-toast";
 import { LocationInput } from "@/components/ui/LocationInput";
 import { ColoredSelect } from "./ColoredSelect";
 import { CompetenceSelect } from "./CompetenceSelect";
+import { useDraftState } from "@/hooks/useDraftState";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
+
+
 
 const LANGUE_OPTIONS = [
   "Français", "Anglais", "Arabe", "Espagnol", "Allemand",
@@ -60,8 +64,10 @@ function SectionStep({ n, label }: { n: number; label: string }) {
 export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
   const qc = useQueryClient();
 
-  const [selectedEntrepriseId, setSelectedEntrepriseId] = useState<number | null>(null);
-  const [form, setForm] = useState({
+  const [selectedEntrepriseId, setSelectedEntrepriseId, clearSelectedEntreprise] =
+    useDraftState<number | null>("draft:offer-create:entrepriseId", null);  
+    
+  const [form, setForm, clearForm] = useDraftState("draft:offer-create:form", {
     titre:              "",
     type_contrat:       "CDI",
     niveau_experience:  "Senior",
@@ -106,6 +112,8 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-pending"] });
       toast.success("Offre créée avec succès !");
+      clearForm();
+      clearSelectedEntreprise();
       onClose();
     },
     onError: (err: any) => toast.error(err?.message ?? "Erreur"),
@@ -284,15 +292,21 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
         </div>
 
         <Field label="Description du poste">
-          <textarea style={{ ...inputStyle, minHeight: 100, resize: "vertical" } as any}
-            value={form.description} onChange={set("description")}
-            placeholder="Décrivez le poste, les missions, le contexte…" required />
+          <RichTextEditor
+            value={form.description}
+            onChange={html => setForm(f => ({ ...f, description: html }))}
+            placeholder="Décrivez le poste, les missions, le contexte…"
+            minHeight={120}
+          />
         </Field>
 
         <Field label="Profil recherché">
-          <textarea style={{ ...inputStyle, minHeight: 90, resize: "vertical" } as any}
-            value={form.profil_recherche} onChange={set("profil_recherche")}
-            placeholder="Décrivez le profil idéal : formation, soft skills, expérience attendue…" />
+          <RichTextEditor
+            value={form.profil_recherche}
+            onChange={html => setForm(f => ({ ...f, profil_recherche: html }))}
+            placeholder="Décrivez le profil idéal : formation, soft skills, expérience attendue…"
+            minHeight={100}
+          />
         </Field>
 
         <Field label="Compétences requises">

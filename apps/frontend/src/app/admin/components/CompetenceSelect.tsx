@@ -85,11 +85,50 @@ export function CompetenceSelect({ value, onChange }: Props) {
     }
   };
 
+
+  const addMultiple = async (parts: string[]) => {
+    setQuery("");
+    const toAdd: string[] = [];
+    const seen = new Set(value.map(v => v.toLowerCase()));
+    for (const raw of parts) {
+      const name = raw.trim();
+      if (!name) continue;
+      const lower = name.toLowerCase();
+      if (seen.has(lower)) continue;
+      seen.add(lower);
+      const existing = options.find(o => o.nom.toLowerCase() === lower);
+      if (existing) {
+        toAdd.push(existing.nom);
+      } else {
+        try {
+          setSaving(true);
+          const { data } = await adminApi.upsertCompetence(name);
+          if (!options.find(o => o.id === data.id)) {
+            setOptions(prev => [...prev, data].sort((a, b) => a.nom.localeCompare(b.nom)));
+          }
+          toAdd.push(data.nom);
+        } catch (err) {
+          console.error("Failed to save competence:", err);
+        }
+      }
+    }
+    setSaving(false);
+    if (toAdd.length) onChange([...value, ...toAdd]);
+    inputRef.current?.focus();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (queryIsNew) createAndSelect();
-      else if (filtered.length > 0) select(filtered[0].nom);
+      const parts = query.split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+      if (parts.length > 1) {
+        addMultiple(parts);
+      } else if (queryIsNew) {
+        createAndSelect();
+      } else if (filtered.length > 0) {
+        select(filtered[0].nom);
+      }
+      return;
     }
     if (e.key === "Backspace" && !query && value.length > 0) {
       remove(value[value.length - 1]);

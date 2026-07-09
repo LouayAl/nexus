@@ -5,6 +5,8 @@ import { useMutation } from "@tanstack/react-query";
 import { adminApi, offresApi, type Offre } from "@/lib/api";
 import toast from "react-hot-toast";
 import { Check, X, Eye, EyeOff, Building2 } from "lucide-react";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
+
 
 const CONTRATS  = ["CDI", "CDD", "Stage", "Freelance", "Alternance", "Interim"];
 const NIVEAUX   = ["Junior", "Confirmé", "Senior", "Expert"];
@@ -128,21 +130,17 @@ export function OffreEditPanel({ offre, onDone }: Props) {
         {/* Description */}
         <div style={{ gridColumn: "1 / -1" }}>
           <label style={labelSx}>Description</label>
-          <textarea
-            style={{ ...iSx, minHeight: 120, resize: "vertical" }}
-            value={description}
-            onChange={e => setDescription(e.target.value)}
-          />
+          <RichTextEditor value={description} onChange={setDescription} minHeight={140} />
         </div>
 
         {/* Profil recherché */}
         <div style={{ gridColumn: "1 / -1" }}>
           <label style={labelSx}>Profil recherché</label>
-          <textarea
-            style={{ ...iSx, minHeight: 90, resize: "vertical" }}
+          <RichTextEditor
             value={profil}
-            onChange={e => setProfil(e.target.value)}
+            onChange={setProfil}
             placeholder="Décrivez le profil idéal pour ce poste…"
+            minHeight={100}
           />
         </div>
 

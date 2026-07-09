@@ -235,24 +235,28 @@ export function JobDrawer({ offre, onClose }: Props) {
             {/* ── 1. Description du poste ── */}
             <div>
               <SectionLabel icon={<Briefcase size={11} />} label="Description du poste" />
-              <div style={{ fontSize: 14, color: "#3D5A73", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
-                {offre.description}
-              </div>
+              <div
+                className="rte-content"
+                style={{ fontSize: 14, color: "#3D5A73", lineHeight: 1.8 }}
+                dangerouslySetInnerHTML={{ __html: offre.description }}
+              />
             </div>
 
             {/* ── 2. Profil recherché ── */}
             {offre.profil_recherche && (
               <div>
                 <SectionLabel icon={<UserCheck size={11} />} label="Profil recherché" />
-                <div style={{
-                  background: "rgba(16,64,107,0.03)",
-                  border: "1px solid rgba(16,64,107,0.08)",
-                  borderRadius: 12,
-                  padding: "14px 16px",
-                  fontSize: 14, color: "#3D5A73", lineHeight: 1.8, whiteSpace: "pre-wrap",
-                }}>
-                  {offre.profil_recherche}
-                </div>
+                <div
+                  className="rte-content"
+                  style={{
+                    background: "rgba(16,64,107,0.03)",
+                    border: "1px solid rgba(16,64,107,0.08)",
+                    borderRadius: 12,
+                    padding: "14px 16px",
+                    fontSize: 14, color: "#3D5A73", lineHeight: 1.8,
+                  }}
+                  dangerouslySetInnerHTML={{ __html: offre.profil_recherche }}
+                />
               </div>
             )}
 
@@ -331,6 +335,17 @@ export function JobDrawer({ offre, onClose }: Props) {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .rte-content p { margin: 0 0 8px; }
+        .rte-content h2 { font-size: 17px; font-weight: 800; font-family: 'Fraunces',serif; color: #0D2137; margin: 10px 0 6px; }
+        .rte-content h3 { font-size: 15px; font-weight: 700; color: #0D2137; margin: 8px 0 4px; }
+        .rte-content ul { list-style-type: disc; list-style-position: outside; padding-left: 20px; margin: 4px 0; }
+        .rte-content ol { list-style-type: decimal; list-style-position: outside; padding-left: 20px; margin: 4px 0; }
+        .rte-content li { margin: 2px 0; }
+        .rte-content strong { font-weight: 700; }
+        .rte-content em { font-style: italic; }
+      `}</style>
     </>
   );
 
