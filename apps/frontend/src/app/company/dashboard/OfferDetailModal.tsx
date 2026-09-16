@@ -214,18 +214,28 @@ export function OfferDetailModal({
       {/* ── Description du poste ───────────────────────────────────────── */}
       <div style={{ marginBottom: 20 }}>
         <SectionLabel>Description du poste</SectionLabel>
-        <p style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>
-          {offre.description}
-        </p>
+        <div
+          className="rte-content"
+          style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.8 }}
+          dangerouslySetInnerHTML={{ __html: offre.description }}
+        />
       </div>
 
       {/* ── Profil recherché ───────────────────────────────────────────── */}
       {offre.profil_recherche && (
         <div style={{ marginBottom: 20 }}>
           <SectionLabel>Profil recherché</SectionLabel>
-          <p style={{ fontSize: 13, color: "#3D5A73", lineHeight: 1.8, whiteSpace: "pre-wrap", margin: 0 }}>
-            {offre.profil_recherche}
-          </p>
+          <div
+            className="rte-content"
+            style={{
+              background: "rgba(16,64,107,0.03)",
+              border: "1px solid rgba(16,64,107,0.08)",
+              borderRadius: 12,
+              padding: "14px 16px",
+              fontSize: 13, color: "#3D5A73", lineHeight: 1.8,
+            }}
+            dangerouslySetInnerHTML={{ __html: offre.profil_recherche }}
+          />
         </div>
       )}
 
