@@ -7,6 +7,7 @@ import { Modal } from "./Modal";
 import { Field, inputStyle } from "./Field";
 import { type Offre, type CreateOffreDto } from "./constants";
 import { offresApi } from "@/lib/api";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 
 const LANGUE_OPTIONS = [
   "Français", "Anglais", "Arabe", "Espagnol", "Allemand",
@@ -126,8 +127,12 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
   const competenceTags = form.competences_str.split(",").map(s => s.trim()).filter(Boolean);
 
   return (
-    <Modal title={isEdit ? "Modifier l'offre" : "Créer une nouvelle offre"} onClose={onClose}>
+    <Modal title={isEdit ? "Modifier l'offre" : "Créer une nouvelle offre"} onClose={onClose} wide>
       <form onSubmit={handleSubmit}>
+        {/* ── Step 1: Informations du poste ── */}
+        <div style={{ borderTop: "1px solid rgba(16,64,107,0.07)", paddingTop: 20, marginBottom: 12 }}>
+          <SectionStep n={1} label="Informations du poste" />
+        </div>
         {/* ── Visibilité entreprise ── */}
         <div style={{ marginBottom: 16 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
@@ -246,18 +251,28 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
           )}
         </div>
 
+        <div style={{ borderTop: "1px solid rgba(16,64,107,0.07)", paddingTop: 20, marginBottom: 16 }}>
+          <SectionStep n={2} label="Contenu de l'offre" />
+        </div>
+
         {/* ── Description ── */}
         <Field label="Description du poste">
-          <textarea style={{ ...inputStyle, minHeight: 110, resize: "vertical" } as React.CSSProperties}
-            value={form.description} onChange={handleChange("description")}
-            placeholder="Décrivez le poste, les missions, le contexte…" required />
+          <RichTextEditor
+            value={form.description}
+            onChange={html => setForm(f => ({ ...f, description: html }))}
+            placeholder="Décrivez le poste, les missions, le contexte…"
+            minHeight={120}
+          />
         </Field>
 
         {/* ── Profil recherché ── */}
         <Field label="Profil recherché">
-          <textarea style={{ ...inputStyle, minHeight: 90, resize: "vertical" } as React.CSSProperties}
-            value={form.profil_recherche} onChange={handleChange("profil_recherche")}
-            placeholder="Décrivez le profil idéal : formation, soft skills, expérience attendue…" />
+          <RichTextEditor
+            value={form.profil_recherche}
+            onChange={html => setForm(f => ({ ...f, profil_recherche: html }))}
+            placeholder="Décrivez le profil idéal : formation, soft skills, expérience attendue…"
+            minHeight={100}
+          />
         </Field>
 
         {/* ── Compétences ── */}
@@ -298,5 +313,14 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
         </button>
       </form>
     </Modal>
+  );
+}
+
+function SectionStep({ n, label }: { n: number; label: string }) {
+  return (
+    <div style={{ fontSize: 13, fontWeight: 700, color: "#0D2137", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+      <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#10406B", color: "white", fontSize: 11, fontWeight: 800, display: "inline-flex", alignItems: "center", justifyContent: "center" }}>{n}</span>
+      {label}
+    </div>
   );
 }
