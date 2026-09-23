@@ -1,3 +1,4 @@
+// backend/src/candidats/candidats.controller.ts
 import {
   Controller, Get, Post, Patch, Delete,
   Body, Param, UseGuards, Request, ParseIntPipe,
@@ -6,7 +7,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import { readFile, unlink } from 'fs/promises';
+import { readFile, unlink, rename } from 'fs/promises';
 import * as FileType from 'file-type';
 import { CandidatsService } from './candidats.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -23,6 +24,18 @@ const CV_MIME_WHITELIST = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 const IMAGE_MIME_WHITELIST = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Maps a detected (magic-byte) MIME type back to a safe extension,
+// used as a fallback when the original filename has none/a wrong one
+// (common with Android file pickers / Drive / WhatsApp document shares).
+const MIME_TO_EXT: Record<string, string> = {
+  'application/pdf': '.pdf',
+  'application/msword': '.doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+};
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.CANDIDAT)
@@ -65,12 +78,23 @@ export class CandidatsController {
       destination: join(__dirname, '..', '..', '..', 'uploads', 'cv'),
       filename: (req, file, cb) => {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `cv-${unique}${extname(file.originalname)}`);
+        // Fall back to .tmp when the original filename has no usable extension
+        // (e.g. some Android pickers send a generic name with none). The real
+        // extension gets corrected after the magic-byte check below.
+        const ext = extname(file.originalname) || '.tmp';
+        cb(null, `cv-${unique}${ext}`);
       },
     }),
     fileFilter: (req, file, cb) => {
-      const allowed = ['.pdf', '.doc', '.docx'];
-      if (!allowed.includes(extname(file.originalname).toLowerCase())) {
+      const allowedExt = ['.pdf', '.doc', '.docx'];
+      const allowedMime = [
+        ...CV_MIME_WHITELIST,
+        'application/octet-stream', // some Android pickers report this generically
+      ];
+      const ext = extname(file.originalname).toLowerCase();
+      const okExt = allowedExt.includes(ext);
+      const okMime = allowedMime.includes(file.mimetype);
+      if (!okExt && !okMime) {
         return cb(new BadRequestException('Type de fichier non autorisé'), false);
       }
       cb(null, true);
@@ -88,7 +112,19 @@ export class CandidatsController {
       throw new BadRequestException('Le contenu du fichier ne correspond pas à un CV valide');
     }
 
-    const cvUrl = `/uploads/cv/${file.filename}`;
+    // Correct the file's extension on disk if the original filename's
+    // extension didn't match the real, detected type.
+    let finalFilename = file.filename;
+    const correctExt = MIME_TO_EXT[detected.mime];
+    const currentExt = extname(file.filename).toLowerCase();
+    if (correctExt && currentExt !== correctExt) {
+      const newFilename = file.filename.slice(0, -currentExt.length || undefined).replace(/\.tmp$/, '') + correctExt;
+      const newPath = join(file.destination, newFilename);
+      await rename(file.path, newPath);
+      finalFilename = newFilename;
+    }
+
+    const cvUrl = `/uploads/cv/${finalFilename}`;
     return this.candidats.updateCvUrl(req.user.id, cvUrl);
   }
 
@@ -103,7 +139,8 @@ export class CandidatsController {
       },
       filename: (req, file, cb) => {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `avatar-${unique}${extname(file.originalname)}`);
+        const ext = extname(file.originalname) || '.tmp';
+        cb(null, `avatar-${unique}${ext}`);
       },
     }),
     fileFilter: (req, file, cb) => {
@@ -124,7 +161,17 @@ export class CandidatsController {
       throw new BadRequestException('Le contenu du fichier ne correspond pas à une image valide');
     }
 
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    let finalFilename = file.filename;
+    const correctExt = MIME_TO_EXT[detected.mime];
+    const currentExt = extname(file.filename).toLowerCase();
+    if (correctExt && currentExt !== correctExt) {
+      const newFilename = file.filename.slice(0, -currentExt.length || undefined).replace(/\.tmp$/, '') + correctExt;
+      const newPath = join(file.destination, newFilename);
+      await rename(file.path, newPath);
+      finalFilename = newFilename;
+    }
+
+    const avatarUrl = `/uploads/avatars/${finalFilename}`;
     return this.candidats.updateAvatarUrl(req.user.id, avatarUrl);
   }
 
@@ -226,12 +273,21 @@ export class CandidatsAdminController {
       },
       filename: (req, file, cb) => {
         const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `note-${unique}${extname(file.originalname)}`);
+        const ext = extname(file.originalname) || '.tmp';
+        cb(null, `note-${unique}${ext}`);
       },
     }),
     fileFilter: (req, file, cb) => {
-      const allowed = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
-      if (!allowed.includes(extname(file.originalname).toLowerCase())) {
+      const allowedExt = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+      const allowedMime = [
+        ...CV_MIME_WHITELIST,
+        ...IMAGE_MIME_WHITELIST,
+        'application/octet-stream',
+      ];
+      const ext = extname(file.originalname).toLowerCase();
+      const okExt = allowedExt.includes(ext);
+      const okMime = allowedMime.includes(file.mimetype);
+      if (!okExt && !okMime) {
         return cb(new BadRequestException('Type de fichier non autorisé'), false);
       }
       cb(null, true);
@@ -252,7 +308,17 @@ export class CandidatsAdminController {
       throw new BadRequestException('Le contenu du fichier ne correspond pas à un type autorisé');
     }
 
-    const pieceJointeUrl = `/uploads/notes/${file.filename}`;
+    let finalFilename = file.filename;
+    const correctExt = MIME_TO_EXT[detected.mime];
+    const currentExt = extname(file.filename).toLowerCase();
+    if (correctExt && currentExt !== correctExt) {
+      const newFilename = file.filename.slice(0, -currentExt.length || undefined).replace(/\.tmp$/, '') + correctExt;
+      const newPath = join(file.destination, newFilename);
+      await rename(file.path, newPath);
+      finalFilename = newFilename;
+    }
+
+    const pieceJointeUrl = `/uploads/notes/${finalFilename}`;
     return this.candidats.upsertAdminNote(id, { pieceJointeUrl });
   }
 }
