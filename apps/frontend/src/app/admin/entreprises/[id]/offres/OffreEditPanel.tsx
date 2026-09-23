@@ -160,6 +160,7 @@ export function OffreEditPanel({ offre, onDone }: Props) {
         <div>
           <label style={labelSx}>Type de contrat</label>
           <select style={iSx} value={contrat} onChange={e => setContrat(e.target.value)}>
+            <option value="">— Indéterminé —</option>
             {CONTRATS.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>

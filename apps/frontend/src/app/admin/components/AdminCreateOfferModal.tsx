@@ -69,7 +69,7 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
     
   const [form, setForm, clearForm] = useDraftState("draft:offer-create:form", {
     titre:              "",
-    type_contrat:       "CDI",
+    type_contrat:       "",
     niveau_experience:  "Senior",
     localisation:       "",
     salaire_min:        undefined as number | undefined,
@@ -217,6 +217,7 @@ export function AdminCreateOfferModal({ onClose }: { onClose: () => void }) {
               value={form.type_contrat}
               onChange={v => setForm(f => ({ ...f, type_contrat: v }))}
               options={[
+                { value: "",           label: "— Indéterminé —", color: "#9BAFC0" },
                 { value: "CDI",        label: "CDI",        color: "#1A9E6F" },
                 { value: "CDD",        label: "CDD",        color: "#2284C0" },
                 { value: "Intérim",    label: "Intérim",    color: "#EE813D" },

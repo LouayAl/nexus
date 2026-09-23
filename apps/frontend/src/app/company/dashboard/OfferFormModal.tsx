@@ -180,6 +180,7 @@ export function OfferFormModal({ offre, onClose }: OfferFormModalProps) {
         <div style={{ display: "flex", gap: 12 }}>
           <Field label="Type de contrat" half>
             <select style={inputStyle} value={form.type_contrat} onChange={handleChange("type_contrat")}>
+              <option value="">— Indéterminé —</option>
               {["CDI", "CDD", "Freelance", "Stage", "Alternance", "Intérim"].map(t => (
                 <option key={t}>{t}</option>
               ))}
