@@ -96,9 +96,7 @@ export const candidatsApi = {
   uploadCv: (file: File) => {
     const form = new FormData();
     form.append("cv", file);
-    return api.post<{ cvUrl: string }>("/candidats/cv", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return api.post<{ cvUrl: string }>("/candidats/cv", form); // let browser set Content-Type + boundary
   },
 
   uploadAvatar: (file: File) => {
@@ -235,9 +233,7 @@ export const adminApi = {
   uploadCandidatNoteFile: (id: number, file: File) => {
     const form = new FormData();
     form.append('file', file);
-    return api.post(`/candidats/admin/${id}/note/piece-jointe`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return api.post(`/candidats/admin/${id}/note/piece-jointe`, form); // removed headers override
   },
 };
 
