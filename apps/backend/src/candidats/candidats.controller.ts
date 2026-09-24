@@ -89,11 +89,21 @@ export class CandidatsController {
       const allowedExt = ['.pdf', '.doc', '.docx'];
       const allowedMime = [
         ...CV_MIME_WHITELIST,
-        'application/octet-stream', // some Android pickers report this generically
+        'application/octet-stream',
       ];
       const ext = extname(file.originalname).toLowerCase();
       const okExt = allowedExt.includes(ext);
       const okMime = allowedMime.includes(file.mimetype);
+
+      // TEMP DEBUG — remove after diagnosing Android upload issue
+      console.log('[CV UPLOAD DEBUG]', {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        ext,
+        okExt,
+        okMime,
+      });
+
       if (!okExt && !okMime) {
         return cb(new BadRequestException('Type de fichier non autorisé'), false);
       }
