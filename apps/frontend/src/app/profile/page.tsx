@@ -1,4 +1,3 @@
-// frontend/src/app/profile/page.tsx
 "use client";
 
 import { useRef, useState } from "react";
@@ -12,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/useBreakpoint";
 import { useAppLanguage } from "@/hooks/useAppLanguage";
 import { candidatsApi } from "@/lib/api";
+import { materializeFile } from "@/lib/materializeFile";
 import { AddExperienceModal } from "./_components/AddExperienceModal";
 import { AddFormationModal } from "./_components/AddFormationModal";
 import { AddLangueModal } from "./_components/AddLangueModal";
@@ -27,8 +27,8 @@ import { RemunerationModal } from "./_components/RemunerationModal";
 type Tab = "skills" | "experience" | "formation" | "langues" | "remuneration";
 
 const COPY = {
-  fr: { loading: "Chargement du profil...", eyebrow: "Mon espace", title: "Mon Profil" },
-  en: { loading: "Loading profile...",      eyebrow: "My space",   title: "My Profile" },
+  fr: { loading: "Chargement du profil...", eyebrow: "Mon espace", title: "Mon Profil", reading: "Lecture du fichier..." },
+  en: { loading: "Loading profile...",      eyebrow: "My space",   title: "My Profile", reading: "Reading file..." },
 } as const;
 
 export default function ProfilePage() {
@@ -39,10 +39,11 @@ export default function ProfilePage() {
   const fileRef                   = useRef<HTMLInputElement>(null);
   const isMobile                  = useIsMobile();
 
-  const [tab,          setTab]          = useState<Tab>("skills");
-  const [modal,        setModal]        = useState<ModalType>(null);
-  const [editingItem,  setEditingItem]  = useState<any>(null);
-  const [showChangePw, setShowChangePw] = useState(false);
+  const [tab,           setTab]           = useState<Tab>("skills");
+  const [modal,         setModal]         = useState<ModalType>(null);
+  const [editingItem,   setEditingItem]   = useState<any>(null);
+  const [showChangePw,  setShowChangePw]  = useState(false);
+  const [preparingFile, setPreparingFile] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
@@ -56,13 +57,26 @@ export default function ProfilePage() {
       const isNetworkError = !err?.response;
       const message = isNetworkError
         ? (language === "fr"
-            ? "Échec de l'import. Si votre CV est sur Google Drive, essayez de le télécharger d'abord sur votre téléphone (dossier Téléchargements), puis réessayez."
-            : "Upload failed. If your resume is stored on Google Drive, try downloading it to your phone first, then upload again.")
+            ? "Échec de l'import. Vérifiez votre connexion et réessayez."
+            : "Upload failed. Check your connection and try again.")
         : (language === "fr" ? "Erreur lors de l'upload" : "Upload failed");
       toast.error(message);
     },
   });
-  
+
+  const handleCvSelected = async (file: File) => {
+    setPreparingFile(true);
+    try {
+      const materialized = await materializeFile(file);
+      uploadCv.mutate(materialized);
+    } catch {
+      toast.error(language === "fr"
+        ? "Impossible de lire ce fichier. Réessayez ou choisissez-en un autre."
+        : "Couldn't read this file. Try again or pick a different one.");
+    } finally {
+      setPreparingFile(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,9 +93,10 @@ export default function ProfilePage() {
 
   const sharedIdentity = {
     profile,
-    uploadPending: uploadCv.isPending,
-    onEdit:        () => setModal("editProfile"),
-    onUploadCv:    () => fileRef.current?.click(),
+    uploadPending:  preparingFile || uploadCv.isPending,
+    uploadingLabel: preparingFile ? copy.reading : undefined,
+    onEdit:         () => setModal("editProfile"),
+    onUploadCv:     () => fileRef.current?.click(),
     language,
   };
 
@@ -94,7 +109,7 @@ export default function ProfilePage() {
     onEditExp:   (item: any) => { setEditingItem(item); setModal("addExp"); },
     onEditForm:  (item: any) => { setEditingItem(item); setModal("addForm"); },
     onEditLang:  (item: any) => { setEditingItem(item); setModal("addLang"); },
-    onEditRemuneration: () => setModal("remuneration"), 
+    onEditRemuneration: () => setModal("remuneration"),
   };
 
   const contactProps = {
@@ -128,7 +143,7 @@ export default function ProfilePage() {
         type="file"
         accept=".pdf,.doc,.docx"
         style={{ display: "none" }}
-        onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadCv.mutate(file); }}
+        onChange={(e) => { const file = e.target.files?.[0]; if (file) handleCvSelected(file); e.target.value = ""; }}
       />
 
       <div style={{ marginBottom: 28 }}>

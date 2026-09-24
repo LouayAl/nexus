@@ -33,15 +33,16 @@ const COPY = {
 } as const;
 
 interface Props {
-  profile:       CandidatProfile;
-  uploadPending: boolean;
-  isMobile:      boolean;
-  onEdit:        () => void;
-  onUploadCv:    () => void;
-  language:      AppLanguage;
+  profile:        CandidatProfile;
+  uploadPending:  boolean;
+  uploadingLabel?: string; // overrides copy.uploading while set (e.g. "Reading file...")
+  isMobile:       boolean;
+  onEdit:         () => void;
+  onUploadCv:     () => void;
+  language:       AppLanguage;
 }
 
-export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploadCv, language }: Props) {
+export function IdentityCard({ profile, uploadPending, uploadingLabel, isMobile, onEdit, onUploadCv, language }: Props) {
   const copy   = COPY[language];
   const pct    = completionPct(profile);
   const exps   = profile.experiences ?? [];
@@ -315,7 +316,7 @@ export function IdentityCard({ profile, uploadPending, isMobile, onEdit, onUploa
           ) : (
             <button className="ic-btn-upload" onClick={onUploadCv} disabled={uploadPending}>
               {uploadPending
-                ? <><Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />{copy.uploading}</>
+                ? <><Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />{uploadingLabel ?? copy.uploading}</>
                 : <><Upload size={14} />{copy.upload}</>
               }
             </button>
