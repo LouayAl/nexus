@@ -52,7 +52,15 @@ export default function ProfilePage() {
   const uploadCv = useMutation({
     mutationFn: (file: File) => candidatsApi.uploadCv(file),
     onSuccess:  () => { qc.invalidateQueries({ queryKey: ["profile"] }); toast.success(language === "fr" ? "CV importé !" : "Resume uploaded!"); },
-    onError:    () => toast.error(language === "fr" ? "Erreur lors de l'upload" : "Upload failed"),
+    onError:    (err: any) => {
+      // TEMP DEBUG — remove after diagnosing Android upload issue
+      console.error("CV UPLOAD ERROR", err);
+      const detail =
+        err?.response?.data?.message ??
+        err?.message ??
+        "unknown";
+      toast.error(`${language === "fr" ? "Erreur lors de l'upload" : "Upload failed"}: ${detail}`);
+    },
   });
 
   if (isLoading) {
