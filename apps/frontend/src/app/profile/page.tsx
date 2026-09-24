@@ -53,15 +53,16 @@ export default function ProfilePage() {
     mutationFn: (file: File) => candidatsApi.uploadCv(file),
     onSuccess:  () => { qc.invalidateQueries({ queryKey: ["profile"] }); toast.success(language === "fr" ? "CV importé !" : "Resume uploaded!"); },
     onError:    (err: any) => {
-      // TEMP DEBUG — remove after diagnosing Android upload issue
-      console.error("CV UPLOAD ERROR", err);
-      const detail =
-        err?.response?.data?.message ??
-        err?.message ??
-        "unknown";
-      toast.error(`${language === "fr" ? "Erreur lors de l'upload" : "Upload failed"}: ${detail}`);
+      const isNetworkError = !err?.response;
+      const message = isNetworkError
+        ? (language === "fr"
+            ? "Échec de l'import. Si votre CV est sur Google Drive, essayez de le télécharger d'abord sur votre téléphone (dossier Téléchargements), puis réessayez."
+            : "Upload failed. If your resume is stored on Google Drive, try downloading it to your phone first, then upload again.")
+        : (language === "fr" ? "Erreur lors de l'upload" : "Upload failed");
+      toast.error(message);
     },
   });
+  
 
   if (isLoading) {
     return (

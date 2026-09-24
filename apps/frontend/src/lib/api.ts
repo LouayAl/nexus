@@ -93,16 +93,33 @@ export const candidatsApi = {
     api.get<{ id: number; nom: string }[]>('/candidats/competences/all'),
 
   // CV
-  uploadCv: (file: File) => {
+  uploadCv: async (file: File) => {
     const form = new FormData();
     form.append("cv", file);
-    return api.post<{ cvUrl: string }>("/candidats/cv", form); // let browser set Content-Type + boundary
+    try {
+      return await api.post<{ cvUrl: string }>("/candidats/cv", form, {
+        timeout: 120_000, // 2 min — Drive-backed files need time to resolve before upload even starts
+      });
+    } catch (err: any) {
+      if (!err?.response) {
+        // Network-level failure (likely a slow Drive fetch) — retry once
+        return api.post<{ cvUrl: string }>("/candidats/cv", form, { timeout: 120_000 });
+      }
+      throw err;
+    }
   },
 
-  uploadAvatar: (file: File) => {
+  uploadAvatar: async (file: File) => {
     const form = new FormData();
     form.append("avatar", file);
-    return api.post("/candidats/avatar", form); // no headers override
+    try {
+      return await api.post("/candidats/avatar", form, { timeout: 120_000 });
+    } catch (err: any) {
+      if (!err?.response) {
+        return api.post("/candidats/avatar", form, { timeout: 120_000 });
+      }
+      throw err;
+    }
   },
 
   // Experiences
@@ -136,10 +153,17 @@ export const entreprisesApi = {
   getProfile:    () => api.get<EntrepriseProfile>("/entreprises/profile"),
   updateProfile: (data: Partial<EntrepriseProfile>) =>
     api.patch<EntrepriseProfile>("/entreprises/profile", data),
-  uploadLogo: (file: File) => {
+  uploadLogo: async (file: File) => {
     const form = new FormData();
     form.append("logo", file);
-    return api.post<{ logoUrl: string }>("/entreprises/logo", form);
+    try {
+      return await api.post<{ logoUrl: string }>("/entreprises/logo", form, { timeout: 120_000 });
+    } catch (err: any) {
+      if (!err?.response) {
+        return api.post<{ logoUrl: string }>("/entreprises/logo", form, { timeout: 120_000 });
+      }
+      throw err;
+    }
   },
 };
 
@@ -230,10 +254,17 @@ export const adminApi = {
     pieceJointeUrl?: string;
   }) => api.patch(`/candidats/admin/${id}/note`, data),
 
-  uploadCandidatNoteFile: (id: number, file: File) => {
+  uploadCandidatNoteFile: async (id: number, file: File) => {
     const form = new FormData();
     form.append('file', file);
-    return api.post(`/candidats/admin/${id}/note/piece-jointe`, form); // removed headers override
+    try {
+      return await api.post(`/candidats/admin/${id}/note/piece-jointe`, form, { timeout: 120_000 });
+    } catch (err: any) {
+      if (!err?.response) {
+        return api.post(`/candidats/admin/${id}/note/piece-jointe`, form, { timeout: 120_000 });
+      }
+      throw err;
+    }
   },
 };
 
