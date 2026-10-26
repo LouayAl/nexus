@@ -7,13 +7,13 @@ const COPY = {
   fr: {
     badge:   "Obligatoire",
     title:   "Rémunération à renseigner",
-    body:    "Ces informations sont indispensables au traitement de votre candidature. Sans rémunération renseignée, votre candidature sera refusée par le recruteur ou l'équipe Hirin.",
+    body:    "Ces informations sont indispensables au traitement de votre candidature. Sans rémunération renseignée, votre candidature ne sera pas traitée par le recruteur ou l'équipe Hirin.",
     privacy: "Vos données de rémunération sont confidentielles : elles ne sont visibles que par les recruteurs et l'équipe Hirin, et ne sont jamais partagées avec des tiers.",
   },
   en: {
     badge:   "Required",
     title:   "Salary details required",
-    body:    "This information is essential to process your application. If your salary details are missing, your application will be declined by the recruiter or the Hirin team.",
+    body:    "This information is essential to process your application. If your salary details are missing, your application will not be processed by the recruiter or the Hirin team.",
     privacy: "Your salary data is confidential: it is only visible to recruiters and the Hirin team, and is never shared with third parties.",
   },
 } as const;
