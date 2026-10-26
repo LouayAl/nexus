@@ -9,6 +9,8 @@ import { SKILL_COLORS, LANGUE_NIVEAU_COLORS, skillLevelLabel, skillColor } from 
 import { PROFILE_COPY } from "./copy";
 import type { AppLanguage } from "@/hooks/useAppLanguage";
 
+import { SalaryNotice } from "./SalaryNotice";
+
 type Tab = "skills" | "experience" | "formation" | "langues" | "remuneration";
 
 interface Props {
@@ -494,6 +496,9 @@ export function TabsPanel({
             {tab === "remuneration" && (
               <div>
                 {sectionHeader(copy.remunerationTitle, addBtn(onEditRemuneration))}
+                {!(profile.salaireActuel?.trim() || profile.pretentionsSalariales?.trim()) && (
+                  <SalaryNotice language={language} />
+                )}
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
                   {/* Salaire actuel */}
@@ -543,7 +548,7 @@ export function TabsPanel({
                       {copy.pretentions}
                     </div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#0D2137" }}>
-                      {profile.pretentionsSalariales ?? <span style={{ color: "#B0C4D4" }}>{copy.notFilled}</span>}
+                      {profile.pretentionsSalariales || <span style={{ color: "#B0C4D4" }}>{copy.notFilled}</span>}
                     </div>
                   </div>
 

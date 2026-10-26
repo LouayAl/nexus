@@ -8,6 +8,8 @@ import toast from "react-hot-toast";
 import { createPortal } from "react-dom";
 import type { AppLanguage } from "@/hooks/useAppLanguage";
 
+import { SalaryNotice } from "./SalaryNotice";
+
 const COPY = {
   fr: {
     title:                  "RÃ©munÃ©ration & PrÃ©tentions",
@@ -72,12 +74,12 @@ export function RemunerationModal({ profile, onClose, language }: Props) {  // â
 
   const mut = useMutation({
     mutationFn: () => candidatsApi.updateRemuneration({
-      salaireActuel:         salaireActuel         || undefined,
+      salaireActuel:         salaireActuel.trim(),
       primes,
       vehiculeFonction,
       vehiculeService,
       avantagesSociaux,
-      pretentionsSalariales: pretentionsSalariales || undefined,
+      pretentionsSalariales: pretentionsSalariales.trim(),
     }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["profile"] });
@@ -137,7 +139,7 @@ export function RemunerationModal({ profile, onClose, language }: Props) {  // â
 
           {/* Scrollable body */}
           <div style={{ flex:1, overflowY:"auto", padding:"20px 24px", display:"flex", flexDirection:"column", gap:16 }}>
-
+            <SalaryNotice language={language} compact /> 
             {/* Salaire actuel */}
             <div>
               <label style={{ display:"block", fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.07em", color:"#5A7A96", marginBottom:7 }}>

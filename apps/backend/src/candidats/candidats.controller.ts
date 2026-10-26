@@ -6,10 +6,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+// import { basename, extname, join } from 'path';   // basename was only used by the extract route
 import { extname, join } from 'path';
 import { readFile, unlink, rename } from 'fs/promises';
 import * as FileType from 'file-type';
+// import { Throttle } from '@nestjs/throttler';      // only used by the extract route
 import { CandidatsService } from './candidats.service';
+// import { ResumeExtractionService } from './resume-extraction.service';   // RESUME ANALYSIS DISABLED
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -41,6 +44,8 @@ const MIME_TO_EXT: Record<string, string> = {
 @Roles(Role.CANDIDAT)
 @Controller('candidats')
 export class CandidatsController {
+  // RESUME ANALYSIS DISABLED: ResumeExtractionService is no longer injected
+  // constructor(private candidats: CandidatsService, private resumeExtraction: ResumeExtractionService) {}
   constructor(private candidats: CandidatsService) {}
 
   @Get('profile')
@@ -117,7 +122,9 @@ export class CandidatsController {
     // Verify actual file content matches an allowed type (magic-byte check)
     const buffer = await readFile(file.path);
     const detected = await FileType.fromBuffer(buffer);
-    if (!detected || !CV_MIME_WHITELIST.includes(detected.mime)) {
+    const originalExt = extname(file.originalname).toLowerCase();
+    const isLegacyWord = detected?.mime === 'application/x-cfb' && originalExt === '.doc';
+    if (!detected || (!CV_MIME_WHITELIST.includes(detected.mime) && !isLegacyWord)) {
       await unlink(file.path).catch(() => {});
       throw new BadRequestException('Le contenu du fichier ne correspond pas à un CV valide');
     }
@@ -137,6 +144,31 @@ export class CandidatsController {
     const cvUrl = `/uploads/cv/${finalFilename}`;
     return this.candidats.updateCvUrl(req.user.id, cvUrl);
   }
+
+  // ── RESUME ANALYSIS / EXTRACTION — DISABLED FOR DEPLOYMENT ─────────────────
+  // @Post('cv/extract')
+  // @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  // async extractCv(@Request() req: any) {
+  //   const profile = await this.candidats.getProfile(req.user.id);
+  //   if (!profile.cvUrl || !profile.cvUrl.startsWith('/uploads/cv/')) {
+  //     throw new BadRequestException({ code: 'CV_NOT_FOUND' });
+  //   }
+  //   const filename = basename(profile.cvUrl);
+  //   const path = join(__dirname, '..', '..', '..', 'uploads', 'cv', filename);
+  //   const buffer = await readFile(path).catch(() => { throw new BadRequestException({ code: 'CV_NOT_FOUND' }); });
+  //   const detected = await FileType.fromBuffer(buffer);
+  //   if (!detected || (!CV_MIME_WHITELIST.includes(detected.mime) && !(detected.mime === 'application/x-cfb' && filename.toLowerCase().endsWith('.doc')))) {
+  //     throw new BadRequestException({ code: 'FILE_UNREADABLE' });
+  //   }
+  //   const text = await this.resumeExtraction.readText(buffer, detected.mime);
+  //   return { extraction: await this.resumeExtraction.extract(text) };
+  // }
+  //
+  // @Post('cv/apply-extraction')
+  // applyResumeExtraction(@Request() req: any, @Body() body: unknown) {
+  //   const extraction = this.resumeExtraction.normalize(body);
+  //   return this.candidats.applyResumeExtraction(req.user.id, extraction);
+  // }
 
   // ── Avatar Upload ──────────────────────────────────────────────────────────
   @Post('avatar')
